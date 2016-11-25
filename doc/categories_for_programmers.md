@@ -261,13 +261,75 @@ Where the composition of the rhs is simply composition in $\mathcal{D}$.
 
 # Types and functions: categories in functional programming
 
-To define a function $f: A \to B$ in Haskell:
+To establish a link between functional programming and category theory, we need to find a category that is applicable. Observe that a _type_ in a programming language, corresponds to a _set_ in mathematics. Indeed, the type `int` in C based languages, corresponds to some finite set of numbers, the type `char` to a set of letters like `'a'`, `'z'` and `'$'`, and the type `bool` is a set of two elements (`true` and `false`). This category, the category of types, turns out to be a very fruitful way to look at programming.
+
+Why do we want to look at types? Programming safety and correctness. Maybe something like declarative programming.
+
+We will take as our model for the category of types the category **Set**. Recall that the elements of **Set** are sets, and the arrows correspond to maps. There is a major issue to address here: Mathematical maps and functions in a computer program are not identical (bottom value $\perp$). We will com back to this, but for now we consider **Set**.
+
+In Haskell, we can express that an object has a certain type:
+
+```haskell
+    f :: Integer
+```
+
+In C++ we would write someting like this:
+
+To define a function $f: A \to B$ from type $A$ to type $B$ in Haskell:
 
 ```haskell
     f :: A -> B
+```
+
+To compose:
+
+```haskell
     g :: B -> C
     h = f . g
 ```
+
+This means that `h` is a function `h :: A -> C`! Note how easy it is to compose functions in Haskell. Compare how this would be in C++, if we were to take two polymorphic functions in C++ and compose them:
+
+```cpp
+template <typename F, typename G>
+auto operator*(F f, G g) {
+    return [&](auto x) { return g(f(x)); };
+}
+
+int main() {
+    auto f = [](int x) -> float { return (x * x) * 0.5f; };
+    auto g = [](float y) -> int { return (int)y; };
+
+    std::cout << (f * g)(5) << "\n";
+}
+```
+
+We need some additional operations to truly turn it into a category. It is easy to define the identity arrow in Haskell (at once for all types):
+
+```haskell
+id :: A -> A
+id a = a
+```
+
+in fact, this is part of the core standard library of Haskell (the Prelude) that gets loaded by default. Ignoring reference types and e.g. `const` specifiers, we can write in C++:
+
+```cpp
+template <typename T>
+T id(T x) {
+    return x;
+}
+```
+
+
+So, types are objects, and (computer program) functions between these types are arrows. Can we apply some of the concepts we have seen, such as functors and natural transformations?
+
+Functors in Haskell. Type constructors. Note that here we only look at _endofunctors_.
+
+Polymorphic functions as natural transformations
+
+Kleisli category?
+
+# Products, Co-products and Algebraic Datatypes
 
 # Monads
 
