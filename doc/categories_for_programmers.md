@@ -10,17 +10,19 @@ header-includes:
     - \usepackage{tikz-cd}
     - \usepackage{amsthm}
     - \newtheoremstyle{custom}
-        {3pt} % Space above
-        {3pt} % Space below
-        {} % Body font
-        {} % Indent amount
-        {\bfseries} % Theorem head font
-        {.} % Punctuation after theorem head
-        {.5em} % Space after theorem head
+        {0.5 cm}
+        {0.5 cm}
+        {}
+        {}
+        {\bfseries}
+        {.}
+        {.5em}
         {}
     - \theoremstyle{custom}
     - \newtheorem{theorem}{Theorem}
     - \newtheorem{definition}{Definition}
+    - \usepackage{geometry}
+    - \geometry{margin=4cm}
 ---
 
 This document contains notes for a small-scale seminar on category theory in the context of (functional) programming, organized at CWI. The goal of the seminar is to gain familiarity with concepts of category theory that apply (in a broad sense) to the field of functional programming. It could be an idea to have an associated (toy) project that examplifies the concepts that are discussed.
@@ -75,7 +77,7 @@ If $f: a \to b$, then we say that $a$ is the *domain* and $b$ is the *codomain* 
 $$\text{dom}(f) = a,~\text{cod}(f) = b.$$
 The composition $g \circ f$ is only defined on arrows $f$ and $g$ if the domain of $g$ is equal to the codomain of $f$.
 
-We will write for objects and arrows respectively simply $a \in \mathcal{C}$ and $f \text{ in } \mathcal{C}$, instead of $a \in O$ and $f \in A$.
+We will write for objects and arrows respectively simply $a \in \mathcal{C}$ and $f \in \mathcal{C}$, instead of $a \in O$ and $f \in A$.
 
 **Examples:**
 
@@ -111,7 +113,7 @@ a \arrow[loop left, "\text{id}_a"] \arrow[r, "f"] & b \arrow[loop right, "\text{
 \end{tikzcd}
 \end{figure}
 
-Another example of a category is a \emph{monoid}, which is a category of a single element. A monoid is a set $M$ with a binary operation $\cdot: S \times S \to S$ and a unit element (indeed, a group without necessarily having inverse elements, or a \emph{semi-group with unit}).
+Another example of a category is a \emph{monoid}, which is a specific kind of category with a single object. A monoid is a set $M$ with a associative binary operation $\cdot: S \times S \to S$ and a unit element (indeed, a group without necessarily having inverse elements, or a \emph{semi-group with unit}).
 
 This corresponds to a category $\mathcal{C}(M)$ where:
 
@@ -139,13 +141,15 @@ The 'power-set functor': $\mathcal{P}:$ **Set** $\to$ **Set** sends subsets to t
 \mathcal{P}f&: \mathcal{P}(A) \to \mathcal{P}(B),~S \mapsto f(S)
 \end{align*}
 
-**Category of functors**
-
 ## Special objects, arrows and functors
+
+\subsection*{Special objects}
 
 For objects, we distuinguish two special kinds:
 
-> **Definition:** An object $x \in \mathcal{C}$ is *terminal* if for all $a \in \mathcal{C}$ there is exactly one arrow $a \to x$. Similarly, it is *initial* if there is exactly one arrow $x \to a$ to all objects.
+\begin{definition}
+An object $x \in \mathcal{C}$ is \textbf{terminal} if for all $a \in \mathcal{C}$ there is exactly one arrow $a \to x$. Similarly, it is \textbf{initial} if there is exactly one arrow $x \to a$ to all objects.
+\end{definition}
 
 
 \begin{figure}[h]
@@ -158,8 +162,9 @@ i\arrow[ur] \arrow[rr] \arrow[dr] & & t\\
 \end{figure}
 Here, $i$ is initial, and $t$ is terminal.
 
+\subsection*{Special arrows}
 
-For arrows we also have special kinds:
+There are a number of special arrows:
 
 \begin{definition}
 An arrow $f: a \to b \in \mathcal{C}$ is a \textbf{monomorphism} (or simply mono), if for all objects $x$ and all arrows $g, h: x \to a$ and $g \neq h$ we have:
@@ -173,15 +178,86 @@ In \textbf{Set} a map $f$ is mono if and only if it is an injection.
 \end{theorem}
 
 \begin{proof}
-Suppose $f: A \to B$ is injective, and let $g, h: X \to A$. If $g \neq h$, then $g(x) \neq h(x)$ for some $x$. But since $f$ is injective, we have $f(g(x)) \neq f(h(x))$, and hence $h \circ f \neq h \circ f$, thus $f$ is mono.
+Let $f: A \to B$. Suppose $f$ is injective, and let $g, h: X \to A$. If $g \neq h$, then $g(x) \neq h(x)$ for some $x$. But since $f$ is injective, we have $f(g(x)) \neq f(h(x))$, and hence $h \circ f \neq h \circ f$, thus $f$ is mono.
 
-Suppose $f$ is mono. Let $\{ * \}$ be the set with a single element. Then for $x \in A$ we have an arrow $\{ * \} \to A$ corresponding to the constant function $\tilde{x}(*) = x$. Let $x \neq y$, then $f \circ \tilde{x} = f(x)$. Since $f$ is mono, $f \circ \tilde{x} \neq f \circ \tilde{y}$, and hence $f(x) \neq f(y)$, thus $f$ is an injection.\qedhere
+For the contrary, suppose $f$ is mono. Let $\{ * \}$ be the set with a single element. Then for $x \in A$ we have an arrow $\{ * \} \to A$ corresponding to the constant function $\tilde{x}(*) = x$, then $f \circ \tilde{x}(*) = f(x)$. Let $x \neq y$. Since $f$ is mono, $(f \circ \tilde{x})(*) \neq (f \circ \tilde{y})(*)$, and hence $f(x) \neq f(y)$, thus $f$ is an injection.\qedhere
 \end{proof}
 
-- Functors: full, faithful
+There is also an generalization of the notion of \emph{surjections}.
+
+\begin{definition}
+An arrow $f: a \to b \in \mathcal{C}$ is a \textbf{epimorphism} (or simply epi), if for all objects $x$ and all arrows $g, h: b \to x$ we have:
+$$g \circ f = h \circ f \implies g = h.$$
+\end{definition}
+
+Finally, we introduce the notion of an 'invertible arrow'.
+
+\begin{definition}
+An arrow $f: a \to b \in \mathcal{C}$ is an \textbf{isomorphism} if there exists an arrow $g: b \to a$ so that:
+$$g \circ f = \text{id}_a~\text{ and }~f \circ g = \text{id}_b.$$
+\end{definition}
+
+(Introduce split, sections, retractions here? It is already a lot). In set, epi and mono imply iso. This however does not hold for general categories!
+
+\subsection*{Special functors}
+
+Finally, we turn our attention to special kinds of functors. For this we first introduce the notion of a _hom-set_ of $a$ and $b$, the set\footnote{Here we assume that this collection is a set, or that the category is so-called \emph{locally small}} of all arrows from $a$ to $b$:
+$$\text{Hom}_\mathcal{C}(a, b) = \{ f \in \mathcal{C}~|~f: a \to b \}.$$
+
+\begin{definition}
+A functor $F: \mathcal{C} \to \mathcal{D}$ is \textbf{full} if for all pairs $a, b \in \mathcal{C}$ the induced function:
+\begin{align*}
+F:~\text{Hom}_\mathcal{C}(a, b) &\to \text{Hom}_\mathcal{C}(Fa, Fb),\\
+   f &\mapsto Ff
+\end{align*}
+is a surjection. It is called \textbf{faithful} if it is an injection.
+\end{definition}
+
+When after applying $F$ an arrow $Ff$ or an object $Fa$ has a certain property(i.e. being initial, terminal or epi, mono), it is implied that $f$ (or $a$) had this property, then we say the \emph{$F$ \textbf{reflects} the property}.
+
+This allows for statements such as this:
+
+\begin{theorem}
+A faithful functor reflects epis and monos.
+\end{theorem}
+
+\begin{proof}
+As an example we will prove it for a $Ff$ that is mono. Let $f: a \to b$ such that $Ff$ is mono, and let $h,g: x \to a$ such that $h \neq g$.
+
+\begin{figure}[h]
+\centering
+\begin{tikzcd}[sep=huge]
+x \arrow[dr, "F"] \arrow[r, bend right=20, "g"'] \arrow[r, bend left=20, "h"]& a \arrow[dr, "F"]  \arrow[r, "f"] & b \arrow[dr, "F"]  &\\
+& Fx \arrow[r, bend right=20, "Fg"'] \arrow[r, bend left=20, "Fh"]& Fa \arrow[r, "Ff"] & Fb\\
+\end{tikzcd}
+\end{figure}
+
+Since $g \neq h$ and $F$ is faithful, we have $Fg \neq Fh$. This implies, because $Ff$ is mono, that $Ff \circ Fg \neq Ff \circ Fh$, and since $F$ is a functor we have $F(f \circ g) \neq F(f \circ h)$, implying $f \circ g \neq f \circ h$, and hence $f$ is mono.
+
+\qedhere
+\end{proof}
 
 ## Natural transformations
 
+\begin{definition}
+A \textbf{natural transformation} $\mu$ between two functors $F, G: \mathcal{C} \to \mathcal{D}$ is a family of morphisms:
+$$\mu = \{ \mu_a: Fa \to Fb~|~a \in \mathcal{C} \},$$
+indexed by objects in $\mathcal{C}$, so that for all morphisms $f: a \to b$ the diagram
+
+\begin{figure}[h]
+\centering
+\begin{tikzcd}
+Fa \arrow[r, "\mu_a"] \arrow[d, "Ff"] & Ga \arrow[d, "Gf"] \\
+Fb \arrow[r, "\mu_b"] & Gb
+\end{tikzcd}
+\end{figure}
+
+commutes. This diagram is called the \emph{naturality square}.  We write $\mu: F \Rightarrow G$, and call $\mu_a$ \emph{the component of $\mu$ at $a$}.
+\end{definition}
+
+We can \emph{compose} natural transformations, turning the set of functors from $\mathcal{C} \to \mathcal{D}$ into a category. Let $\mu: F \Rightarrow G$ and $\nu: G \Rightarrow H$, then we have $\nu \circ \mu: F \Rightarrow H$ defined by (in components):
+$$(\nu \circ \mu)_a = \nu_a \circ \mu_a.$$
+Where the composition of the rhs is simply composition in $\mathcal{D}$.
 
 # Types and functions: categories in functional programming
 
