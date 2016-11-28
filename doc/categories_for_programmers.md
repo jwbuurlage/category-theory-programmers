@@ -29,7 +29,6 @@ This document contains notes for a small-scale seminar on category theory in the
 
 Although the main focus will be on the mathematics, examples should be made in Haskell to illustrate how to apply the concepts, and possibly examples in other languages as well (such as Python and C++).
 
-
 # Categories
 
 ## Core definitions
@@ -113,7 +112,7 @@ a \arrow[loop left, "\text{id}_a"] \arrow[r, "f"] & b \arrow[loop right, "\text{
 \end{tikzcd}
 \end{figure}
 
-Another example of a category is a \emph{monoid}, which is a specific kind of category with a single object. A monoid is a set $M$ with a associative binary operation $\cdot: S \times S \to S$ and a unit element (indeed, a group without necessarily having inverse elements, or a \emph{semi-group with unit}).
+Another example of a category is a \emph{monoid}, which is a specific kind of category with a single object. A monoid is a set $M$ with a associative binary operation $(\cdot): S \times S \to S$ and a unit element (indeed, a group without necessarily having inverse elements, or a \emph{semi-group with unit}).
 
 This corresponds to a category $\mathcal{C}(M)$ where:
 
@@ -270,10 +269,14 @@ We will take as our model for the category of types the category **Set**. Recall
 In Haskell, we can express that an object has a certain type:
 
 ```haskell
-    f :: Integer
+    a :: Integer
 ```
 
-In C++ we would write someting like this:
+In C++ we would write:
+
+```cpp
+    int a;
+```
 
 To define a function $f: A \to B$ from type $A$ to type $B$ in Haskell:
 
@@ -291,33 +294,33 @@ To compose:
 This means that `h` is a function `h :: A -> C`! Note how easy it is to compose functions in Haskell. Compare how this would be in C++, if we were to take two polymorphic functions in C++ and compose them:
 
 ```cpp
-template <typename F, typename G>
-auto operator*(F f, G g) {
-    return [&](auto x) { return g(f(x)); };
-}
+    template <typename F, typename G>
+    auto operator*(G g, F f) {
+        return [&](auto x) { return g(f(x)); };
+    }
 
-int main() {
-    auto f = [](int x) -> float { return (x * x) * 0.5f; };
-    auto g = [](float y) -> int { return (int)y; };
+    int main() {
+        auto f = [](int x) -> float { return (x * x) * 0.5f; };
+        auto g = [](float y) -> int { return (int)y; };
 
-    std::cout << (f * g)(5) << "\n";
-}
+        std::cout << (g * f)(5) << "\n";
+    }
 ```
 
 We need some additional operations to truly turn it into a category. It is easy to define the identity arrow in Haskell (at once for all types):
 
 ```haskell
-id :: A -> A
-id a = a
+    id :: A -> A
+    id a = a
 ```
 
 in fact, this is part of the core standard library of Haskell (the Prelude) that gets loaded by default. Ignoring reference types and e.g. `const` specifiers, we can write in C++:
 
 ```cpp
-template <typename T>
-T id(T x) {
-    return x;
-}
+    template <typename T>
+    T id(T x) {
+        return x;
+    }
 ```
 
 
