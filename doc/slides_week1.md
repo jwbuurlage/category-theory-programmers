@@ -190,41 +190,45 @@ Similarly, it is \textbf{initial} if there is exactly one arrow $x \to a$ for al
 There are a number of special kind of arrows:
 
 \begin{definition}
-An arrow $f: a \to b \in \mathcal{C}$ is a \textbf{monomorphism} (or simply mono), if for all objects $x$ and all arrows $g, h: x \to a$ and $g \neq h$ we have:
+An arrow $f: a \to b \in \mathcal{C}$ is \textbf{mono}, if $\forall x \in \mathcal{C}$ and all $g, h: x \to a$ with $g \neq h$ we have:
 $$g \circ f \neq h \circ f.$$
 \end{definition}
-
-To put this into perspective, we show that in the category \textbf{Set} monomorphisms correspond to injective functions;
 
 \begin{theorem}
 In \textbf{Set} a map $f$ is mono if and only if it is an injection.
 \end{theorem}
 
 \begin{proof}
-Let $f: A \to B$. Suppose $f$ is injective, and let $g, h: X \to A$. If $g \neq h$, then $g(x) \neq h(x)$ for some $x$. But since $f$ is injective, we have $f(g(x)) \neq f(h(x))$, and hence $h \circ f \neq h \circ f$, thus $f$ is mono.
+\emph{Inj $\implies$ Mono}
 
-For the contrary, suppose $f$ is mono. Let $\{ * \}$ be the set with a single element. Then for $x \in A$ we have an arrow $\{ * \} \to A$ corresponding to the constant function $\tilde{x}(*) = x$, then $f \circ \tilde{x}(*) = f(x)$. Let $x \neq y$. Since $f$ is mono, $(f \circ \tilde{x})(*) \neq (f \circ \tilde{y})(*)$, and hence $f(x) \neq f(y)$, thus $f$ is an injection.\qedhere
+Let $f: A \to B$ injective, $g, h: X \to A$, $g \neq h \implies g(x) \neq h(x)$ for some $x$.
+$$f \text{ inj.} \implies f(g(x)) \neq f(h(x)) \implies h \circ f \neq h \circ f.$$
+
+\emph{Mono $\implies$ Inj}
+
+$\{ * \}$ singleton set.
+$$\forall x \in A~\exists!~\tilde{x}: \{ * \} \to A, \tilde{x}(*) = x.$$
+Note $f \circ \tilde{x}(*) = f(x)$.
+$$x \neq y \implies \tilde{x} \neq \tilde{y} \implies f \circ \tilde{x} \neq f \circ \tilde{y}$$
+$$\implies f(x) \neq f(y).$$
+\qedhere
 \end{proof}
 
-There is also an generalization of the notion of \emph{surjections}.
-
 \begin{definition}
-An arrow $f: a \to b \in \mathcal{C}$ is a \textbf{epimorphism} (or simply epi), if for all objects $x$ and all arrows $g, h: b \to x$ we have:
+$f: a \to b \in \mathcal{C}$ is \textbf{epi}, if for all objects $x$ and all arrows $g, h: b \to x$:
 $$g \circ f = h \circ f \implies g = h.$$
 \end{definition}
 
-Finally, we introduce the notion of an 'invertible arrow'.
-
 \begin{definition}
-An arrow $f: a \to b \in \mathcal{C}$ is an \textbf{isomorphism} if there exists an arrow $g: b \to a$ so that:
+An arrow $f: a \to b \in \mathcal{C}$ is \textbf{iso} if there exists $g: b \to a$ s.t.:
 $$g \circ f = \text{id}_a~\text{ and }~f \circ g = \text{id}_b.$$
 \end{definition}
 
-(Introduce split, sections, retractions here? It is already a lot). In set, epi and mono imply iso. This however does not hold for general categories!
+In \textbf{Set}: Epi + Mono $\iff$ Iso. Not in general!
 
 *Functors*
 
-Finally, we turn our attention to special kinds of functors. For this we first introduce the notion of a _hom-set_ of $a$ and $b$, the set\footnote{Here we assume that this collection is a set, or that the category is so-called \emph{locally small}} of all arrows from $a$ to $b$:
+Finally, we turn our attention to special kinds of functors. For this we first introduce the notion of a _hom-set_ of $a$ and $b$, the set of all arrows from $a$ to $b$:
 $$\text{Hom}_\mathcal{C}(a, b) = \{ f \in \mathcal{C}~|~f: a \to b \}.$$
 
 \begin{definition}
