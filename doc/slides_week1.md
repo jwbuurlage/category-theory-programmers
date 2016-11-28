@@ -29,7 +29,9 @@ header-includes:
 
 **Category theory for programmers**
 
-**Definition**: A *category* $\mathcal{C} = (O, A)$ is a set $O$ of \emph{objects} $a \in O$ and $A$ of \emph{arrows} $(f: a \to b) \in A$ between these objects, along with a notion of \emph{composition (f $\circ$ g) of arrows} and the existence of an identity arrow $\text{id}_a$ for each object $a \in O$, so that the following laws hold:
+\begin{definition}
+A \emph{category} $\mathcal{C} = (O, A)$ is a set $O$ of \emph{objects} $a \in O$ and $A$ of \emph{arrows} $(f: a \to b) \in A$ between these objects, along with a notion of \emph{composition (f $\circ$ g) of arrows} and the existence of an identity arrow $\text{id}_a$ for each object $a \in O$, so that the following laws hold:
+\end{definition}
 
 - *Composition*: If $f: a \to b$ and $g: b \to c$ then $g \circ f: a \to c$.
 
@@ -162,6 +164,12 @@ $$T(\text{id}_a) = \text{id}_{Ta},~T(g \circ f) = Tg \circ Tf.$$
 \end{align*}
 
 * Dual-functor
+\begin{align*}
+*&: \textbf{Vect} \to \textbf{Vect}\\
+&: W \mapsto W^*\\
+&: (f: V \to W) \mapsto (f^*: W^* \to V^*)
+\end{align*}
+Example of a \emph{contravariant functor} (a functor from \textbf{Vect} to $\textbf{Vect}^{\text{op}}$, the category with reversed arrows and composition rules.
 
 \newpage
 
@@ -195,7 +203,7 @@ $$g \circ f \neq h \circ f.$$
 \end{definition}
 
 \begin{theorem}
-In \textbf{Set} a map $f$ is mono if and only if it is an injection.
+In \textbf{Set} a map $f$ is mono iff it is an injection.
 \end{theorem}
 
 \begin{proof}
@@ -228,8 +236,10 @@ In \textbf{Set}: Epi + Mono $\iff$ Iso. Not in general!
 
 *Functors*
 
-Finally, we turn our attention to special kinds of functors. For this we first introduce the notion of a _hom-set_ of $a$ and $b$, the set of all arrows from $a$ to $b$:
+\begin{definition}
+The \emph{hom-set} of $a$ and $b$, is the 'set' of all arrows from $a$ to $b$:
 $$\text{Hom}_\mathcal{C}(a, b) = \{ f \in \mathcal{C}~|~f: a \to b \}.$$
+\end{definition}
 
 \begin{definition}
 A functor $F: \mathcal{C} \to \mathcal{D}$ is \textbf{full} if for all pairs $a, b \in \mathcal{C}$ the induced function:
@@ -240,16 +250,14 @@ F:~\text{Hom}_\mathcal{C}(a, b) &\to \text{Hom}_\mathcal{C}(Fa, Fb),\\
 is a surjection. It is called \textbf{faithful} if it is an injection.
 \end{definition}
 
-When after applying $F$ an arrow $Ff$ or an object $Fa$ has a certain property(i.e. being initial, terminal or epi, mono), it is implied that $f$ (or $a$) had this property, then we say the \emph{$F$ \textbf{reflects} the property}.
-
-This allows for statements such as this:
+When after applying $F$ an arrow $Ff$ or an object $Fa$ has a certain property (i.e. being initial, terminal or epi, mono), and it is implied that $f$ (or $a$) had this property, then we say the \emph{$F$ \textbf{reflects} the property}.
 
 \begin{theorem}
 A faithful functor reflects epis and monos.
 \end{theorem}
 
 \begin{proof}
-As an example we will prove it for a $Ff$ that is mono. Let $f: a \to b$ such that $Ff$ is mono, and let $h,g: x \to a$ such that $h \neq g$.
+E.g. monoic $Ff$. Let $f: a \to b$ such that $Ff$ is mono, and let $h,g: x \to a$ such that $h \neq g$.
 
 \begin{figure}[h]
 \centering
@@ -259,7 +267,10 @@ x \arrow[dr, "F"] \arrow[r, bend right=20, "g"'] \arrow[r, bend left=20, "h"]& a
 \end{tikzcd}
 \end{figure}
 
-Since $g \neq h$ and $F$ is faithful, we have $Fg \neq Fh$. This implies, because $Ff$ is mono, that $Ff \circ Fg \neq Ff \circ Fh$, and since $F$ is a functor we have $F(f \circ g) \neq F(f \circ h)$, implying $f \circ g \neq f \circ h$, and hence $f$ is mono.
+$$g \neq h,~F \text{ faithf.} \implies Fg \neq Fh,$$
+$$Ff \text{ mono} \implies Ff \circ Fg \neq Ff \circ Fh$$
+$$F \text{ functor} \implies F(f \circ g) \neq F(f \circ h)$$
+Thus, $f \circ g \neq f \circ h$, and therefore $f$ is mono.
 
 \qedhere
 \end{proof}
