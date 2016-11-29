@@ -22,7 +22,7 @@ header-includes:
     - \newtheorem{definition}{Def}
     - \newtheorem{example}{Ex}
     - \setlength{\columnsep}{1cm}
-    - \usepackage[margin=1cm,landscape,twocolumn]{geometry}
+    - \usepackage[margin=1.5cm,landscape,twocolumn]{geometry}
     - \setlength{\parindent}{0em}
     - \setlength{\parskip}{0.5cm}
 ---
@@ -69,8 +69,6 @@ $$\text{dom}(f) = a,~\text{cod}(f) = b.$$
 The composition $g \circ f$ is only defined on arrows $f$ and $g$ if the domain of $g$ is equal to the codomain of $f$.
 
 We will write for objects and arrows respectively simply $a \in \mathcal{C}$ and $f \in \mathcal{C}$, instead of $a \in O$ and $f \in A$.
-
-\newpage
 
 **Examples of categories:**
 
@@ -127,8 +125,6 @@ Some examples of familiar categories:
 * **Grp**, groups, group homomorphisms
 
 
-
-\newpage
 
 **Functors**
 

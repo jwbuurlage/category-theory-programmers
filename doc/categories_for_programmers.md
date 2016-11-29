@@ -275,6 +275,13 @@ We can \emph{compose} natural transformations, turning the set of functors from 
 $$(\nu \circ \mu)_a = \nu_a \circ \mu_a.$$
 Where the composition of the rhs is simply composition in $\mathcal{D}$.
 
+## References:
+
+- 1.1 -- 1.4 and 1.8 of Mac Lane
+- 1.1, 1.2, 2.1, 3.1 and 3.2 of Asperti and Longo
+- 2.1, 2.7, 2.8, 3.1, 4.2, 4.3 of Barr and Wells
+- 1.1, 1.7, 1.10 of the 'Category Theory for Programmers' blog by Bartosz Milewski (best to study after reading Chapter 2)
+
 # Types and functions: a category for programmers
 
 \epigraph{""A monad is a monoid in the category of endofunctors, what's the problem?"}{\emph{James Iry jokes about Haskell in his blog post A Brief, Incomplete, and Mostly Wrong History of Programming Languages}}
@@ -362,6 +369,8 @@ You may be tempted to discard the type `Void` as something that is only used by 
 type Continuation a = a -> Void
 ```
 In other words, a continuation is a function that *never returns*, which can be used to manipulate control flows (in a type-safe manner).
+
+Recall that an initial object has exactly one arrow to each other object, and a terminal object has exactly one arrow coming from each other object. These objects are unique up to isomorphism. In the category of types, they correspond to `Void` and `()` respectively. 
 
 To summarize this introduction, in the category of 'computer programs', types are objects, and *pure* functions between these types are arrows. Next, we consider how we can apply some of the concepts we have seen, such as functors and natural transformations, to this category.
 
@@ -520,14 +529,47 @@ fmap f . head = head . fmap f
 ```
 Here, the fmap on the lhs corresonds to the `Maybe` functor, while on the rhs it corresponds to the `[]` functor. The lhs can b e read like this; take the first element of the list, then apply f on it. The rhs can be read as "apply the function f to the enitre list, then take the first element". The result is the same; the funtion f applied to the head of the list (if any). But for the rhs we apply the function `f` for each element in the list, while on the lhs we only apply it to the head. Because of the constraint on polymorphic function, the compiler knows that the result is equal and can choose which one to use!
 
+**References:**
+
+- 1.2, 1.7 of the 'Category Theory for Programmers' blog by Bartosz Milewski
+
 # Products, Co-products and Algebraic Datatypes
 
+Duality, the 'opposite category'. Initial and terminal objects as 'co-concepts'.
+
+Universal construction
+
+Product and co-product
+
+Product and co-products applied to types
+
 Bifunctorality and `Either`
-o
+
+**References:**
+
+- 3.1, 3.3 (partially) and 3.4 (partially) of Mac Lane
+- 1.5, 1.6 and 1.8 of the 'Category Theory for Programmers' blog by Bartosz Milewski
+- Chapter 5 of Barr and Wells
+- Catsters products and co-products
 
 # Monads
 
-# Yonedda's Lemma, reader and writer monads, Kleisli categories
+**References:**
+
+- 6.1 and parts of 6.3 and 6.4 of Mac Lane
+- Blogs..
+- Catsters
+
+# Function types (and Curry-Howard Isomorphism?)
+
+**References:**
+
+- 1.9 of the 'Category Theory for Programmers' blog by Bartosz Milewski
+- 6.1 of Barr and Wells
+
+# Reader and writer monads, Kleisli categories
+
+# Yonedda's Lemma
 
 # Limits and co-limits
 
@@ -542,6 +584,8 @@ o
 Recursion, co-algebras and streams
 
 # Denotational semantics
+
+# Homotopy type theory
 
 # Quantum computations?
 
@@ -566,4 +610,4 @@ Section on 'modularity':
 ## Books
 1. Conceptual Mathematics: A first introduction to categories.
 2. Maclane, Category Theory for the working mathematician
-3. Category Theory for Computer Scientists
+3. Barr and Wells, Category Theory for Computer Scientists
