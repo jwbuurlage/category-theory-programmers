@@ -533,6 +533,20 @@ o
 
 # 'Theorems for free!'
 
+# 'Fast and loose reasoning is morally correct'
+
+# Lenses; Adjunctions and profunctors
+
+# F-algebras:
+
+Recursion, co-algebras and streams
+
+# Denotational semantics
+
+# Quantum computations?
+
+(Bert Jacobs)
+
 # Ideas
 
 Section on 'modularity':
@@ -547,6 +561,7 @@ Section on 'modularity':
 ## Papers
 1. About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
 2. Free theorems: <http://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf> (also Reynold: <http://www.cse.chalmers.se/edu/year/2010/course/DAT140_Types/Reynolds_typesabpara.pdf>).
+3. Recursion as initial objects in F-algebra: <http://homepages.inf.ed.ac.uk/wadler/papers/free-rectypes/free-rectypes.txt>
 
 ## Books
 1. Conceptual Mathematics: A first introduction to categories.
