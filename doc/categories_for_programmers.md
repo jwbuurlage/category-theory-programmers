@@ -24,6 +24,9 @@ header-includes:
     - \newtheorem{theorem}{Theorem}
     - \newtheorem{definition}{Definition}
     - \newtheorem{example}{Example}
+    - \numberwithin{theorem}{chapter}
+    - \numberwithin{definition}{chapter}
+    - \numberwithin{example}{chapter}
     - \usepackage{geometry}
     - \geometry{margin=4cm}
 ---
@@ -594,22 +597,102 @@ Here, the fmap on the lhs corresonds to the `Maybe` functor, while on the rhs it
 
 # Products, Co-products and Algebraic Datatypes
 
-Duality, the 'opposite category'. Initial and terminal objects as 'co-concepts'.
+## Duality and products of objects
 
-Universal construction
+\subsection*{Duality}
 
-Product and co-product
+For any category, we can defined the category with all arrows (and composition) reversed.
 
-Product and co-products applied to types
+\begin{definition}
+The \emph{opposite category} $\mathcal{C}^{\text{op}}$ of a category $\mathcal{C}$ is the category with:
 
-Bifunctorality and `Either`
+\begin{itemize}
+\item The same objects as $\mathcal{C}$.
+\item For all arrows $f: a \to b$ in $\mathcal{C}$, there is an arrow $f^{\text{op}}: b \to a$
+\item The composition of $f^{\text{op}} : a \to b$ and $g^{\text{op}}: b \to c$ is given by:
+$$g^{\text{op}} \circ f^{\text{op}} = (f \circ g)^{\text{op}}$$
+\end{itemize}
+\end{definition}
+
+The opposite category is very useful, because many concepts defined in the original category have 'dual notions' in the opposite category. Clearly, for example, an *initial object in $\mathcal{C}$ is a terminal object in $\mathcal{C}^{\text{op}}$*. Similarly, an arrow that is *mono in $\mathcal{C}$ is epi in $\mathcal{C}^{\text{op}}$*. This is called **duality**, and provides so-called 'co-' notions of constructs, as well as 'co-' versions of theorems.
+
+Whenever defining something it always make sense to see what this means in the opposite category, giving you a lot of free information. For example, we showed that faithful functors reflects mono's. Looking at the dual category, we immediately have that it also reflects epi's!
+
+\subsection*{Products and co-products}
+
+Initial objects and terminal objects have a so-called *universal property*, they are the object so that for all other objects there is a *unique morphism to the objects*. A more involved example of such a universal property is the *notion of a product of objects*. The categorical product is a unifying definition for many 'products' encountered in mathematics, such as the cartesian product, product group, products of topological spaces, and so on.
+
+\begin{definition}
+Let $\mathcal{C}$ be a category, and let $a, b \in \mathcal{C}$ be objects in $\mathcal{C}$. A \emph{product} of $a$ and $b$ is an object $a \times b \in \mathcal{C}$ along with two arrows $p_1: a \times b \to a$ and $p_2: a \times b \to b$ (the \emph{projections}) so that for all objects $c \in \mathcal{C}$ and arrows $f: c \to a$ and $g: c \to b$ there exists a unique morphism $q: c \to a \times b$ that makes the following diagram commute:
+\begin{figure}[h]
+\centering
+\begin{tikzcd}[sep=large]
+& c \arrow[ddl, "f"'] \arrow[ddr, "g"] \arrow[d, "q"] & \\
+& a \times b \arrow[dl, "p_1"] \arrow[dr, "p_2"'] & \\
+a & & b
+\end{tikzcd}
+\end{figure}
+\end{definition}
+
+In this case, the (unique) arrows $q$ are what gives the product a *universal mapping property*. If a product exists, it is unique op to unique isomorphism.
+
+We say that the functions $f$ and $g$ *factors* through $a \times b$, or that $a \times b$ *factorizes* $f$ and $g$. The reason for this name is clear when making the analogy with numbers. Consider:
+$$f = p_1 \circ q,~g = p_2 \circ q.$$
+For an example with numbers:
+\begin{figure}[h]
+\centering
+\begin{tikzcd}[sep=large]
+& 2 \arrow[dl, "\times 4"'] \arrow[dr, "\times 8"] \arrow[d, "\times 2"] & \\
+8 & 4 \arrow[l, "\times 2"] \arrow[r, "\times 4"'] & 16
+\end{tikzcd}
+\end{figure}
+$$4 = 2 \times 2,~8 = 4 \times 2.$$
+This seems to indicate that in 'some category related to numbers' (in fact, precisely the category of natural numbers with their multiples, that we gave as an example in the first chapter), the product would correspond to the gcd!
+
+
+\begin{example}
+Let us consider the product of objects in \textbf{Set}. Consider two sets $A, B$. We have a clear candidate for a product; the cartesian product $A \times B$. Given any element (or \emph{pair}) $(a, b) \in A \times B$, the projections $p_1, p_2$ send it to $a$ and $b$ respectively. Is this indeed a product?
+
+Let $V$ be any other set, with arrows (functions) $f$ to $A$ and $g$ to $B$. Can we construct a (unique) arrow $q$ to $A \times B$?
+
+\begin{figure}[h!]
+\centering
+\begin{tikzcd}[sep=large]
+& V \arrow[ddl, "f"'] \arrow[ddr, "g"] \arrow[d, "q"] & \\
+& A \times B \arrow[dl, "p_1"] \arrow[dr, "p_2"'] & \\
+A & & B
+\end{tikzcd}
+\end{figure}
+
+Consider any element $v \in V$. It gets mapped to $f(v) \in A$, and $g(v) \in B$. Let $q: v \mapsto (f(v), g(v))$, then $(p_1 \circ f)(v) = f(v)$, and thus $p_1 \circ f = f$. Similarly $p_2 \circ g = g$.
+
+Indeed, we have constructed an arrow that makes the above diagram commute. It is also clear that this is the \emph{only arrow} that satisfies this, so we conclude that $A \times B$ is the product of $A$ and $B$ in the category \textbf{Set}. Another example of a product of sets would be $B \times A$, which is cannonically isomorphic to $A \times B$ (the isomorphism corresponds to 'swapping' the elements, which is its own inverse).
+\end{example}
+
+For a completely different example, we consider the category corresponding to a poset.
+
+\begin{example}
+Let us consider the product of objects in the category corresponding to some poset $P$. Consider two elements $x, y \in P$. A product $z \equiv x \times y$ would be equiped with two arrows $z \to x$ and $z \to y$, which means $z \leq x$ and $z \leq y$. Furthermore, for any element $w$ with arrows to $x, y$ (i.e. $w \leq x$ and $w \leq y$), there has to be an arrow $q: w \to z$ (i.e. $w \leq z$). This is the same as saying that, in addition to $z \leq x$ and $z \leq y$, we have for all elements $w$ of the poset:
+$$w \leq x \text{ and } w \leq y \implies w \leq z$$
+This means that $z$ is the "largest element that is smaller or equal to $x$ and $y$", also called the \emph{infimum} of $x$ and $y$.
+\end{example}
+
+Let us revisit the idea of *duality*. What would be the dual-notion of this product?
+
+\subsection*{Hom-functors and bifunctorality}
+
+Hom-sets give rise to a specific type of functor, the (co- and contravariant) hom-functor. See page 34 of Mac Lane.
+
+## Algebraic data types
+
+`Pair` (product), `Either` (sum)
 
 **References:**
 
-- 3.1, 3.3 (partially) and 3.4 (partially) of Mac Lane
+- 2.1, 2.2, 3.1, 3.3 (partially) and 3.4 (partially) of Mac Lane
 - 1.5, 1.6 and 1.8 of the 'Category Theory for Programmers' blog by Bartosz Milewski
-- Chapter 5 of Barr and Wells
-- Catsters products and co-products
+- 2.6.7, 5.1, 5.2, 5.4 of Barr and Wells
+- *Catsters*: Products and co-products <https://www.youtube.com/watch?v=upCSDIO9pjc>
 
 # Monads
 
@@ -635,6 +718,11 @@ Bifunctorality and `Either`
 # 'Theorems for free!'
 
 # 'Fast and loose reasoning is morally correct'
+
+**References**
+
+- About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
+- <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
 
 # Lenses; Adjunctions and profunctors
 
