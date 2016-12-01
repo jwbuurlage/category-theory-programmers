@@ -271,24 +271,4 @@ Thus, $f \circ g \neq f \circ h$, and therefore $f$ is mono.
 \qedhere
 \end{proof}
 
-**Natural transformations**
 
-\begin{definition}
-A \textbf{natural transformation} $\mu$ between two functors $F, G: \mathcal{C} \to \mathcal{D}$ is a family of morphisms:
-$$\mu = \{ \mu_a: Fa \to Fb~|~a \in \mathcal{C} \},$$
-indexed by objects in $\mathcal{C}$, so that for all morphisms $f: a \to b$ the diagram
-
-\begin{figure}[h]
-\centering
-\begin{tikzcd}
-Fa \arrow[r, "\mu_a"] \arrow[d, "Ff"] & Ga \arrow[d, "Gf"] \\
-Fb \arrow[r, "\mu_b"] & Gb
-\end{tikzcd}
-\end{figure}
-
-commutes. This diagram is called the \emph{naturality square}.  We write $\mu: F \Rightarrow G$, and call $\mu_a$ \emph{the component of $\mu$ at $a$}.
-\end{definition}
-
-We can \emph{compose} natural transformations, turning the set of functors from $\mathcal{C} \to \mathcal{D}$ into a category. Let $\mu: F \Rightarrow G$ and $\nu: G \Rightarrow H$, then we have $\nu \circ \mu: F \Rightarrow H$ defined by (in components):
-$$(\nu \circ \mu)_a = \nu_a \circ \mu_a.$$
-Where the composition of the rhs is simply composition in $\mathcal{D}$.

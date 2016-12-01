@@ -38,11 +38,18 @@ Although the main focus will be on the mathematics, examples should be made in H
 
 We start with giving the definition of a category:
 
-> **Definition**: A *category* $\mathcal{C} = (O, A)$ is a set $O$ of \emph{objects} and $A$ of \emph{arrows} between these objects, along with a notion of \emph{composition $\circ$ of arrows} and a notion of an identity arrow $\text{id}_a$ for each object $a \in O$.
+\begin{definition}
+A \textbf{category} $\mathcal{C} = (O, A, \circ)$ consists of:
+\begin{itemize}
+\item a collection $O$ of \emph{objects}, written $a,b,\ldots \in O$.
+\item a collection $A$ of \emph{arrows} written $f,g,\ldots \in A$ between these objects, e.g. $f: a \to b$.
+\item a notion of \emph{composition} $f \circ g$ of arrows.
+\item an identity arrow $\text{id}_a$ for each object $a \in O$.
+\end{itemize}
+The composition operation and identity arrow should satisfy the following laws:
 
-> The composition operation and identity arrow should satisfy the following laws:
-
-> - *Composition*: If $f: a \to b$ and $g: b \to c$ then $g \circ f: a \to c$.
+\begin{itemize}
+\item \emph{Composition}: If $f: a \to b$ and $g: b \to c$ then $g \circ f: a \to c$.
 
 \begin{figure}[h]
 \centering
@@ -51,8 +58,8 @@ a \arrow[r, "f"] \arrow[rr, "g \circ f", bend right=50] & b \arrow[r, "g"]  & c
 \end{tikzcd}
 \end{figure}
 
-> - *Composition with identity arrows*:  If $f: x \to a$ and $g: a \to x$ where $x$ is arbitrary, then:
-> $$ \text{id}_a \circ f = f,~g \circ \text{id}_a = g.$$
+\item \emph{Composition with identity arrows}:  If $f: x \to a$ and $g: a \to x$ where $x$ is arbitrary, then:
+$$ \text{id}_a \circ f = f,~g \circ \text{id}_a = g.$$
 
 
 \begin{figure}[h]
@@ -62,9 +69,9 @@ a \arrow[loop left, "\text{id}_a"] \arrow[r, "g"', bend right=20] & x \arrow[l, 
 \end{tikzcd}
 \end{figure}
 
-> - *Associativity*: If $f: a \to b$, $g: b \to c$ and $h: c \to d$ then:
-> $$(h \circ g) \circ f = h \circ (g \circ f).$$
-> This is the same as saying that the following diagram commutes:
+\item \emph{Associativity}: If $f: a \to b$, $g: b \to c$ and $h: c \to d$ then:
+$$(h \circ g) \circ f = h \circ (g \circ f).$$
+This is the same as saying that the following diagram commutes:
 
 \begin{figure}[h]
 \centering
@@ -73,7 +80,10 @@ a \arrow[r, "f"] \arrow[d, "h \circ g \circ f"'] \arrow[rd, crossing over, near 
 d & c \arrow[l, "h"]
 \end{tikzcd}
 \end{figure}
-> Saying a diagram commutes means that for all pairs of vertices $a'$ and $b'$ all paths from between them are equivalent (i.e. correspond to the same arrow of the category).
+Saying a diagram commutes means that for all pairs of vertices $a'$ and $b'$ all paths from between them are equivalent (i.e. correspond to the same arrow of the category).
+\end{itemize}
+
+\end{definition}
 
 If $f: a \to b$, then we say that $a$ is the *domain* and $b$ is the *codomain* of $b$. It is also written as:
 $$\text{dom}(f) = a,~\text{cod}(f) = b.$$
@@ -81,7 +91,7 @@ The composition $g \circ f$ is only defined on arrows $f$ and $g$ if the domain 
 
 We will write for objects and arrows respectively simply $a \in \mathcal{C}$ and $f \in \mathcal{C}$, instead of $a \in O$ and $f \in A$.
 
-**Examples:**
+\subsection*{Examples of categories}
 
 Some examples of familiar categories:
 
@@ -94,12 +104,12 @@ Some examples of familiar categories:
 
 In all these cases, arrows correspond to functions, although this is by no means required. All these categories correspond to objects from mathematics, along with *structure preserving maps*. **Set** will also play a role when we discuss the category **Hask** when we start talking about concrete applications to Haskell.
 
-There are also a number of very simple examples of categories:
+There are also a number of simple examples of categories:
 
-- **0**, the empty category $O \equiv A \equiv \emptyset$.
+- **0**, the empty category $O = A \equiv \emptyset$.
 - **1**, the category with a single element and (identity) arrow:
 
-\begin{figure}[h]
+\begin{figure}[h!]
 \centering
 \begin{tikzcd}
 a \arrow[loop left, "\text{id}_a"]
@@ -108,36 +118,73 @@ a \arrow[loop left, "\text{id}_a"]
 
 - **2**, the category with a two elements and a single arrow between these elements
 
-\begin{figure}[h]
+\begin{figure}[h!]
 \centering
 \begin{tikzcd}
 a \arrow[loop left, "\text{id}_a"] \arrow[r, "f"] & b \arrow[loop right, "\text{id}_b"]
 \end{tikzcd}
 \end{figure}
 
-Another example of a category is a \emph{monoid}, which is a specific kind of category with a single object. A monoid is a set $M$ with a associative binary operation $(\cdot): S \times S \to S$ and a unit element (indeed, a group without necessarily having inverse elements, or a \emph{semi-group with unit}).
+- $\rightrightarrows$: the category with two elements and two parallel arrows between these elements:
 
-This corresponds to a category $\mathcal{C}(M)$ where:
+\begin{figure}[h!]
+\centering
+\begin{tikzcd}
+a \arrow[loop left, "\text{id}_a"] \arrow[r, shift left] \arrow[r, shift right]  & b \arrow[loop right, "\text{id}_b"]
+\end{tikzcd}
+\end{figure}
 
-- There is a single object (for which we simply write $M$)
-- There are arrows $s: M \to M$ for each element $s \in M$.
-- Composition is given by the binary operation of the monoid: $s_1 \circ s_2 \equiv s_1 \cdot s_2$.
+From now on we will sometimes omit the identity arrows when drawing categories.
+
+- Another example of a category is a \emph{monoid category}, which is a specific kind of category with a single object.
+    \begin{definition}
+    A \emph{monoid} $(M, \cdot, e)$ consists of:
+    \begin{itemize}
+    \item a set $M$
+    \item an associative binary operation $(\cdot): M \times M \to M$
+    \item a unit element w.r.t $(\cdot)$, i.e. $\forall_m~e \cdot m = m$
+    \end{itemize}
+    Indeed, it is a group structure without requirement of inverse elements. It is also called a \emph{semi-group with unit})
+    \end{definition}
+    This corresponds to a category $\mathcal{C}(M)$ where:
+    - There is a single object (for which we simply write $M$)
+    - There are arrows $m: M \to M$ for each element $m \in M$.
+    - Composition is given by the binary operation of the monoid: $m_1 \circ m_2 \equiv m_1 \cdot m_2$.
+    - The identity arrow $id_M$ is equal to $e$, the unit of the monoid.
+
+
+- We can also consider natural numbers $\mathbb{N}_{> 0}$, with arrows going from each number to its multiples.
+
+\begin{figure}[h]
+\centering
+\begin{tikzcd}
+1 \arrow[r, bend right=0] \arrow[rr, bend right=10] \arrow[rrr, bend right=20] \arrow[rrrr, bend right=30] \arrow[rrrrr, bend right=40] & 2 \arrow[rr, bend left=20, "\times 2"] \arrow[rrrr, bend left=30, "\times 3"] & 3 \arrow[rrr, bend left=20, "\times 2"] & 4 & 5 & 6 \ldots
+\end{tikzcd}
+\end{figure}
+
+- A partially ordered set (poset): a binary relation $\leq$ over a set $S$ s.t. for $a,b,c \in S$:
+
+    - $a \leq a$
+    - $a \leq b,~b \leq a \implies a = b$
+    - $a \leq b,~b \leq c \implies a \leq c$
+
+    also corresponds to a category.
 
 ## Functors
 
 A functor is a map between categories. This means it sends objects to objects, and arrows to arrows.
 
-> **Definition**: A *functor* $T$ between categories $\mathcal{C}$ and $\mathcal{D}$ consists of two functions (both denoted simply by $T$):
->
-> - An *object function* that maps objects $a \in \mathcal{C}$: $a \mapsto Ta \in \mathcal{D}$
-> - An *arrow function* that assigns to each arrow $f: a \to b$ in $\mathcal{C}$ an arrow $Tf: Ta \to Tb$ in $\mathcal{D}$, such that:
-> $$T(\text{id}_a) = \text{id}_{Ta},~T(g \circ f) = Tg \circ Tf.$$
+**Definition**: A *functor* $T$ between categories $\mathcal{C}$ and $\mathcal{D}$ consists of two functions (both denoted simply by $T$):
 
-A functor is a very powerful concept, since intuitively it allows you to translate between different branches of mathematics! They also play an important role in functional programming. Where among many other things, they are useful for defining the type of _containers_.
+- An *object function* that maps objects $a \in \mathcal{C}$: $a \mapsto Ta \in \mathcal{D}$
+- An *arrow function* that assigns to each arrow $f: a \to b$ in $\mathcal{C}$ an arrow $Tf: Ta \to Tb$ in $\mathcal{D}$, such that:
+$$T(\text{id}_a) = \text{id}_{Ta},~T(g \circ f) = Tg \circ Tf.$$
 
-Functors can be composed, and this allows one to define a category of categories\footnote{Actually, there is some technicalities to be worked out and the resulting category consists of 'small categories' only.}, where the arrows are functors.
+A functor is a very powerful concept, since it allows you to translate between different branches of mathematics! They also play an important role in functional programming. Where among many other things, they are useful for defining the _container types_ or more generally _type constructors_.
 
-**Examples**
+Functors can be composed, and this allows one to define a category of categories\footnote{Actually, there are some technicalities to be worked out and the resulting category consists of 'small categories' only.} **Cat**, where the arrows are functors.
+
+\subsection*{Examples of functors}
 
 * The identity functor: $\text{id}_{\mathcal{C}}: \mathcal{C} \to \mathcal{C}$ is defined as:
 \begin{align*}
@@ -151,11 +198,23 @@ Functors can be composed, and this allows one to define a category of categories
 &f \mapsto \text{id}_d
  \end{align*}
 
-* The 'power-set functor': $\mathcal{P}:$ **Set** $\to$ **Set** sends subsets to their image under maps. Let $A, B \in$ **Set**, $f: A \to B$ and $S \subset A$:
+* The \emph{power-set functor}: $\mathcal{P}:$ **Set** $\to$ **Set** sends subsets to their image under maps. Let $A, B \in$ **Set**, $f: A \to B$ and $S \subset A$:
 \begin{align*}
 \mathcal{P}A &= \mathcal{P}(A),\\
 \mathcal{P}f&: \mathcal{P}(A) \to \mathcal{P}(B),~S \mapsto f(S)
 \end{align*}
+
+* From many categories representing 'sets with added structure' (groups, vector spaces, rings, topological spaces, ...) there is a *forgetful functor* going to **Set**, where objects are sent to their underlying sets.
+
+    There is also a forgetful functor $F: \mathbf{Cat} \to \mathbf{Graph}$, sending each category to the graph defined by its objects and arrows.
+
+* Dual-set functor
+\begin{align*}
+*&: \textbf{Vect} \to \textbf{Vect}\\
+&: W \mapsto W^*\\
+&: (f: V \to W) \mapsto (f^*: W^* \to V^*)
+\end{align*}
+This is an example of a \emph{contravariant functor} (a functor from \textbf{Vect} to $\textbf{Vect}^{\text{op}}$, the category with reversed arrows and composition rules.
 
 ## Special objects, arrows and functors
 
@@ -168,11 +227,11 @@ An object $x \in \mathcal{C}$ is \textbf{terminal} if for all $a \in \mathcal{C}
 \end{definition}
 
 
-\begin{figure}[h]
+\begin{figure}[h!]
 \centering
-\begin{tikzcd}[sep=tiny]
+\begin{tikzcd}
   &a \arrow[dr]&  \\
-i\arrow[ur] \arrow[rr] \arrow[dr] & & t\\
+i\arrow[ur] \arrow[rr, shift left] \arrow[dr] & & t \arrow[ll, shift left]\\
   &b \arrow[ur] &
 \end{tikzcd}
 \end{figure}
@@ -184,7 +243,7 @@ There are a number of special kind of arrows:
 
 \begin{definition}
 An arrow $f: a \to b \in \mathcal{C}$ is a \textbf{monomorphism} (or simply mono), if for all objects $x$ and all arrows $g, h: x \to a$ and $g \neq h$ we have:
-$$g \circ f \neq h \circ f.$$
+$$f \circ g \neq f \circ h.$$
 \end{definition}
 
 To put this into perspective, we show that in the category \textbf{Set} monomorphisms correspond to injective functions;
@@ -213,17 +272,17 @@ An arrow $f: a \to b \in \mathcal{C}$ is an \textbf{isomorphism} if there exists
 $$g \circ f = \text{id}_a~\text{ and }~f \circ g = \text{id}_b.$$
 \end{definition}
 
-(Introduce split, sections, retractions here? It is already a lot). In set, epi and mono imply iso. This however does not hold for general categories!
+In set, **epi** and **mono** imply **iso**. This however does not hold for general categories!
 
 \subsection*{Special functors}
 
-Finally, we turn our attention to special kinds of functors. For this we first introduce the notion of a _hom-set_ of $a$ and $b$, the set\footnote{Here we assume that this collection is a set, or that the category is so-called \emph{locally small}} of all arrows from $a$ to $b$:
+Lastly, we turn our attention to special kinds of functors. For this we first introduce the notion of a _hom-set_ of $a$ and $b$, the set\footnote{Here we assume that this collection is a set, or that the category is so-called \emph{locally small}} of all arrows from $a$ to $b$:
 $$\text{Hom}_\mathcal{C}(a, b) = \{ f \in \mathcal{C}~|~f: a \to b \}.$$
 
 \begin{definition}
 A functor $F: \mathcal{C} \to \mathcal{D}$ is \textbf{full} if for all pairs $a, b \in \mathcal{C}$ the induced function:
 \begin{align*}
-F:~\text{Hom}_\mathcal{C}(a, b) &\to \text{Hom}_\mathcal{C}(Fa, Fb),\\
+F:~\text{Hom}_\mathcal{C}(a, b) &\to \text{Hom}_\mathcal{D}(Fa, Fb),\\
    f &\mapsto Ff
 \end{align*}
 is a surjection. It is called \textbf{faithful} if it is an injection.
@@ -350,7 +409,7 @@ in fact, this is part of the core standard library of Haskell (the Prelude) that
     }
 ```
 
-There is one issue we have glared over; in mathematics all functions are *pure*: they will always give the same output for the same input. This is not always the case for computer programs, using IO functions, returning the current date, using a global variable are all examples of impure operations that are common in programming. In Haskell, *all functions are pure*, and this is a requirement that allows us to make the mapping to the category **Set**. The mechanism that allows Haskell programs to still do useful things is powered by *Monads*, which we will discuss later.
+There is one issue we have glared over; in mathematics all functions are *pure*: they will always give the same output for the same input. This is not always the case for computer programs, using IO functions, returning the current date, using a global variable are all examples of impure operations that are common in programming. In Haskell, *all functions are pure*, and this is a requirement that allows us to make the mapping to the category **Set**. The mechanism that allows Haskell programs to still do useful things is powered by *monads*, which we will discuss later.
 
 Although many of the things we will consider can apply to other languages (such as Python and C++), there is a strong reason why people consider often consider Haskell as an example in the context of category theory and programming; it originates in academia and therefore takes care to model the language more accurately. For example, since we take as our model the category **Set**, there should be a type that corresponds to the empty set $\emptyset$. In C / C++, the obvious candidate would be `void` for this set, but consider a function definition:
 ```cpp
@@ -409,7 +468,7 @@ For this second option, we have an obvious candidate for the precise function, l
 $$Tf(x_1, x_2, x_3, ... x_n) = (f(x_1), f(x_2), f(x_3), \ldots, f(x_n)).$$
 \end{example}
 
-**Type classes en type constructors**
+**Type classes and type constructors**
 
 We will express this idea in Haskell, but before we can do this we first have to consider type classes and -constructors. A _type constructor_ is a 'function' (on types, not an arrow) that creates a type out of a type. A _type constructor_ can have multiple _value constructors_, and these constructors can be differentiated between using something called _pattern matching_ which we will see later. As an example, consider `Bool`.
 ```haskell
@@ -417,7 +476,7 @@ data Bool = True | False
 ```
 Here, we define the type constructor `Bool` as the resulting type corresponding to the _value_ given by the value constructors `True` and `False`, which both are nullary constructors (that take no argument as types!). Normally however, type constructors take one or multiple types for their value constructors:
 ```haskell
-data Either = Left a | Right b
+data Either a b = Left a | Right b
 ```
 Here, the type constructor either hold either a value of type `a` or of type `b`, corresponding to the value constructors `Left` and `Right`. We will revisit this idea (and `Either`) when talk about products and coproducts.
 
@@ -449,7 +508,7 @@ instance Functor List where
     fmap _ Nil = Nil
     fmap f (Cons x t) = Cons (f x) (fmap f t)
 ```
-If a list is empty, then we get te empty set, otherwise we map the indivual values in the list recursively using the given `f`. In `C++` this `fmap` functor roughly corresponds to `std::transform`, while for Python the closest thing would be the `map` function. With these two definitions, `List` is a functor! We could check the that it satisfies the requirements.
+If a list is empty, then we get the empty set, otherwise we map the indivual values in the list recursively using the given `f`. In `C++` this `fmap` functor roughly corresponds to `std::transform`, while for Python the closest thing would be the `map` function. With these two definitions, `List` is a functor! We could check the that it satisfies the requirements.
 
 As mentioned, `List` is implemented in the standard library as `[]`, and `Cons` is written as `:`, while the empty set is written also as `[]`. This allows you to write:
 ```haskell
