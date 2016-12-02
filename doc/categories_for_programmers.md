@@ -825,6 +825,9 @@ example of Haskell program, composibility
 
 # Lenses; Adjunctions and profunctors
 
+- <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
+- <https://github.com/ekmett/lens>
+
 # 'Theorems for free!'
 
 # 'Fast and loose reasoning is morally correct'
