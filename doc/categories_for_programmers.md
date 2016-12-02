@@ -9,6 +9,7 @@ classoption: oneside
 header-includes:
     - \usepackage{tikz-cd}
     - \usepackage{amsthm}
+    - \usepackage{float}
     - \usepackage{epigraph}
     - \setlength{\epigraphwidth}{0.8\textwidth}
     - \newtheoremstyle{custom}
@@ -54,7 +55,7 @@ The composition operation and identity arrow should satisfy the following laws:
 \begin{itemize}
 \item \emph{Composition}: If $f: a \to b$ and $g: b \to c$ then $g \circ f: a \to c$.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}
 a \arrow[r, "f"] \arrow[rr, "g \circ f", bend right=50] & b \arrow[r, "g"]  & c
@@ -65,7 +66,7 @@ a \arrow[r, "f"] \arrow[rr, "g \circ f", bend right=50] & b \arrow[r, "g"]  & c
 $$ \text{id}_a \circ f = f,~g \circ \text{id}_a = g.$$
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}
 a \arrow[loop left, "\text{id}_a"] \arrow[r, "g"', bend right=20] & x \arrow[l, "f"', bend right=20]
@@ -76,7 +77,7 @@ a \arrow[loop left, "\text{id}_a"] \arrow[r, "g"', bend right=20] & x \arrow[l, 
 $$(h \circ g) \circ f = h \circ (g \circ f).$$
 This is the same as saying that the following diagram commutes:
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=huge]
 a \arrow[r, "f"] \arrow[d, "h \circ g \circ f"'] \arrow[rd, crossing over, near start, "g \circ f"] & b  \arrow[d, "g"] \arrow[ld, crossing over, near end, "h \circ g"] \\
@@ -112,7 +113,7 @@ There are also a number of simple examples of categories:
 - **0**, the empty category $O = A \equiv \emptyset$.
 - **1**, the category with a single element and (identity) arrow:
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}
 a \arrow[loop left, "\text{id}_a"]
@@ -121,7 +122,7 @@ a \arrow[loop left, "\text{id}_a"]
 
 - **2**, the category with a two elements and a single arrow between these elements
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}
 a \arrow[loop left, "\text{id}_a"] \arrow[r, "f"] & b \arrow[loop right, "\text{id}_b"]
@@ -130,7 +131,7 @@ a \arrow[loop left, "\text{id}_a"] \arrow[r, "f"] & b \arrow[loop right, "\text{
 
 - $\rightrightarrows$: the category with two elements and two parallel arrows between these elements:
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}
 a \arrow[loop left, "\text{id}_a"] \arrow[r, shift left] \arrow[r, shift right]  & b \arrow[loop right, "\text{id}_b"]
@@ -158,7 +159,7 @@ From now on we will sometimes omit the identity arrows when drawing categories.
 
 - We can also consider natural numbers $\mathbb{N}_{> 0}$, with arrows going from each number to its multiples.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}
 1 \arrow[r, bend right=0] \arrow[rr, bend right=10] \arrow[rrr, bend right=20] \arrow[rrrr, bend right=30] \arrow[rrrrr, bend right=40] & 2 \arrow[rr, bend left=20, "\times 2"] \arrow[rrrr, bend left=30, "\times 3"] & 3 \arrow[rrr, bend left=20, "\times 2"] & 4 & 5 & 6 \ldots
@@ -230,7 +231,7 @@ An object $x \in \mathcal{C}$ is \textbf{terminal} if for all $a \in \mathcal{C}
 \end{definition}
 
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}
   &a \arrow[dr]&  \\
@@ -302,7 +303,7 @@ A faithful functor reflects epis and monos.
 \begin{proof}
 As an example we will prove it for a $Ff$ that is mono. Let $f: a \to b$ such that $Ff$ is mono, and let $h,g: x \to a$ such that $h \neq g$.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=huge]
 x \arrow[dr, "F"] \arrow[r, bend right=20, "g"'] \arrow[r, bend left=20, "h"]& a \arrow[dr, "F"]  \arrow[r, "f"] & b \arrow[dr, "F"]  &\\
@@ -322,7 +323,7 @@ A \textbf{natural transformation} $\mu$ between two functors $F, G: \mathcal{C} 
 $$\mu = \{ \mu_a: Fa \to Fb~|~a \in \mathcal{C} \},$$
 indexed by objects in $\mathcal{C}$, so that for all morphisms $f: a \to b$ the diagram
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}
 Fa \arrow[r, "\mu_a"] \arrow[d, "Ff"] & Ga \arrow[d, "Gf"] \\
@@ -570,7 +571,7 @@ Here, e.g. `f<int>(1)` would yield `2`, while `f<char>('a')` would result in a c
 In Haskell, this is not allowed, polymorphic functions must work for _all types_, this is called parametric polymorphism. Specializing function definitions is done using type classes^[in C++ this would be done using overloading and (partial) template specialization]. This has an important consequence (or perhaps, it is the underlying reason): a parametric polymorphic function satisfies automatically the naturality conditions.
 
 The corresponding diagram is:
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}
 \texttt{F a} \arrow[r, "\texttt{alpha}"] \arrow[d, "\texttt{fmap f :: F a -> F b}"'] & \texttt{G a} \arrow[d, "\texttt{fmap f :: G a -> G b}"]\\
@@ -618,13 +619,13 @@ The opposite category is very useful, because many concepts defined in the origi
 
 Whenever defining something it always make sense to see what this means in the opposite category, giving you a lot of free information. For example, we showed that faithful functors reflects mono's. Looking at the dual category, we immediately have that it also reflects epi's!
 
-\subsection*{Products and co-products}
+\subsection*{Products}
 
 Initial objects and terminal objects have a so-called *universal property*, they are the object so that for all other objects there is a *unique morphism to the objects*. A more involved example of such a universal property is the *notion of a product of objects*. The categorical product is a unifying definition for many 'products' encountered in mathematics, such as the cartesian product, product group, products of topological spaces, and so on.
 
 \begin{definition}
 Let $\mathcal{C}$ be a category, and let $a, b \in \mathcal{C}$ be objects in $\mathcal{C}$. A \emph{product} of $a$ and $b$ is an object $a \times b \in \mathcal{C}$ along with two arrows $p_1: a \times b \to a$ and $p_2: a \times b \to b$ (the \emph{projections}) so that for all objects $c \in \mathcal{C}$ and arrows $f: c \to a$ and $g: c \to b$ there exists a unique morphism $q: c \to a \times b$ that makes the following diagram commute:
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
 & c \arrow[ddl, "f"'] \arrow[ddr, "g"] \arrow[d, "q"] & \\
@@ -639,7 +640,7 @@ In this case, the (unique) arrows $q$ are what gives the product a *universal ma
 We say that the functions $f$ and $g$ *factors* through $a \times b$, or that $a \times b$ *factorizes* $f$ and $g$. The reason for this name is clear when making the analogy with numbers. Consider:
 $$f = p_1 \circ q,~g = p_2 \circ q.$$
 For an example with numbers:
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
 & 2 \arrow[dl, "\times 4"'] \arrow[dr, "\times 8"] \arrow[d, "\times 2"] & \\
@@ -655,7 +656,7 @@ Let us consider the product of objects in \textbf{Set}. Consider two sets $A, B$
 
 Let $V$ be any other set, with arrows (functions) $f$ to $A$ and $g$ to $B$. Can we construct a (unique) arrow $q$ to $A \times B$?
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
 & V \arrow[ddl, "f"'] \arrow[ddr, "g"] \arrow[d, "q"] & \\
@@ -677,30 +678,155 @@ $$w \leq x \text{ and } w \leq y \implies w \leq z$$
 This means that $z$ is the "largest element that is smaller or equal to $x$ and $y$", also called the \emph{infimum} of $x$ and $y$.
 \end{example}
 
-Let us revisit the idea of *duality*. What would be the dual-notion of this product?
+\subsection*{Coproducts}
 
-\subsection*{Hom-functors and bifunctorality}
+Let us revisit the idea of *duality*. What would be the dual-notion of the product? Let us take the product diagram, and reverse the arrows:
 
-Hom-sets give rise to a specific type of functor, the (co- and contravariant) hom-functor. See page 34 of Mac Lane.
+\begin{figure}[H]
+\centering
+\begin{tikzcd}[sep=large]
+& c  & \\
+& a + b\arrow[u, "q"] & \\
+a \arrow[uur, "f"] \arrow[ur, "p_1"'] & & b \arrow[uul, "g"']\arrow[ul, "p_2"]
+\end{tikzcd}
+\end{figure}
+
+This already very suggestives, we have arrows going from objects $a, b$ into the coproduct (written 'a+b', we will see why soon), and from this coproduct arrows going to arbitrary target objects $c$. The arrows $a \to a + b$ and $b \to a + b$ already look kind of like an inclusion. Let us see what happens when we apply duality to the product definition, and change some names.
+
+\begin{definition}
+Let $\mathcal{C}$ be a category, and let $a, b \in \mathcal{C}$ be objects in $\mathcal{C}$. A \emph{coproduct} of $a$ and $b$ is an object $a + b \in \mathcal{C}$ along with two arrows $i_1: a + b \leftarrow a$ and $i_2: a + b \leftarrow b$ (the \emph{inclusions}) so that for all objects $c \in \mathcal{C}$ and arrows $f: c \leftarrow a$ and $g: c \leftarrow b$ there exists a unique morphism $q: c \leftarrow a + b$ that makes the following diagram commute:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}[sep=large]
+& c  & \\
+& a + b\arrow[u, "q"] & \\
+a \arrow[uur, "f"] \arrow[ur, "i_1"'] & & b \arrow[uul, "g"']\arrow[ul, "i_2"]
+\end{tikzcd}
+\end{figure}
+\end{definition}
+Note that this is precisely the definition of the product, with all arrows reversed and the projections renamed to $i_1$ and $i_2$.
+
+Because of the properties that we will show discover, the coproduct is also called the *sum*. Note that this dual notion is fundamentally different. Let us see what it means for the category **Set**:
+
+\begin{example}
+Consider two sets $A, B$. When looking at the diagram for the coproduct, we see that we need to find some kind of set in which elements of $A$ and $B$ are represented but completely independent; since $c$ is now the target of the functions we want to factor through $a + b$.
+
+This describes the \emph{union} of $A$ and $B$, but only if the two are disjoint since in the intersection of $A$ and $B$ we would not know whether $q$ should represent $f$ or $g$. This is easily solved by looking at the disjoint union, which has a nice representation:
+$$A + B \equiv \{ (a, 0)~|~a \in A \} \cup \{ (b, 1)~|~b \in B \}.$$
+
+It is clear what $i_1$ and $i_2$ are. Let $V$ be any other set, with arrows (functions) $f: A \to V$ and $g: B \to V$.
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}[sep=large]
+& V  & \\
+& A + B\arrow[u, "q"] & \\
+A \arrow[uur, "f"] \arrow[ur, "i_1"'] & & B \arrow[uul, "g"']\arrow[ul, "i_2"]
+\end{tikzcd}
+\end{figure}
+
+Consider any element $a \in A$. It gets mapped to $f(a) \in V$, and to $i_1(a) = (a, 0)$ in $A + B$. Then we should set $q(a, 0) \equiv f(a)$, and similarly we should set $q(b, 1) \equiv g(b)$. This already defines $q$ uniquely and completely, so we conclude that the disjunt union is indeed the coproduct in the category \textbf{Set}.
+\end{example}
+
+We note there that the coproduct (and product) of two objects, generalizes also to products of more than 2 objects (by simply adding more maps $i_1, i_2, i_3 \ldots$).
 
 ## Algebraic data types
 
-`Pair` (product), `Either` (sum)
+Let us apply the product (and coproduct) concepts to the category of types. Since we already saw what these constructs mean for sets, namely the cartesian product and the disjoint union respectively, it should be clear what this means for types.
+
+Given a type $a$ and a type $b$, the product corresponds to a *pair*, written `(a, b)` in Haskell. We could implement this ourselves using simply:
+```haskell
+data Pair a b = Pair a b
+```
+Here, we give the unique value constructor the same name as its type constructor. In C this would correspond roughly to a `struct` (more specifically a POD data type), although a `Record` in Haskell corresponds more precisely to a `struct`. Note for this to make sense, the product type should (and is) be defined for  more than 2 elements.
+
+In C++ this is known as a `std::pair` (or a `std::tuple` for n-ary products). However, its implementation (and also usage) is awkward and convoluted. Functional programming (and product/coproduct types) is not yet a first-class citizen in C++.
+
+The coproduct (or _sum type_ corresponds to a value that has either type $a$, or type $b$. This is implemented as the `Either` datatype:
+```haskell
+data Either a b = Left a | Right b
+```
+Here, the two value constructors take an element of type `a`, or an element of type `b` respectively. In C and C++ this would correspond roughly to a union\footnote{In C++17 there will be a standardized 'tagged union' `std::variant` that more accurately models the coproduct}, except that it is *tagged*.
+
+A sum type means choosing an alternative between types, while the product type is a combination of the types. Let us look at some more examples:
+
+- In C, an `enum` represents a fixed number of alternative constants. In Haskell, this would correspond to the sum type of multiple 0-ary value constructors (implicitely the finite sum type of the type `()` with itself):
+```haskell
+    data Enum = One | Two | Three
+```
+
+- A node of a binary tree of type `a` has a sum type: it is either `()` (representing a leaf), or it is the product type of:
+    - Tree on the left
+    - `a` for the value of the node
+    - Tree on the right
+
+    or in Haskell:
+```haskell
+data Tree a = Leaf | Node (Tree a) a (Tree a)
+```
+
+- Using the product and sum types, we can turn the type system into a semi-ring, where we define:
+    - $0$ = `Void`
+    - $1$ = `()`
+    - $a + b$ = `Either a b = Left a | Right b`
+    - $a \times b$ = `(a, b)`
+
+    Let us check that $0$ really works as $0$. What happens when we add `Void` to a type:
+```haskell
+Either a Void = Left a | Right Void
+```
+    We can never get a value for void, so the only thing we can do is to construct `Either a Void` with a value of type `a`, which means:
+    $$a + 0 = a.$$
+    Similarly, if we have a product with `Void`, we can never instantiate a pair (because there is no value for `Void`), so the corresponding product type is again `Void`:
+    $$a \times 0 = 0.$$
+    Although this is all a bit of a stretch, this analogy has some interesting properties, and we can do some real algebra with our types and try to interpret the results. Consider again the list type:
+```haskell
+List a = Empty | Cons a (List a)
+```
+    In our 'semi-ring', writing $x$ for `List a`, this would look like the expression:
+    $$x = 1 + a \times x$$
+    This is unsolvable, but we can try to iteratively substitute $x$ into the right hand side:
+    \begin{align*}
+        x &= 1 + a \times (1 + a x)\\
+          &= 1 + a + a^2 x\\
+          &= 1 + a + a^2 (1 + a x)\\
+          &= 1 + a + a^2 + a^3 x\\
+          &= \ldots
+     \end{align*}
+     Which can be read as 'a list is either empty, or it has one element of type `a`, or it has two elements of type `a`, etc.
+     Although this is mostly a funny (and overly complicated) way of looking at types, a similar correspondence from types to logical operations forms the basis of the Curry-Howard isomorphismthat connects type theory to logic in a very fundamental way.
+
+## Hom-functors and bifunctorality
+
+Hom-sets give rise to a specific type of functor, the (co- and contravariant) hom-functor. See page 34 of Mac Lane.
 
 **References:**
 
 - 2.1, 2.2, 3.1, 3.3 (partially) and 3.4 (partially) of Mac Lane
 - 1.5, 1.6 and 1.8 of the 'Category Theory for Programmers' blog by Bartosz Milewski
 - 2.6.7, 5.1, 5.2, 5.4 of Barr and Wells
-- *Catsters*: Products and co-products <https://www.youtube.com/watch?v=upCSDIO9pjc>
+- *Catsters*: Products and coproducts <https://www.youtube.com/watch?v=upCSDIO9pjc>
 
-# Monads
+# Monads I
+
+## Pure functional programming
+
+## Monads in Category Theory
 
 **References:**
 
 - 6.1 and parts of 6.3 and 6.4 of Mac Lane
 - Blogs..
 - Catsters
+
+# Monads II
+
+## Monads in programming
+
+
+## Kleisli categories
+
+Reader writer
 
 # Function types (and Curry-Howard Isomorphism?)
 
@@ -709,11 +835,9 @@ Hom-sets give rise to a specific type of functor, the (co- and contravariant) ho
 - 1.9 of the 'Category Theory for Programmers' blog by Bartosz Milewski
 - 6.1 of Barr and Wells
 
-# Reader and writer monads, Kleisli categories
-
 # Yonedda's Lemma
 
-# Limits and co-limits
+# Limits and colimits
 
 # 'Theorems for free!'
 
@@ -728,7 +852,7 @@ Hom-sets give rise to a specific type of functor, the (co- and contravariant) ho
 
 # F-algebras:
 
-Recursion, co-algebras and streams
+Recursion, coalgebras and streams
 
 # Denotational semantics
 
