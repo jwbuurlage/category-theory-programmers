@@ -24,10 +24,12 @@ header-includes:
     - \theoremstyle{custom}
     - \newtheorem{theorem}{Theorem}
     - \newtheorem{definition}{Definition}
+    - \newtheorem{proposition}{Proposition}
     - \newtheorem{example}{Example}
     - \numberwithin{theorem}{chapter}
     - \numberwithin{definition}{chapter}
     - \numberwithin{example}{chapter}
+    - \numberwithin{proposition}{chapter}
     - \usepackage{geometry}
     - \geometry{margin=4cm}
 ---
@@ -154,7 +156,7 @@ From now on we will sometimes omit the identity arrows when drawing categories.
     - There is a single object (for which we simply write $M$)
     - There are arrows $m: M \to M$ for each element $m \in M$.
     - Composition is given by the binary operation of the monoid: $m_1 \circ m_2 \equiv m_1 \cdot m_2$.
-    - The identity arrow $id_M$ is equal to $e$, the unit of the monoid.
+    - The identity arrow $\text{id}_M$ is equal to $e$, the unit of the monoid.
 
 
 - We can also consider natural numbers $\mathbb{N}_{> 0}$, with arrows going from each number to its multiples.
@@ -790,15 +792,100 @@ List a = Empty | Cons a (List a)
         x &= 1 + a \times (1 + a x)\\
           &= 1 + a + a^2 x\\
           &= 1 + a + a^2 (1 + a x)\\
-          &= 1 + a + a^2 + a^3 x\\
+          &= 1 + a + a^2 + a^3 (1 + ax) \\
           &= \ldots
      \end{align*}
      Which can be read as 'a list is either empty, or it has one element of type `a`, or it has two elements of type `a`, etc.
-     Although this is mostly a funny (and overly complicated) way of looking at types, a similar correspondence from types to logical operations forms the basis of the Curry-Howard isomorphismthat connects type theory to logic in a very fundamental way.
+     Although this is mostly an entertaining (and, depending on your view, an overly complicated) way of looking at types, a similar correspondence from types to logical operations forms the basis of the Curry-Howard isomorphismthat connects type theory to logic in a very fundamental way.
 
-## Hom-functors and bifunctorality
+## Bi-functors
 
-Hom-sets give rise to a specific type of functor, the (co- and contravariant) hom-functor. See page 34 of Mac Lane.
+\begin{definition}
+Given two categories $\mathcal{C}, \mathcal{D}$ their product category $\mathcal{C} \times \mathcal{D}$ is given by:
+\begin{itemize}
+\item The objects are pairs $(c, d)$ where $c \in \mathcal{C}$ and $d \in \mathcal{D}$.
+\item The arrows are pairs of arrows, $(f, g): (c, d) \to (c', d')$ for $f: c \to c'$ in $\mathcal{C}$ and $g: d \to d'$ in $\mathcal{D}$.
+\item The identity arrow for $(c, d)$ is the pair $(\text{id}_c, \text{id}_d)$.
+\item Composition of arrows happens per component, i.e.\ when $f, g$ in $\mathcal{C}$ and $h, k \in \mathcal{D}$:
+$$(f, h) \circ (g, k) \equiv (f \circ g, h \circ k)$$
+\end{itemize}
+\end{definition}
+
+Note that alternatively we could define this as the product of objects in the category \textbf{Cat}.
+
+This brings us to the concept of a bifunctor, which can be seen as a 'functor of two arguments'.
+
+\begin{definition}
+Let $\mathcal{C}, \mathcal{D}, \mathcal{E}$ be categories. A bifunctor is a functor:
+$$F: \mathcal{C} \times \mathcal{D} \to \mathcal{E}.$$
+\end{definition}
+
+When is something a bifunctor. Given any candidate functor $\mathcal{C} \times \mathcal{D} \to \mathcal{E}$, it is enough to show that fixing one argument (an object, setting the mapped arrow to the identity arrow at that object) result in a functor from one of the components to $\mathcal{E}$. This is summarized in the following proposition:
+
+\begin{proposition}
+\label{prop:bifunctorcomponents}
+Let $F$ be a function $\mathcal{C} \times \mathcal{D} \to \mathcal{E}$. $F$ is a bifunctor if and only if the functions:
+\begin{align*}
+F(c, -)&: \mathcal{D} \to \mathcal{E} \\
+       &: d \mapsto F(c, d)\\
+       &: (f: d \to d') \mapsto F(\text{id}_c, f) \\
+F(-, d)&: \mathcal{C} \to \mathcal{E} \\
+       &: c \mapsto F(c, d)\\
+       &: (f: c \to c') \mapsto F(f, \text{id}_d)
+\end{align*}
+are functors.
+\end{proposition}
+
+\begin{proof}
+todo
+\end{proof}
+
+In Haskell the bifunctor is implemented as a type class, which is implemented in the standard library as follows:
+
+```haskell
+class Bifunctor f where
+    bimap :: (a -> c) -> (b -> d) -> f a b -> f c d
+    bimap g h = first g . second h
+    first :: (a -> c) -> f a b -> f c b
+    first g = bimap g id
+    second :: (b -> d) -> f a b -> f a d
+    second = bimap id
+```
+
+Here you see a circular definition. This means it is enough to *either* provide the `bimap`, or the `first` and `second` functions, powered by Proposition \ref{prop:bifunctorcomponents}.
+
+\begin{example}
+Whenever you have a category $\mathcal{C}$ where the product of two objects exists for all pairs of objects, then this gives rise to a bifunctor:
+\begin{align*}
+\times&: \mathcal{C} \times \mathcal{C} \to \mathcal{C}\\
+      &: (a, b) \mapsto a \times b\\
+      &: (f: a \to a', g: b \to b') \mapsto (f \times g: a \times b \to a' \times b')
+\end{align*}
+where we find $f \times g$ by looking at the diagram:
+
+\begin{figure}[h!]
+\centering
+\begin{tikzcd}[sep=large]
+a \arrow[d, "f"'] & a \times b \arrow[d, dashed, "f \times g"] \arrow[l, "p_1"'] \arrow[r, "p_2"] & b \arrow[d, "g"] \\
+a' & a' \times b' \arrow[l, "p'_1"] \arrow[r, "p'_2"'] & b'
+\end{tikzcd}
+\end{figure}
+
+By definition of the product $a' \times b'$, we have that for any object $c$ that has arrows to $a'$ and $b'$, there should be a \emph{unique} arrow $c \to a' \times b'$. Note that $f \circ p_1$ and $g \circ p_2$ are arrows from $a \times b$ to $a'$ and $b'$ respectively, meaning that we can set $f \times g$ to the unique arrow going between $a \times b$ and $a' \times b'$.
+\end{example}
+
+By duality, there is also a bifunctor corresponding to the coproduct if it is defined everywhere. What would these two examples mean in Haskell? The product is the 'pair functor' `(,)`, and the coproduct is the sum type `Either`.
+
+```haskell
+instance Bifunctor (,) where
+    bimap f g (x, y) = (f x, g y)
+
+instance Bifunctor Either where
+    bimap f _ (Left x)  = Left (f x)
+    bimap _ g (Right y) = Right (g y)
+```
+
+These are examples of type constructors (or algebraic data types, as we have seen). Since functors compose, we could ask ourselves: "Are all algebraic data types functors?". The answer is positive, and this allows that Haskell language to derive an implementation of `fmap` for all ADTs!
 
 **References:**
 
@@ -807,11 +894,20 @@ Hom-sets give rise to a specific type of functor, the (co- and contravariant) ho
 - 2.6.7, 5.1, 5.2, 5.4 of Barr and Wells
 - *Catsters*: Products and coproducts <https://www.youtube.com/watch?v=upCSDIO9pjc>
 
-# Monads I
 
-## Pure functional programming
 
-## Monads in Category Theory
+# Pure functional programming
+
+What are functional languages, and what are the limiting things.
+
+- purity
+- immutability
+
+list of problems:
+
+example of Haskell program, composibility
+
+# Monads
 
 **References:**
 
@@ -823,21 +919,33 @@ Hom-sets give rise to a specific type of functor, the (co- and contravariant) ho
 
 ## Monads in programming
 
-
 ## Kleisli categories
 
 Reader writer
 
-# Function types (and Curry-Howard Isomorphism?)
+# Closed cartesian categories, function types
+
+Discuss Curry-Howard Isomorphism?
 
 **References:**
 
 - 1.9 of the 'Category Theory for Programmers' blog by Bartosz Milewski
-- 6.1 of Barr and Wells
+- 6.1, 6.2, 6.3 of Barr and Wells
 
 # Yonedda's Lemma
 
+# Lenses; Adjunctions and profunctors
+
+- <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
+- <https://github.com/ekmett/lens>
+
+## Hom-functors
+
+Hom-sets give rise to a specific type of functor, the (co- and contravariant) hom-functor. See page 34 of Mac Lane.
+
 # Limits and colimits
+
+# Ends and co-ends
 
 # 'Theorems for free!'
 
@@ -847,8 +955,6 @@ Reader writer
 
 - About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
 - <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
-
-# Lenses; Adjunctions and profunctors
 
 # F-algebras:
 
