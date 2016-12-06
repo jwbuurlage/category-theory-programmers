@@ -586,7 +586,9 @@ The corresponding diagram is:
 
 Here the left `fmap` works for `F`, while the right `fmap` corresponds to `G`, and the top `alpha` is implicitely the component at `a`, while the bottom one is the component at `b`. What would have to show, is that automatically
 
-\texttt{fmap f . alpha = alpha . fmap f}
+```haskell
+fmap f . alpha = alpha . fmap f
+```
 
 This can be shown in a very general context, and it has to do with the fact that the 'bodies'for `f`, `fmap` and `alpha` are the same for all types. We will show this in an upcoming part when we discuss _free theorems_.
 
@@ -799,7 +801,7 @@ List a = Empty | Cons a (List a)
           &= \ldots
      \end{align*}
      Which can be read as 'a list is either empty, or it has one element of type `a`, or it has two elements of type `a`, etc.
-     Although this is mostly an entertaining (and, depending on your view, an overly complicated) way of looking at types, a similar correspondence from types to logical operations forms the basis of the Curry-Howard isomorphismthat connects type theory to logic in a very fundamental way.
+     Although this is mostly an entertaining (and, depending on your view, an overly complicated) way of looking at types, a similar correspondence from types to logical operations forms the basis of the Curry-Howard isomorphism that connects type theory to logic in a very fundamental way.
 
 ## Bi-functors
 
@@ -1040,7 +1042,7 @@ What if we want to discard the inbetween values (because e.g. they are `IO ()`, 
 main = putStrLn "a" >> putStrLn "b"
 ```
 
-The `>>` (and then) function can be implemented as:
+The `>>` (pronounced: then) function can be implemented as:
 ```haskell
 >> :: IO a -> IO b -> IO b
 
@@ -1091,13 +1093,38 @@ Here, the `bind` and `return` pair lets us **compose operations defined on data 
 
 Both `IO`, `Maybe` and `[]` may be seen as 'functional containers', but let us now look at a completely different example where again we see that `bind` and `return` pair.
 
+Consider a *function with side effects*, the canonical case is a function that logs that it has been used.
+When thinking about how to accomplish this in Haskell, a candidate solution to letting some function `f :: a -> b` log a message, is to let it return a *pair* of `(b, String)`, where the `String` part contains the message.
+
+As before, we want to **compose operations that involve logging or non-logging functions**. How would we do this in this case? First, we define the `Writer` functor. A `type` in Haskell corresponds to a `typedef` or `using` in C++.
+```haskell
+data Writer m a = Writer (a, m)
+
+instance Functor (Writer m) where
+    fmap f (Writer (a, m)) = Writer (f a, m)
+```
+
+This `Functor` instance allows us to lift functions that don't log to work with functions that log, however, what we really want to do do is to not worry about this decomposition, and any function that logs should just have the signature:
+```haskell
+logging_function :: a -> Writer String b
+```
+For this, we use the same schema we have seen before, and define two functions:
+```
+return :: a -> Logger a
+x = Logger x
+```
+
+Note, as suggested by the way `Writer m a` was introduced, that if we would use some other *monoid* instead of `String`^[Indeed, String gives rise to a monoid with binary operation `++` (concatenation)], we could accomplish different goals than logging.
+
 ## Problem 4: Random numbers in Haskell
 
-`Random` monad
+`State` monad
 
 ## Putting it together; Monads
 
-We have seen the following pattern over and over: `F` is a functor (`IO, [], Maybe, Writer, ...`), along with two operations:
+In this section we have talked about `return` and *bind* `>>=`.
+
+So, in various forms, we have seen the following pattern over and over: `F` is a functor (`IO, [], Maybe, Writer, ...`), along with two operations:
 
 ```haskell
 join :: F F a -> F a
@@ -1151,7 +1178,7 @@ Algebras of a monad
 
 Reader writer
 
-# Monads III
+## Background
 
 - <https://golem.ph.utexas.edu/category/2012/09/where_do_monads_come_from.html>
 
@@ -1163,6 +1190,7 @@ Discuss Curry-Howard Isomorphism?
 
 - 1.9 of the 'Category Theory for Programmers' blog by Bartosz Milewski
 - 6.1, 6.2, 6.3 of Barr and Wells
+- <https://en.wikibooks.org/wiki/Haskell/The_Curry–Howard_isomorphism>
 
 # Yoneda's Lemma
 
