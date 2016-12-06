@@ -11,6 +11,9 @@ header-includes:
     - \usepackage{amsthm}
     - \usepackage{float}
     - \usepackage{epigraph}
+    - \usepackage{hyperref}
+    - \hypersetup{colorlinks, urlcolor=blue}
+    - \urlstyle{tt}
     - \setlength{\epigraphwidth}{0.8\textwidth}
     - \newtheoremstyle{custom}
         {0.5 cm}
@@ -340,7 +343,7 @@ We can \emph{compose} natural transformations, turning the set of functors from 
 $$(\nu \circ \mu)_a = \nu_a \circ \mu_a.$$
 Where the composition of the rhs is simply composition in $\mathcal{D}$.
 
-## References:
+**References:**
 
 - 1.1 -- 1.4 and 1.8 of Mac Lane
 - 1.1, 1.2, 2.1, 3.1 and 3.2 of Asperti and Longo
@@ -355,7 +358,7 @@ To establish a link between functional programming and category theory, we need 
 
 Why do we want to look at types? Programming safety and correctness. In this part we will hopefully give an idea of how category theory applies to programming, but we will not go into to much detail yet, this is saved for later parts.
 
-We will take as our model for the category of types the category **Set**. Recall that the elements of **Set** are sets, and the arrows correspond to maps. There is a major issue to address here: Mathematical maps and functions in a computer program are not identical (bottom value $\perp$). We may come back to this, but for now we consider **Set**, although we will refer to the category **Hask** in the following (it is enough to think of it as **Set**).
+We will take as our model for the category of types the category **Set**. Recall that the elements of **Set** are sets, and the arrows correspond to maps. There is a major issue to address here: Mathematical maps and functions in a computer program are not identical (bottom value $\perp$). We may come back to this, but for now we consider **Set**..
 
 In Haskell, we can express that an object has a certain type:
 
@@ -898,21 +901,246 @@ These are examples of type constructors (or algebraic data types, as we have see
 
 # Pure functional programming
 
-What are functional languages, and what are the limiting things.
+Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. This is originally described by mathematicians such as Turing and von Neuman in the 30s.
 
-- purity
-- immutability
+A constrasting way of programming is *declarative programming*, which is a way of expressing *what* you want the program to compute (without explicitely saying how it should do this). A good way of expressing what you want to have computed, is by describing your program mathematically, i.e. *using functions*, which is what we explore here. This functional style of looking at computations is based on work in the 20s/30s by Curry and Church among others.
 
-list of problems:
+The difficulty in using a *(typed, pure) functional* programming language, is that the **functions that you write** between types **should behave like mathematical functions** on the corresponding sets. This means, for example, that if you call a function multiple times with the same arguments, it should produce the same result every time. This is often summarized as a *side-effect free function*. Other difficulties are that values are in principle immutable.
 
-example of Haskell program, composibility
+Something else that would allow us to more accurately describe our programs in a mathematical way is if executing is *lazy*, and Haskell indeed is lazy. This means we can work with **infinite lists and sequences**, and only peeking inside such as a list causes the necessary computations to be done (or 'collapses the wave function' if you want a quantum analogy).
+
+We will explore what this means for actual programs, and discover what problems and difficulties pop up. In the coming chapters we will fix these problems (and go beyond!) using our categorical language.
+
+## Problem 1: Computations and IO in Haskell
+
+A typical Haskell program consists of the description of a number of functions, which are 'composed', and then run against some input^[In this section (and the following sections) we will write in 'pseudo-Haskell' to illustrate some points, not all examples will be valid Haskell programs.] Say we two functions:
+
+```haskell
+f :: Int -> Int
+f x = ..
+
+g :: Int -> Int
+g x = ..
+```
+
+We want to perform `g . f`, and output the result.
+
+### IO actions
+
+First, assume that the input is static. The 'function' executed by Haskell is called `main`, and say there is some `print :: a -> ??` function that prints the value of any type to standard output. Then our code would look something like this
+
+```haskell
+-- NOTE: not real Haskell
+main = print(g(f 123))
+```
+
+In Haskell there are two alternative ways of writing this composition (to prevent overuse of paranthesis):
+```haskell
+main = print $ g $ f 123
+main = (print . g . f) 123
+```
+Here, `$` makes sure that all the fucntions on the right have been evaluated before statements on the left come in to play. There are a two things unclear about this code:
+
+- If `main` should *behave*, then it should return the same function every time. However, we would like to support user input (`cin, scanf, getLine, ..)` so what should be its type if it should 'behave mathematically'?
+- Similarly, for `print`, what would be its type? It should take a value, convert it to a string, and output this in a terminal somewhere. The first part seems doable, but what is the *type* of *printing to screen*?
+
+Although this is quite a fundamental problem, Haskell 'fixes this' using *IO actions*. This is not limited to input/output for terminal, it can also be network related, or mouse/keyboard input for a video game!
+
+An IO action is a *value* with a type of `IO a`. We can also have an 'empty IO action', if the result is not used. Let us look at some examples:
+
+- The print function has the signature from a String to an IO action:
+
+    ```haskell
+    putStrLn :: String -> IO ()
+    ```
+    To print the value of any type, we precompose this function with `show :: a -> String`.
+
+- The function `main` itself is an IO action! `main :: IO ()`.
+- The `getLine` function is an IO action `getLine :: IO String`.
+
+
+### Handling input
+
+Let us use this `getLine` action to interact with the user of our program. We would like to do something like this:
+
+```haskell
+f :: Int -> Int
+f x = 2 * x
+
+main = print $ f getLine
+```
+
+But this does not type check! The action `getLine` has type `IO String`, while `f` expects an `Int`. Assume we could convert the `String` to an `Int`:
+
+```haskell
+toInt :: String -> Int
+```
+
+Then to work on the IO action, We want to *lift* `toInt` to take an `IO String` and produce an `IO Int`. This sounds like an `fmap`, and indeed `IO` provides fmap, it is a functor!
+
+The `print`^[`print` actually corresponds to `(putStrLn . show)` in Haskell] statement we used here has signature `a -> IO ()`. Applying the `fmap` of IO on this function would give something like:
+
+```haskell
+fmap print :: IO a -> IO (IO ())
+```
+
+Since `main` should corespond to `IO ()`, we need either a way to remove a 'nested IO tag', or we need a function for functors that only lifts the first argument. I.e. let `F` be a functor, then we require either:
+
+```haskell
+join :: F (F a) -> F a
+lift_one :: (a -> F b) -> (F a -> F b)
+```
+
+Since parantheses can be placed however (currying, we will describe this in more detail in the section on Closed Cartesian Categories (CCCs)), and order of arguments does not matter -- we can write `life_one` equivalently as:
+```haskell
+>>= :: F a -> (a -> F b) -> F b
+```
+Where the `>>=` (which is the Haskell notation, pronounced 'bind') is isomorphic to the arrow `lift_one`.
+
+Note, that we have:
+```haskell
+join :: F (F a) -> F a
+join x = x >>= id
+
+-- indeed, consider `(>>=) x id`, where `x :: F (F a)`
+id :: (F a -> F a) ==> b = a ==> join x :: F a
+```
+So we can define a `join` function only using our *bind*, so that implementing `>>=` is enough. Conversely, we can also retrieve bind from `join` and `fmap`:
+
+```haskell
+x >>= f = join (fmap f x)
+
+-- e.g.
+getLine >>= putStrLn
+=> join fmap putStrLn(getLine)
+=> join y -- y :: IO IO ()
+=> z :: IO ()
+```
+
+Note also that we can pack an object inside an IO 'container':
+```haskell
+unit :: a -> IO a
+```
+So what does this give us. The bind notation can be used *infix*: so what would this code do:
+
+```haskell
+main = getLine >>= putStrLn
+```
+
+This is equivalent to `(>>=) getLine putStrLn`, whose type deduces to:
+```haskell
+F a = IO String ==> F = IO, a = String
+a -> Fb ==> String -> IO () ==> b = ()
+```
+which gives us a type of `F b = IO ()`, as required. So the 'bind' function can be used to chain `IO` operations together!
+
+What if we want to discard the inbetween values (because e.g. they are `IO ()`, when we output more than one line). This is kind of the role of `;` in imperative languages. For this there exists the `>>` notation:
+
+```haskell
+main = putStrLn "a" >> putStrLn "b"
+```
+
+The `>>` (and then) function can be implemented as:
+```haskell
+>> :: IO a -> IO b -> IO b
+
+(>>) (putStrLn "a") (putStrLn "b")
+==> a == b == ()
+==> putStrLn "a" >> putStrLn "b" :: IO () -- as required
+
+```
+
+To summarize, `bind` and `return` allows us to **compose functions that may or may not require IO operations**.
+
+## Problem 2: Data structures in Haskell
+
+Trivial (finite) data structures are easily implemented in Haskell as product types, but we have also seen a different type of container namely a *functorial* one. The examples we have looked at so far are `[]` and `Maybe`. Let us explore these more deeply, and see how we can make their usage more flexible. First consider the `Maybe` functor. Say we have a number of functions, where some may or may not produce a result:
+
+```haskell
+f :: a -> Maybe a
+g :: a -> a
+h :: a -> Maybe a
+```
+
+And we want to do something like `h . g . f` using these definitions. What would happen:
+
+1. Let `x :: a`.
+2. Apply `f`, and obtain `f x :: Maybe a`
+3. To apply `g`, we need to `fmap` it, so that `fmap g $ f x :: Maybe b`.
+4. Now notice the pattern `h :: a -> F a`, which we have seen in the previous section, and we already saw the solution 'bind':
+```haskell
+(fmap g $ f x) >>= h
+```
+Although this is still somewhat ugly, we see that the *bind* function gives us the tools to do any computations with the Maybe monad regardless of the specific signature of the functions, and the order of composition. We can see that `bind` (and `return`) allow us to **compose arbitrary functions that may or may not fail**.
+
+Next we look at `[]`. A common pattern, which is easy to do in mathematics, is when you have a function:
+
+```haskell
+f :: A -> B
+```
+
+to consider a sequence $a_1, a_2, \ldots$ and map this over $f$ to obtain $f(a_1), f(a_2), \ldots$. This corresponds of course to the `fmap` of the `[]`, and we already made this easy to do by considering `[]` as a functor. What does the `bind` operator do for us here? It lets us take a list of *inputs*, apply a function to each of them returning a variable number of *outputs*, and then gather all the results in a single list:
+
+```haskell
+[1, 2, 3] >>= \x -> [2 * x, 3 * x] -- [2, 3, 4, 6, 6, 9]
+```
+
+Here, the `bind` and `return` pair lets us **compose operations defined on data structures or their elements**.
+
+## Problem 3: Side effects in Haskell
+
+Both `IO`, `Maybe` and `[]` may be seen as 'functional containers', but let us now look at a completely different example where again we see that `bind` and `return` pair.
+
+## Problem 4: Random numbers in Haskell
+
+`Random` monad
+
+## Putting it together; Monads
+
+We have seen the following pattern over and over: `F` is a functor (`IO, [], Maybe, Writer, ...`), along with two operations:
+
+```haskell
+join :: F F a -> F a
+unit :: a -> F a
+```
+
+Note that in categorical terms:
+
+- `unit` can be seen as a natural transformation between the identity endofunctor `Identity`, and `F`.
+- `join` is a natural transformation between `F^2` and `F`.
+
+**References**:
+
+If you want to learn *yourself a bit of Haskell*, the following resources are helpful as a first step:
+
+- 5 minute tutorial to get an idea: <https://tryhaskell.org/>
+- A book that has quite a (cult) following in the Haskell community: <http://learnyouahaskell.com/chapters>
+- The wiki book on Haskell is quite good: <https://en.wikibooks.org/wiki/Haskell>
+
+About IO:
+
+- <https://wiki.haskell.org/Introduction_to_IO>
+
+Some posts dealing specifically with Monads from a Haskell perspective:
+
+- <http://blog.sigfpe.com/2006/08/you-could-have-invented-monads-and.html>
+- <https://bartoszmilewski.com/2013/03/07/the-tao-of-monad/>
 
 # Monads
+
+Definition of a Monad
+
+Example: power set
+
+Algebras of a monad
 
 **References:**
 
 - 6.1 and parts of 6.3 and 6.4 of Mac Lane
-- Blogs..
+- Blogs:
+    - <https://bartoszmilewski.com/2016/11/21/monads-programmers-definition/>
+    - <https://bartoszmilewski.com/2016/11/30/monads-and-effects/>
+    - <http://www.stephendiehl.com/posts/monads.html>
 - Catsters
 
 # Monads II
@@ -923,6 +1151,10 @@ example of Haskell program, composibility
 
 Reader writer
 
+# Monads III
+
+- <https://golem.ph.utexas.edu/category/2012/09/where_do_monads_come_from.html>
+
 # Closed cartesian categories, function types
 
 Discuss Curry-Howard Isomorphism?
@@ -932,7 +1164,7 @@ Discuss Curry-Howard Isomorphism?
 - 1.9 of the 'Category Theory for Programmers' blog by Bartosz Milewski
 - 6.1, 6.2, 6.3 of Barr and Wells
 
-# Yonedda's Lemma
+# Yoneda's Lemma
 
 # Lenses; Adjunctions and profunctors
 
