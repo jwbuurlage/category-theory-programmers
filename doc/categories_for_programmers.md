@@ -1,4 +1,4 @@
-% Category Theory for Programmers
+% Category Theory and its Application to (Functional) Programming
 % Jan-Willem Buurlage
 % November 21, 2016
 
@@ -40,6 +40,10 @@ header-includes:
 This document contains notes for a small-scale seminar on category theory in the context of (functional) programming, organized at CWI. The goal of the seminar is to gain familiarity with concepts of category theory that apply (in a broad sense) to the field of functional programming. It could be an idea to have an associated (toy) project that examplifies the concepts that are discussed.
 
 Although the main focus will be on the mathematics, examples should be made in Haskell to illustrate how to apply the concepts, and possibly examples in other languages as well (such as Python and C++).
+
+I would like to thank:
+
+- Tom Bannink for supplying the proof for the bifunctor example in Chapter 3.
 
 # Categories
 
@@ -325,7 +329,7 @@ Since $g \neq h$ and $F$ is faithful, we have $Fg \neq Fh$. This implies, becaus
 
 \begin{definition}
 A \textbf{natural transformation} $\mu$ between two functors $F, G: \mathcal{C} \to \mathcal{D}$ is a family of morphisms:
-$$\mu = \{ \mu_a: Fa \to Fb~|~a \in \mathcal{C} \},$$
+$$\mu = \{ \mu_a: Fa \to Ga~|~a \in \mathcal{C} \},$$
 indexed by objects in $\mathcal{C}$, so that for all morphisms $f: a \to b$ the diagram
 
 \begin{figure}[H]
@@ -519,7 +523,7 @@ instance Functor List where
 ```
 If a list is empty, then we get the empty set, otherwise we map the indivual values in the list recursively using the given `f`. In `C++` this `fmap` functor roughly corresponds to `std::transform`, while for Python the closest thing would be the `map` function. With these two definitions, `List` is a functor! We could check the that it satisfies the requirements.
 
-As mentioned, `List` is implemented in the standard library as `[]`, and `Cons` is written as `:`, while the empty set is written also as `[]`. This allows you to write:
+As mentioned, `List` is implemented in the standard library as `[]`, and `Cons` is written as `:`, while the empty list is written also as `[]`. This allows you to write:
 ```haskell
 x = 1 : 2 : [] -- this results in `[1, 2] :: [Int]`!
 ```
@@ -609,7 +613,7 @@ Here, the fmap on the lhs corresonds to the `Maybe` functor, while on the rhs it
 
 \subsection*{Duality}
 
-For any category, we can defined the category with all arrows (and composition) reversed.
+For any category, we can define the category with all arrows (and composition) reversed.
 
 \begin{definition}
 The \emph{opposite category} $\mathcal{C}^{\text{op}}$ of a category $\mathcal{C}$ is the category with:
@@ -628,7 +632,7 @@ Whenever defining something it always make sense to see what this means in the o
 
 \subsection*{Products}
 
-Initial objects and terminal objects have a so-called *universal property*, they are the object so that for all other objects there is a *unique morphism to the objects*. A more involved example of such a universal property is the *notion of a product of objects*. The categorical product is a unifying definition for many 'products' encountered in mathematics, such as the cartesian product, product group, products of topological spaces, and so on.
+Initial objects and terminal objects have a *universal property*, they are defined by the property that e.g. all other objects have a *unique morphism to the object*. A more involved example of such a universal property is the *notion of a product of objects*. The categorical product is a unifying definition for many 'products' encountered in mathematics, such as the cartesian product, product group, products of topological spaces, and so on.
 
 \begin{definition}
 Let $\mathcal{C}$ be a category, and let $a, b \in \mathcal{C}$ be objects in $\mathcal{C}$. A \emph{product} of $a$ and $b$ is an object $a \times b \in \mathcal{C}$ along with two arrows $p_1: a \times b \to a$ and $p_2: a \times b \to b$ (the \emph{projections}) so that for all objects $c \in \mathcal{C}$ and arrows $f: c \to a$ and $g: c \to b$ there exists a unique morphism $q: c \to a \times b$ that makes the following diagram commute:
@@ -650,12 +654,12 @@ For an example with numbers:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
-& 2 \arrow[dl, "\times 4"'] \arrow[dr, "\times 8"] \arrow[d, "\times 2"] & \\
-8 & 4 \arrow[l, "\times 2"] \arrow[r, "\times 4"'] & 16
+& 2 \arrow[dl, "\times 4"'] \arrow[dr, "\times 8"] \arrow[d, "\times 4"] & \\
+8 & 8 \arrow[l, "\times 1"] \arrow[r, "\times 2"'] & 16
 \end{tikzcd}
 \end{figure}
 $$4 = 2 \times 2,~8 = 4 \times 2.$$
-This seems to indicate that in 'some category related to numbers' (in fact, precisely the category of natural numbers with their multiples, that we gave as an example in the first chapter), the product would correspond to the gcd!
+This seems to indicate that in 'some category related to numbers' (in fact, precisely the category of natural numbers with arrows to their multiples, that we gave as an example in the first chapter), the product would correspond to the gcd!
 
 
 \begin{example}
@@ -825,24 +829,47 @@ Let $\mathcal{C}, \mathcal{D}, \mathcal{E}$ be categories. A bifunctor is a func
 $$F: \mathcal{C} \times \mathcal{D} \to \mathcal{E}.$$
 \end{definition}
 
-When is something a bifunctor. Given any candidate functor $\mathcal{C} \times \mathcal{D} \to \mathcal{E}$, it is enough to show that fixing one argument (an object, setting the mapped arrow to the identity arrow at that object) result in a functor from one of the components to $\mathcal{E}$. This is summarized in the following proposition:
+We now ask ourselves how bifunctors relate to functors. This is summarized in the following proposition, where we denote pairs as $\langle c, d \rangle \in \mathcal{C} \times \mathcal{D}$:
 
 \begin{proposition}
 \label{prop:bifunctorcomponents}
-Let $F$ be a function $\mathcal{C} \times \mathcal{D} \to \mathcal{E}$. $F$ is a bifunctor if and only if the functions:
+Let $F: \mathcal{C} \times \mathcal{D} \to \mathcal{E}$ be a bifunctor. Then:
 \begin{align*}
-F(c, -)&: \mathcal{D} \to \mathcal{E} \\
-       &: d \mapsto F(c, d)\\
-       &: (f: d \to d') \mapsto F(\text{id}_c, f) \\
-F(-, d)&: \mathcal{C} \to \mathcal{E} \\
-       &: c \mapsto F(c, d)\\
-       &: (f: c \to c') \mapsto F(f, \text{id}_d)
+    F \langle c, - \rangle \equiv G_c&: \mathcal{D} \to \mathcal{E},~d \mapsto F \langle c, d \rangle,~(g: d \to d') \mapsto F \langle \text{id}_c, g \rangle \\
+     F \langle -, d \rangle \equiv H_d&: \mathcal{C} \to \mathcal{E},~c \mapsto F \langle c, d \rangle,~(f: c \to c') \mapsto F \langle f, \text{id}_d \rangle
 \end{align*}
-are functors.
+are functors for all $c \in \mathcal{C}$ and $d \in \mathcal{D}$ respectively, and furthermore they satisfy:
+\begin{align}
+G_c d &= H_d c \label{bif1}\\
+G_{c'} g \circ H_d f &= H_{d'} f \circ G_c g \label{bif2}
+\end{align}
+for all $c, c' \in \mathcal{C}$ and $d, d' \in \mathcal{D}$.
+Conversely, let $G_c, H_d$ be family of functors so that \eqref{bif1} and \eqref{bif2} hold, then:
+$$\tilde{F}: \mathcal{C} \times \mathcal{D} \to \mathcal{E},~\langle c, d \rangle \mapsto G_c d,~\langle f, g \rangle \mapsto H_{d'} f \circ G_c g$$
 \end{proposition}
+is a bifunctor, and satisfies $\tilde{F} \langle c, - \rangle = G_c$ and $\tilde{F} \langle -, d \rangle = H_d$.
 
 \begin{proof}
-todo
+Let us first show that we can construct the functors $G_c$ and $H_d$ from a bifunctor $F$. We show that $G_c$ is a functor, $H_d$ follows similarly.
+\begin{align*}
+G_c(\text{id}_d) &= F \langle \text{id}_c, \text{id}_d \rangle = \text{id}_{F \langle c, d \rangle} \\
+G_c(g \circ g') &= F \langle \text{id}_c, g \circ g' \rangle = F (\langle \text{id}_c, g \rangle \circ \langle \text{id}_c, g' \rangle) \\
+&= F \langle \text{id}_c, g \rangle \circ F \langle \text{id}_c, g' \rangle = G_c g \circ G_c g'
+\end{align*}
+and clearly the mapped arrows have the correct (co)domains, hence $G_c$ is a functor for all $c$. Showing \eqref{bif1} is simply, by definition both sides are equal to $F \langle c, d \rangle$. To show \eqref{bif2} we compute:
+\begin{align*}
+G_{c'} g \circ H_d f &= F \langle \text{id}_{c'}, g \rangle \circ F \langle f, \text{id}_d \rangle \\
+&= F(\langle \text{id}_c, g \rangle \circ \langle f, \text{id}_d \rangle) = F(\langle f, g \rangle) = F(\langle f, \text{id}_{d'} \rangle \circ \langle \text{id}_c, g \rangle) \\
+&= F\langle f, \text{id}_{d'} \rangle \circ F\langle \text{id}_c, g \rangle = H_{d'} f \circ G_c g
+\end{align*}
+
+To show the converse statement, we compute:
+\begin{align*}
+F \langle \text{id}_c, \text{id}_d \rangle &= G_c \text{id}_d \circ H_d \text{id}_c = \text{id}_{G_c d} \circ \text{id}_{H_d c} = \text{id}_{F \langle c, d \rangle} \circ \text{id}_{F \langle c, d \rangle} = \text{id}_{F \langle c, d \rangle} \\
+F(\langle f, g \rangle \circ \langle f', g' \rangle) &= F\langle f \circ f', g \circ g' \rangle = G_{c'} g \circ G_{c'} g' \circ H_d f \circ H_d f' \\
+&= G_{c'} g \circ H_{d'} f \circ G_{c} g' \circ H_d f' = F \langle f, g \rangle \circ F \langle f', g' \rangle
+\end{align*}
+\qedhere
 \end{proof}
 
 In Haskell the bifunctor is implemented as a type class, which is implemented in the standard library as follows:
@@ -890,7 +917,7 @@ instance Bifunctor Either where
     bimap _ g (Right y) = Right (g y)
 ```
 
-These are examples of type constructors (or algebraic data types, as we have seen). Since functors compose, we could ask ourselves: "Are all algebraic data types functors?". The answer is positive, and this allows that Haskell language to derive an implementation of `fmap` for all ADTs!
+These are examples of type constructors (or algebraic data types, as we have seen). Since functors compose, we could ask ourselves: "Are all algebraic data types functors?". The answer is positive, and this allows the Haskell language to derive an implementation of `fmap` for all ADTs!
 
 **References:**
 
@@ -899,9 +926,16 @@ These are examples of type constructors (or algebraic data types, as we have see
 - 2.6.7, 5.1, 5.2, 5.4 of Barr and Wells
 - *Catsters*: Products and coproducts <https://www.youtube.com/watch?v=upCSDIO9pjc>
 
+# The Yoneda Lemma
 
+- http://www.haskellforall.com/2012/06/gadts.html
+- http://blog.sigfpe.com/2006/11/yoneda-lemma.html
+- https://www.schoolofhaskell.com/user/bartosz/understanding-yoneda#yoneda-lemma
 
 # Pure functional programming
+
+\epigraph{"Mathematics is the art of giving the same name to different things"}{\emph{Henri Poincar\'e}}
+
 
 Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. This is originally described by mathematicians such as Turing and von Neuman in the 30s.
 
@@ -1192,7 +1226,6 @@ Discuss Curry-Howard Isomorphism?
 - 6.1, 6.2, 6.3 of Barr and Wells
 - <https://en.wikibooks.org/wiki/Haskell/The_Curry–Howard_isomorphism>
 
-# Yoneda's Lemma
 
 # Lenses; Adjunctions and profunctors
 
