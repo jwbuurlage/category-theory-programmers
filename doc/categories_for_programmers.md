@@ -928,14 +928,82 @@ These are examples of type constructors (or algebraic data types, as we have see
 
 # The Yoneda Lemma
 
+The Yoneda Lemma relates a category $\mathcal{C}$ with the functors from $\mathcal{C}$ to $\mathbf{Set}$. Before we can introduce the lemma's we will introduce a number of concepts; first we introduce a class of functors called *hom-functors*, we introduce the notion of *representable functors*, we will discuss the *Yoneda embedding* and finally we will move on to the Yoneda Lemma; one of the important tools in category theory
+
+## Hom-functors
+
+The *hom-functor* for some fixed object $c$, is a functor that sends any object $a$ to the hom-set $\text{Hom}(c, a)$. It is clear that for each object we get an associated object in **Set**, but what should this functor do with arrows? We will denote the candidate functor with $F = \text{Hom}(c, -)$. Say we have an arrow $f: a \to b$:
+
+\begin{figure}[h!]
+\centering
+\begin{tikzcd}[sep=large]
+a \arrow[d, "f"] \arrow[r, "F"] & \text{Hom}(c, a) \arrow[d, "?"] \\
+b  \arrow[r, "F"] & \text{Hom}(c, b)
+\end{tikzcd}
+\end{figure}
+
+The arrow marked with a question marked is an arrow in **Set**. Arrows in sets are functions, which we can define by saying what it does on elements. The elements of the hom-sets are arrows in $\mathcal{C}$. Given some element of $\text{Hom}(c, a)$, i.e. an arrow in $\mathcal{C}$: $g: c \to a$, we need to obtain an element of $\text{Hom}(c, b)$, i.e. an arrow from $c \to b$. We have the following picture
+
+\begin{figure}[h!]
+\centering
+\begin{tikzcd}[sep=large]
+c \arrow[r, "g"] \arrow[rr, bend left, "Ff(g) = ?"] & a & b
+\end{tikzcd}
+\end{figure}
+
+We can go to $a$ from $c$ using $g$, but then we need a way to get from $a$ to $b$. We actually have a way to do this, namely the arrow $f: a \to b$ that we started with. We need only to compose! This motivates the following definition:
+
+\begin{definition}
+Let $\mathcal{C}$ be a category, and let $c \in \mathcal{C}$ and $f: a \to b \in \mathcal{C}$. We define the (covariant) \textbf{hom-functor} $\text{Hom}(c, -): \mathcal{C} \to \mathbf{Set}$ as:
+\begin{align*}
+\text{Hom}(c, -)(a) = &\text{Hom}(c, a) \\
+\text{Hom}(c, -)(f) : &\text{Hom}(c, a) \to \text{Hom}(c, b),\\
+                      &g \mapsto f \circ g
+\end{align*}
+Clearly the identity arrow gets mapped to the identity map. To show that compositions are preserved, we compute for any arrow $h: c \to a$:
+\begin{align*}
+\text{Hom}(c, -)(g \circ f)(h) &= (g \circ f) \circ h \\
+                               &= g \circ (f \circ h) \\
+                               &= g \circ (\text{Hom}(c, -)(f)(h)) \\
+                               &= \text{Hom}(c, -)(g) \circ (\text{Hom}(c, -)(f)(h)) \\
+                               &= (\text{Hom}(c, -)(g) \circ \text{Hom}(c, -)(f))(h)
+\end{align*}
+\end{definition}
+
+We can also define the contravariant hom-functor: $\mathcal{C}^{\text{op}} \to \mathbf{Set}$ by *precomposing with $f$*.
+
+Let us introduce a term; functors are called **naturally isomorphic** if there is a natural transformation between them for which all components are isomorphisms. Hom-functors are such an important class of functors from $\mathcal{C} \to \mathbf{Set}$, that they motivate the following definition:
+
+\begin{definition}
+A functor $F: \mathcal{C} \to \mathbf{Set}$ is called \textbf{representable} if it is naturally isomorphic to a hom-functor.
+\end{definition}
+
+## Yoneda Embedding
+
+For any category $\mathcal{C}$ the Yoneda embedding is a functor between the opposite category and the category of functors between $\mathcal{C}$ and **Set**. Let us first introduce this target category.
+
+\begin{definition}
+Let $\mathcal{C}$ and $\mathcal{D}$ be two categories, then we define $\mathbf{Fun}(\mathcal{C}, \mathcal{D})$ as the category with as objects functors $\mathcal{C} \to \mathcal{D}$, and as arrows natural transformations between these functors.
+\end{definition}
+
+## The Yoneda Lemma
+
+## Yoneda in Haskell
+
+We will discuss two examples, the first is a hopefully intuitive way of looking at Yoneda's Lemma, while the second has to do with Generalized ADTs.
+
+**References:**
+
+- ? of the 'Category Theory for Programmers' blog by Bartosz Milewski
+- 6.? of Barr and Wells
+- *Catsters*: Yoneda Lemma <??>
 - http://www.haskellforall.com/2012/06/gadts.html
 - http://blog.sigfpe.com/2006/11/yoneda-lemma.html
 - https://www.schoolofhaskell.com/user/bartosz/understanding-yoneda#yoneda-lemma
 
-# Pure functional programming
+# Monads and functional programming
 
 \epigraph{"Mathematics is the art of giving the same name to different things"}{\emph{Henri Poincar\'e}}
-
 
 Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. This is originally described by mathematicians such as Turing and von Neuman in the 30s.
 
