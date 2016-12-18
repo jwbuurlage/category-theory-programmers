@@ -26,13 +26,17 @@ header-includes:
         {}
     - \theoremstyle{custom}
     - \newtheorem{theorem}{Theorem}
+    - \newtheorem{lemma}{Lemma}
     - \newtheorem{definition}{Definition}
     - \newtheorem{proposition}{Proposition}
+    - \newtheorem{corollary}{Corollary}
     - \newtheorem{example}{Example}
     - \numberwithin{theorem}{chapter}
     - \numberwithin{definition}{chapter}
     - \numberwithin{example}{chapter}
     - \numberwithin{proposition}{chapter}
+    - \numberwithin{corollary}{chapter}
+    - \numberwithin{lemma}{chapter}
     - \usepackage{geometry}
     - \geometry{margin=4cm}
 ---
@@ -347,7 +351,7 @@ We can \emph{compose} natural transformations, turning the set of functors from 
 $$(\nu \circ \mu)_a = \nu_a \circ \mu_a.$$
 Where the composition of the rhs is simply composition in $\mathcal{D}$.
 
-**References:**
+## References
 
 - 1.1 -- 1.4 and 1.8 of Mac Lane
 - 1.1, 1.2, 2.1, 3.1 and 3.2 of Asperti and Longo
@@ -603,7 +607,7 @@ fmap f . head = head . fmap f
 ```
 Here, the fmap on the lhs corresonds to the `Maybe` functor, while on the rhs it corresponds to the `[]` functor. The lhs can b e read like this; take the first element of the list, then apply f on it. The rhs can be read as "apply the function f to the enitre list, then take the first element". The result is the same; the funtion f applied to the head of the list (if any). But for the rhs we apply the function `f` for each element in the list, while on the lhs we only apply it to the head. Because of the constraint on polymorphic function, the compiler knows that the result is equal and can choose which one to use!
 
-**References:**
+## References
 
 - 1.2, 1.7 of the 'Category Theory for Programmers' blog by Bartosz Milewski
 
@@ -895,7 +899,7 @@ Whenever you have a category $\mathcal{C}$ where the product of two objects exis
 \end{align*}
 where we find $f \times g$ by looking at the diagram:
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
 a \arrow[d, "f"'] & a \times b \arrow[d, dashed, "f \times g"] \arrow[l, "p_1"'] \arrow[r, "p_2"] & b \arrow[d, "g"] \\
@@ -919,7 +923,7 @@ instance Bifunctor Either where
 
 These are examples of type constructors (or algebraic data types, as we have seen). Since functors compose, we could ask ourselves: "Are all algebraic data types functors?". The answer is positive, and this allows the Haskell language to derive an implementation of `fmap` for all ADTs!
 
-**References:**
+## References
 
 - 2.1, 2.2, 3.1, 3.3 (partially) and 3.4 (partially) of Mac Lane
 - 1.5, 1.6 and 1.8 of the 'Category Theory for Programmers' blog by Bartosz Milewski
@@ -934,7 +938,7 @@ The Yoneda Lemma relates a category $\mathcal{C}$ with the functors from $\mathc
 
 The *hom-functor* for some fixed object $c$, is a functor that sends any object $a$ to the hom-set $\text{Hom}(c, a)$. It is clear that for each object we get an associated object in **Set**, but what should this functor do with arrows? We will denote the candidate functor with $F = \text{Hom}(c, -)$. Say we have an arrow $f: a \to b$:
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
 a \arrow[d, "f"] \arrow[r, "F"] & \text{Hom}(c, a) \arrow[d, "?"] \\
@@ -944,7 +948,7 @@ b  \arrow[r, "F"] & \text{Hom}(c, b)
 
 The arrow marked with a question marked is an arrow in **Set**. Arrows in sets are functions, which we can define by saying what it does on elements. The elements of the hom-sets are arrows in $\mathcal{C}$. Given some element of $\text{Hom}(c, a)$, i.e. an arrow in $\mathcal{C}$: $g: c \to a$, we need to obtain an element of $\text{Hom}(c, b)$, i.e. an arrow from $c \to b$. We have the following picture
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
 c \arrow[r, "g"] \arrow[rr, bend left, "Ff(g) = ?"] & a & b
@@ -965,18 +969,20 @@ Clearly the identity arrow gets mapped to the identity map. To show that composi
 \text{Hom}(c, -)(g \circ f)(h) &= (g \circ f) \circ h \\
                                &= g \circ (f \circ h) \\
                                &= g \circ (\text{Hom}(c, -)(f)(h)) \\
-                               &= \text{Hom}(c, -)(g) \circ (\text{Hom}(c, -)(f)(h)) \\
-                               &= (\text{Hom}(c, -)(g) \circ \text{Hom}(c, -)(f))(h)
+                               &= \text{Hom}(c, -)(g) \left( \text{Hom}(c, -)(f)(h)\right) \\
+                               &= \left(\text{Hom}(c, -)(g) \circ \text{Hom}(c, -)(f) \right)(h)
 \end{align*}
 \end{definition}
 
-We can also define the contravariant hom-functor: $\mathcal{C}^{\text{op}} \to \mathbf{Set}$ by *precomposing with $f$*.
+We can also define the contravariant hom-functor: $\mathcal{C}^{\text{op}} \to \mathbf{Set}$ by *precomposing with $f$*, and we denote it as $\text{Hom}(-, d)$.
 
 Let us introduce a term; functors are called **naturally isomorphic** if there is a natural transformation between them for which all components are isomorphisms. Hom-functors are such an important class of functors from $\mathcal{C} \to \mathbf{Set}$, that they motivate the following definition:
 
 \begin{definition}
 A functor $F: \mathcal{C} \to \mathbf{Set}$ is called \textbf{representable} if it is naturally isomorphic to a hom-functor.
 \end{definition}
+
+To simplify the notation in the upcoming secftions, we will denote the covariant hom-functor $\text{Hom}(a, -) = h^a$ and the contravariant hom-functor $\text{Hom}(-, b) = h_b$.
 
 ## Yoneda Embedding
 
@@ -986,15 +992,170 @@ For any category $\mathcal{C}$ the Yoneda embedding is a functor between the opp
 Let $\mathcal{C}$ and $\mathcal{D}$ be two categories, then we define $\mathbf{Fun}(\mathcal{C}, \mathcal{D})$ as the category with as objects functors $\mathcal{C} \to \mathcal{D}$, and as arrows natural transformations between these functors.
 \end{definition}
 
+Now, we are ready to describe the Yonedda embedding. Note that because its a functor between *the opposite of* $\mathcal{C}$ and the category of *functors* between $\mathcal{C}$ and **Set**, it should take objects to functors, and arrows to natural transfomrations. For any object, we have introduced a functor associated to it in the previous section; the *hom-functor*.
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}[sep=large]
+a \arrow[d, "f"'] \arrow[r, "Y"] & h^a \arrow[d, Leftarrow, "Yf"] \\
+b \arrow[r, "Y"] & h^b
+\end{tikzcd}
+\end{figure}
+
+The natural transformation $Yf$ should have components which are arrows in **Set**, indexed by objects in $\mathcal{C}$. Let $k: d \to c$ (note the reversed order), the corresponding naturality square looks like this:
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}[sep=large]
+\text{Hom}(a, c) \arrow[r, "(Yf)_c"] \arrow[d, "h^a(k)"'] & \text{Hom}(b, c)  \arrow[d, "h^b(k)"] \\
+\text{Hom}(a, d) \arrow[r, "(Yf)_d"] & \text{Hom}(b, d)
+\end{tikzcd}
+\end{figure}
+
+So the natural components should be maps between hom-sets, and again we can find these maps by composition! This is summarized in the following definition:
+
+\begin{definition}[Yoneda embedding]
+The \textbf{Yoneda functor} $Y: \mathcal{C}^{\text{op}} \to \mathbf{Fun}(\mathcal{C}, \mathbf{Set})$, is defined as follows. Let $a \in \mathcal{C}$ and $f: b \to c$ in $\mathcal{C}$.
+\begin{align*}
+Ya =& h^a \\
+Yf^{\text{op}} :& h^c \to h^b \\
+(Yf^{\text{op}})_a:& \text{Hom}(c, a) \to \text{Hom}(b, a) \\
+                  :& (g: c \to a) \mapsto (g \circ f: b \to a)
+\end{align*}
+\end{definition}
+
+Note that the component is defined using *pre-composition*, it is a contravariant hom-functor, whereas the objects $Ya$ are *covariant* hom-functors, i.e. use *post-composition*. Let us check that $Yf$ is indeed a natural transformation by looking at the naturality square introduced above, let $\ell: a \to c$, and lets trace it through the diagram:
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}[sep=large]
+\ell \in \text{Hom}(a, c) \arrow[r, "(Yf)_c"] \arrow[d, "h^a(k)"'] & \text{Hom}(b, c) \ni \ell \circ f  \arrow[d, "h^b(k)"] \\
+k \circ \ell \in \text{Hom}(a, d) \arrow[r, "(Yf)_d"] & \text{Hom}(b, d) \ni k \circ (\ell \circ f) = (k \circ \ell) \circ f
+\end{tikzcd}
+\end{figure}
+In other words, the naturality condition corresponds simply to the associativity in $\mathcal{C}$. We say that $Yf$ is the \emph{induced natural transformation} of $f$.
+
+The reason that the Yoneda functor is of such interest is because of the following:
+\begin{theorem}
+The Yoneda functor $Y$ is \emph{full} and \emph{faithful}.
+\label{thm:yon_full_faithful}
+\end{theorem}
+We will prove this in the next section, after we state and prove the Yoneda lemma. Theorem \ref{thm:yon_full_faithful} has the following corollary:
+
+\begin{corollary}
+Let $\mu: h^a \to h^b$ be a natural transformation between hom-functors, then it is given by composition with a unique arrow $f: b \to a$. Furthermore, $\mu$ is a (natural) isomorphism if and only if $f$ is an isomorphism.
+\label{cor:natural_transformation_arrow}
+\end{corollary}
+
+This means in particular that if a set-valued functor $F$ is represented by both $a$ and $b$, then there is an isomorphism $a \overset{\sim}{\rightarrow} b$.
+
+Again, by duality, there exists also a full and faithful functor from $\mathcal{C} \to \mathbf{Fun}(\mathcal{C}^{\text{op}}, \mathbf{Set})$.
+
 ## The Yoneda Lemma
+
+Corollary \ref{cor:natural_transformation_arrow} tells us that any natural transformation between covariant hom-functors $h^a$ and $h^b$ is given by composition with an arrow in the reverse direction $f: b \to a$. Note that this arrow is an element of $h^b a = \text{Hom}(b, a)$.
+
+Less obviously, this result holds also for natural transformations between $h^a$ and any other set-valued functor $F$.
+
+What would a function between $h^a$ and $F$ look like? We see that a component of the natural transformation should take an element from $h^a b$, i.e. an arrow $g: a \to b$, to some element of $Fb$. We can do this by *evaluating* the lifted arrow $Fg$ , which is a map between the sets $Fa$ and $Fb$, at a fixed $x \in \mathcal{C}$.
+
+This gives us an idea for a natural transformation corresponding to an element of $Fa$. We summarize this in the following proposition:
+
+\begin{proposition}
+Let $F: \mathcal{C} \to \mathbf{Set}$ be a functor, and $a \in \mathcal{C}$. Any element $x \in Fa$ induces a natural transformation from $h^A$ to $f$, by evaluating any lifted arrow in $x$.
+\end{proposition}
+
+\begin{proof}
+We have to show that this induces a natural transformation, i.e\ that the following diagram commutes:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}[sep=large]
+h^a b \arrow[d, "h^a f"'] \arrow[r, "F \_ (x)"] & F b \arrow[d, "F f"] \\
+h^a c \arrow[r, "F \_ (x)"'] & F c
+\end{tikzcd}
+\end{figure}
+Here we denote:
+$$F \_ (x): h^a b \to F b,~f \mapsto F f(x).$$
+To show that the diagram commutes, fix an arrow $g: a \to b \in h^a b$. If we start taking it along the top side we obtain:
+\begin{align*}
+F f (F g(x)) = (F f \circ F g)(x) = F(f \circ g)(x) = (F \_ (x))(f \circ g) = (F \_ (x))((h^a f)(g))
+\end{align*}
+which is equal to taking it along the bottom, hence the diagram commutes.
+\end{proof}
+
+The Yoneda lemma states that *all natural transformations between $h^a$ and $F$ are of this form*.
+
+\begin{theorem}[The Yoneda lemma]
+Let $\mathcal{C}$ be a category, let $a \in \mathcal{C}$, and let $F: \mathcal{C} \to \mathbf{Set}$ be a set-valued functor. There is a one-to-one correspondence between elements of $Fa$, and natural transformations:
+$$\mu: h^a \Rightarrow F.$$
+\end{theorem}
+
+\begin{proof}
+We already saw that each element of $Fa$ induces a natural transformation, so we have a map:
+$$\Phi: F a \to \text{Nat}(h^a, F).$$
+Here, $\text{Nat}(h^a, F)$ denotes the set of natural transformations between $h^A$ and $F$. We now need to show show that $\Phi$ has an inverse.
+Let $\mu$ be any natural transformation, then we can obtain an element of $F a$ by looking at the component $\mu_a$ and let it act on the identity arrow $\text{id}_c \in h^a a$, i.e.:
+$$\Psi: \mu \mapsto \mu_a(\text{id}_a).$$
+Now let us show that $\Phi$ and $\Psi$ are inverses of each other. First, we compute:
+\begin{align*}
+    \Psi(\Phi(x)) = \Psi(F \_ (x)) = F \text{id}_a (x) = \text{id}_{F a}(x) = x,
+\end{align*}
+so $\Psi$ is a left inverse of $\Phi$. To show that it is also a right inverse, we need to show that:
+$$\Phi(\Psi(\mu)) = \mu,$$
+or in components:
+$$\Phi(\Psi(\mu))_b = \mu_b.$$
+We note that by definition, for any $f: a \to b$ in $h^a b$:
+$$\Phi(\Psi(\mu))_b (f) = (\Phi(\mu_a(\text{id}_a)))_b (f) = Ff (\mu_a(\text{id}_a)).$$
+Since $\mu$ is a natural transformation we have that the following diagram commutes:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}[sep=large]
+h^a a \arrow[d, "h^a f"'] \arrow[r, "\mu_a"] & F a \arrow[d, "F f"] \\
+h^a b \arrow[r, "\mu_b"'] & F b
+\end{tikzcd}
+\end{figure}
+In particular, consider the element $\text{id}_a \in h^a a$. Tracing this along bottom this gets mapped to $\mu_b (f)$, while along the top it gives precisely $Ff (\mu_a(\text{id}_a))$, so we have shown that:
+$$\Phi(\Psi(\mu))_b (f) = Ff (\mu_a(\text{id}_a)) = \mu_b(f).$$
+And hence, $\Psi$ is also a right inverse of $\Phi$, and thus $\Phi$ is a bijection, as required.
+
+\qedhere
+
+\end{proof}
+
+One can also show, that this correspondence is 'natural' in $a \in \mathcal{C}$ and $F$.
+
+Let us now prove Theorem \ref{thm:yon_full_faithful}.
+
+\begin{proof}
+\qedhere
+\end{proof}
+
+Let us recap what we have seen so far. We discussed a special class of set-valued functors called *hom-functors*. These hom-functors, like hom-sets, relate objects directly with the arrows between them.
+
+Next we showed that we can *embed* any category into the category of contravariant set-valued functors of this category, sending objects to their hom-functors. We also showed that this embedding, as a functor, is *full* and *faithful*, which suggests that all the information of the category and its objects, is contained in its hom-functors.
+
+When looking at what this means for the arrows, we noted that in particular any natural transformation between hom-functors is given by composition with arrows of our category.
+
+To prove this, we stated and proved the Yoneda lemma -- which is an important result in its own right. It shows that for an arbitrary set-valued functor, there is a bijection between elements of the set $F a$ and natural transformations from $h^a$ to $F$,
+
+All functors in Haskell are set-valued, since that is our category of interest. We first show two simple applications of Yoneda's lemma in mathematics, and next we see some initial applications of the Yoneda lemma to Haskell. In later parts we will see more advanced uses.
+
+## Examples of applications
+
+See: Category theory in context
+
+[Matrices]
+
+[Groups]
 
 ## Yoneda in Haskell
 
-We will discuss two examples, the first is a hopefully intuitive way of looking at Yoneda's Lemma, while the second has to do with Generalized ADTs.
+We will discuss two examples, the first is a hopefully intuitive way of looking at Yoneda's lemma, by pinpointing a function with a single evaluation, while the second has to do with Generalized ADTs.
 
-**References:**
+## References
 
 - ? of the 'Category Theory for Programmers' blog by Bartosz Milewski
+- Page 32 of Mac Lane.
 - 6.? of Barr and Wells
 - *Catsters*: Yoneda Lemma <??>
 - http://www.haskellforall.com/2012/06/gadts.html
@@ -1238,7 +1399,7 @@ Note that in categorical terms:
 - `unit` can be seen as a natural transformation between the identity endofunctor `Identity`, and `F`.
 - `join` is a natural transformation between `F^2` and `F`.
 
-**References**:
+## References
 
 If you want to learn *yourself a bit of Haskell*, the following resources are helpful as a first step:
 
@@ -1263,7 +1424,7 @@ Example: power set
 
 Algebras of a monad
 
-**References:**
+## References
 
 - 6.1 and parts of 6.3 and 6.4 of Mac Lane
 - Blogs:
@@ -1288,21 +1449,24 @@ Reader writer
 
 Discuss Curry-Howard Isomorphism?
 
-**References:**
+## References
 
 - 1.9 of the 'Category Theory for Programmers' blog by Bartosz Milewski
 - 6.1, 6.2, 6.3 of Barr and Wells
 - <https://en.wikibooks.org/wiki/Haskell/The_Curry–Howard_isomorphism>
 
+# Purely functional datastructures
 
-# Lenses; Adjunctions and profunctors
+- https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504
+
+# Adjunctions, Free monads
+
+- https://www.youtube.com/watch?v=K8f19pXB3ts
+
+# Lenses; Yoneda, adjunctions and profunctors
 
 - <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
 - <https://github.com/ekmett/lens>
-
-## Hom-functors
-
-Hom-sets give rise to a specific type of functor, the (co- and contravariant) hom-functor. See page 34 of Mac Lane.
 
 # Limits and colimits
 
@@ -1312,7 +1476,7 @@ Hom-sets give rise to a specific type of functor, the (co- and contravariant) ho
 
 # 'Fast and loose reasoning is morally correct'
 
-**References**
+## References
 
 - About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
 - <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
