@@ -31,12 +31,30 @@ header-includes:
     - \newtheorem{proposition}{Proposition}
     - \newtheorem{corollary}{Corollary}
     - \newtheorem{example}{Example}
-    - \numberwithin{theorem}{chapter}
-    - \numberwithin{definition}{chapter}
-    - \numberwithin{example}{chapter}
-    - \numberwithin{proposition}{chapter}
-    - \numberwithin{corollary}{chapter}
-    - \numberwithin{lemma}{chapter}
+    - \newcounter{common}
+    - \usepackage{aliascnt}
+    - \makeatletter
+        \let\c@theorem\relax
+        \let\c@lemma\relax
+        \let\c@definition\relax
+        \let\c@example\relax
+        \let\c@proposition\relax
+        \let\c@corollary\relax
+        \let\c@proposition\relax
+        \makeatother
+    - \newaliascnt{theorem}{common}
+    - \newaliascnt{lemma}{common}
+    - \newaliascnt{definition}{common}
+    - \newaliascnt{example}{common}
+    - \newaliascnt{proposition}{common}
+    - \newaliascnt{corollary}{common}
+    - \numberwithin{common}{chapter}
+    - \renewcommand{\thetheorem}{\thechapter.\arabic{theorem}}
+    - \renewcommand{\thelemma}{\thechapter.\arabic{lemma}}
+    - \renewcommand{\thedefinition}{\thechapter.\arabic{definition}}
+    - \renewcommand{\theexample}{\thechapter.\arabic{example}}
+    - \renewcommand{\theproposition}{\thechapter.\arabic{proposition}}
+    - \renewcommand{\thecorollary}{\thechapter.\arabic{corollary}}
     - \usepackage{geometry}
     - \geometry{margin=4cm}
 ---
@@ -982,7 +1000,7 @@ Let us introduce a term; functors are called **naturally isomorphic** if there i
 A functor $F: \mathcal{C} \to \mathbf{Set}$ is called \textbf{representable} if it is naturally isomorphic to a hom-functor.
 \end{definition}
 
-To simplify the notation in the upcoming secftions, we will denote the covariant hom-functor $\text{Hom}(a, -) = h^a$ and the contravariant hom-functor $\text{Hom}(-, b) = h_b$.
+To simplify the notation in the upcoming sections, we will denote the covariant hom-functor $\text{Hom}(a, -) = h^a$ and the contravariant hom-functor $\text{Hom}(-, b) = h_b$.
 
 ## Yoneda Embedding
 
@@ -992,7 +1010,7 @@ For any category $\mathcal{C}$ the Yoneda embedding is a functor between the opp
 Let $\mathcal{C}$ and $\mathcal{D}$ be two categories, then we define $\mathbf{Fun}(\mathcal{C}, \mathcal{D})$ as the category with as objects functors $\mathcal{C} \to \mathcal{D}$, and as arrows natural transformations between these functors.
 \end{definition}
 
-Now, we are ready to describe the Yonedda embedding. Note that because its a functor between *the opposite of* $\mathcal{C}$ and the category of *functors* between $\mathcal{C}$ and **Set**, it should take objects to functors, and arrows to natural transfomrations. For any object, we have introduced a functor associated to it in the previous section; the *hom-functor*.
+Now, we are ready to describe the Yonedda embedding. Note that because it is a functor between *the opposite of* $\mathcal{C}$ and the category of *functors* between $\mathcal{C}$ and **Set**, it should take objects to functors, and arrows to natural transfomrations. For all objects, we have introduced a functor associated to it in the previous section; the *hom-functor*.
 
 \begin{figure}[H]
 \centering
@@ -1020,7 +1038,8 @@ The \textbf{Yoneda functor} $Y: \mathcal{C}^{\text{op}} \to \mathbf{Fun}(\mathca
 Ya =& h^a \\
 Yf^{\text{op}} :& h^c \to h^b \\
 (Yf^{\text{op}})_a:& \text{Hom}(c, a) \to \text{Hom}(b, a) \\
-                  :& (g: c \to a) \mapsto (g \circ f: b \to a)
+                  :& (g: c \to a) \mapsto (g \circ f: b \to a) \\
+                  =& h_a f
 \end{align*}
 \end{definition}
 
@@ -1081,6 +1100,7 @@ To show that the diagram commutes, fix an arrow $g: a \to b \in h^a b$. If we st
 F f (F g(x)) = (F f \circ F g)(x) = F(f \circ g)(x) = (F \_ (x))(f \circ g) = (F \_ (x))((h^a f)(g))
 \end{align*}
 which is equal to taking it along the bottom, hence the diagram commutes.
+\qedhere
 \end{proof}
 
 The Yoneda lemma states that *all natural transformations between $h^a$ and $F$ are of this form*.
@@ -1142,15 +1162,109 @@ All functors in Haskell are set-valued, since that is our category of interest. 
 
 ## Examples of applications
 
-See: Category theory in context
+\begin{example}[Matrix row operations]
+In linear algebra, row operations can be performed without changing the solutions of the linear system. Examples are row permutations, adding the j-th row to the i-th row, or multiplying a row by a (non-zero) scalar. We will show that these \emph{row operations} are natural, in the following sense.
 
-[Matrices]
+Let $\mathcal{C}$ be the category where the objects are natural numbers $1, 2, 3, \ldots$, and where arrows $n \to m$ correspond to $m \times n$ matrices. Composition is given by matrix multiplication, indeed if we have arrows:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}[sep=large]
+n \arrow[r, "A_{m \times n}"] & m \arrow[r, "B_{k \times m}"] & k
+\end{tikzcd}
+\end{figure}
+then the composite $B_{k \times m} A_{m \times n} = C_{k \times n}$ is an arrow from $n$ to $k$, as required. Consider contravariant hom-functors $h_n$ for this category. The hom-set $h_n k = \text{Hom}(k, n)$ consists of $n \times k$ matrices. To show that row operations can be seen as natural transformations $\mu: h_n \Rightarrow h_n$, we fix some $k \times m$ matrix $B$, and look at the following naturality square:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}[sep=large]
+h_n k \arrow[r, "\mu_k"] \arrow[d, "h_n B"'] & h_n k \arrow[d, "h_n B"]\\
+h_n m \arrow[r, "\mu_k"] & h_n m
+\end{tikzcd}
+\end{figure}
+Considering some $n \times k$ matrix $A$, the naturality condition states:
+$$\mu(A) B \overset{?}{=} \mu(AB).$$
+To show this, we observe that for all row transformations we have:
+$$\mu(A) = A + \tilde{A}$$
+where the rows of $A$ are either empty, or are multiples of rows of $A$, or:
+$$\mu(A) = A + \text{diag}(\lambda_1, \ldots, \lambda_n) A.$$
+This means we have
+$$\mu(A) B = (A + \text{diag}(\lambda_1, \ldots, \lambda_n) A) B = AB + \text{diag}(\lambda_1, \ldots, \lambda_n) AB = \mu(AB).$$
+as required. By Corollary \ref{cor:natural_transformation_arrow} we have that any natural transformation $\mu: h_n \Rightarrow h_n$ is given by postcomposition with a unique arrow $D: n \to n$. The Yoneda lemma allows us to identify this arrow, it is equal to:
+$$D = \mu_n(\text{Id}_n),$$
+so to perform row operations on a matrix, one can equivalently left multiply with a matrix obtained by applying these operations to the identity matrix. This powers the technique of manually inverting a matrix $A$, where you perform row operations to the matrix $A$ and simultaneously to another matrix $B$ that is initially the identity matrix, until you reduce $A$ to the identity matrix. The resulting matrix $B$, when left multiplied with the original $A$ will perform the row operations, and hence $BA = \text{Id}$, or $B = A^{-1}$.
 
-[Groups]
+\end{example}
+
+\begin{example}
+Another application of Yoneda is the following classic result from group theory:
+\begin{corollary}[Cayley's Theorem]
+Any group $G$ is isomorphic to a subgroup of a permutation group.
+\end{corollary}
+
+\begin{proof}
+Recall that we can view a group $G$ as a category $\mathcal{C}_G$ with a single object $\{ \bullet \}$ and with arrows $\bullet \to \bullet$ corresponding to the elements of $g$. Consider the Yoneda embedding $Y$ of this category into $\mathbf{Fun}(\mathcal{C}_G^{\text{op}}, \mathbf{Set})$, and in particular we consider the shape of the image of $\bullet$ under the contravariant hom-functor $h_\bullet$:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+\bullet \arrow[loop left, dashed, "G"] \arrow[r, "Y"] & h_\bullet \arrow[loop right, dashed, "\text{Nat}(h_{\bullet}{,} h_{\bullet})"]
+\end{tikzcd}
+\end{figure}
+The arrows on the left (displayed collectively using a dashed arrow), corresponding to the elements of $G$, get mapped \emph{fully and faithfully} (by Theorem \ref{thm:yon_full_faithful}) to the natural transformations between $h_\bullet$ and itself (natural endomorphisms).
+
+The natural endomorphisms $h_\bullet$ are characterized, by Corollary \ref{cor:natural_transformation_arrow}, (at the only component $G$) by left-multiplication of elements $G$ on the set $h_\bullet \bullet \simeq G_{\text{set}}$ which is the underlying set of $G$ (since it is $\text{Hom}(\bullet, \bullet)$). For each element $g \in G$ we obtain an automorphism $G_{\text{set}} \to G_{\text{set}}$ given by $h \mapsto gh$.
+
+Recall that $\text{Aut}(G_{\text{set}})$ is a group (indeed a permutation group), and note that the collection of automorphisms defined by left multiplication of elements of $G$ is indeed a subgroup of this permutation group. The correspondence between $G$ and the "automorphisms by left-multiplication" is easily seen to be a group isomorphism.
+\qedhere
+\end{proof}
+
+
+\end{example}
 
 ## Yoneda in Haskell
 
 We will discuss two examples, the first is a hopefully intuitive way of looking at Yoneda's lemma, by pinpointing a function with a single evaluation, while the second has to do with Generalized ADTs.
+
+Let us first see how we can translate the relevant tools of Yoneda to Haskell. We have the following concepts:
+
+- *hom-sets* : the hom-set of types `a` and `b` are the arrows between `a` and `b`, i.e. functions of the type `(a -> b)`. Note that this hom-set is again in the category of types.
+- The *hom-functor* corresponding to a type `a` should be a functor, i.e. a type constructor, that produces the hom-set `(a -> b)` when given a type `b`, for some fixed type `a`. On functions `(b -> c)` it should get a function between the hom-sets of `a` and `b, c` respectively, i.e.:
+```haskell
+instance Functor (HomFunctor a) where
+    fmap :: (b -> c) -> (a -> b) -> (a -> c)
+    fmap f g = f . g
+```
+And indeed, we see that we can simply use composition.
+- Yoneda's lemma says that for any other functor `F`, we can produce a natural transformation from the hom-functor for `a` (i.e.\ polymorphic function) by looking at elements of `F a`.
+
+Next we look at a simple example.
+
+### Reverse engineering machines
+
+We set `F` equal to `Id`, the identity functor, and consider a natural transformation between `HomFunctor a` and `Id`, this has the form (at the component `b`):
+
+```haskell
+--    (HomFunctor a) b      Id b
+--            |               |
+machine :: (a -> b)     ->    b
+```
+Say we are given any function with this signature, and we want to know how it is implemented. We can actually do this in a *single evaluation*, using the Yoneda lemma. The Yoneda lemma says precisely that such a *machine* is given uniquely by any element of `Id a = a`, i.e. some value of the type `a`. This makes a lot of sense in this context, since we can be given *any* `b`, and the only tool that we have to produce a value for `b` is to use the function `f :: a -> b` that is supplied to us. Furthermore, the polymorphic function should behave the same for any type, so it can only be implemented as:
+```haskell
+machine :: (a -> b) -> b
+machine f = f x
+```
+where `x` is some fixed element of type `a`. Now, the Yoneda lemma also tells us a way to obtain `x`, we simply supply `f = id`:
+```haskell
+x <- machine id -- obtain the 'hidden element'
+```
+
+What if `F` is not the identity function, but say the `List` functor. The story actually does not change much, we now have a function with the signature:
+```haskell
+--    (HomFunctor a) b      List b
+--            |               |
+machine :: (a -> b)     ->   [b]
+```
+the Yoneda lemma says that internally, any function of this signature should maintain a list of the type `[a]`, and when given a function `f :: a -> b` it fmaps this over the internal list to produce a value of the type `[b]`. Again, we can get this list by feeding the `id` function into the machine.
+
+### Generalized ADTs
 
 ## References
 
@@ -1158,6 +1272,7 @@ We will discuss two examples, the first is a hopefully intuitive way of looking 
 - Page 32 of Mac Lane.
 - 6.? of Barr and Wells
 - *Catsters*: Yoneda Lemma <??>
+- 2.2 of Riehl
 - http://www.haskellforall.com/2012/06/gadts.html
 - http://blog.sigfpe.com/2006/11/yoneda-lemma.html
 - https://www.schoolofhaskell.com/user/bartosz/understanding-yoneda#yoneda-lemma
