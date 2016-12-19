@@ -1212,7 +1212,7 @@ The arrows on the left (displayed collectively using a dashed arrow), correspond
 
 The natural endomorphisms $h_\bullet$ are characterized, by Corollary \ref{cor:natural_transformation_arrow}, (at the only component $G$) by left-multiplication of elements $G$ on the set $h_\bullet \bullet \simeq G_{\text{set}}$ which is the underlying set of $G$ (since it is $\text{Hom}(\bullet, \bullet)$). For each element $g \in G$ we obtain an automorphism $G_{\text{set}} \to G_{\text{set}}$ given by $h \mapsto gh$.
 
-Recall that $\text{Aut}(G_{\text{set}})$ is a group (indeed a permutation group), and note that the collection of automorphisms defined by left multiplication of elements of $G$ is indeed a subgroup of this permutation group. The correspondence between $G$ and the "automorphisms by left-multiplication" is easily seen to be a group isomorphism.
+Recall that $\text{Aut}(G_{\text{set}})$ is a group (a permutation group), and note that the collection of automorphisms defined by left multiplication of elements of $G$ is indeed a subgroup of this permutation group. The correspondence between $G$ and the "automorphisms by left-multiplication" is easily seen to be a group isomorphism.
 \qedhere
 \end{proof}
 
@@ -1268,14 +1268,15 @@ the Yoneda lemma says that internally, any function of this signature should mai
 
 ## References
 
-- ? of the 'Category Theory for Programmers' blog by Bartosz Milewski
-- Page 32 of Mac Lane.
-- 6.? of Barr and Wells
-- *Catsters*: Yoneda Lemma <??>
+- 2.3, 2.4 and 2.5 of the 'Category Theory for Programmers' blog by Bartosz Milewski
+- 2.2, 3.2 of Mac Lane.
+- 3.1, 4.5 of Barr and Wells
 - 2.2 of Riehl
-- http://www.haskellforall.com/2012/06/gadts.html
-- http://blog.sigfpe.com/2006/11/yoneda-lemma.html
-- https://www.schoolofhaskell.com/user/bartosz/understanding-yoneda#yoneda-lemma
+- *Catsters*: Yoneda and representables : <https://www.youtube.com/playlist?list=PLUWfjhrIRed_PgAmTFFyuEtFRdJzgcOZE>
+- Blogs:
+    - <http://www.haskellforall.com/2012/06/gadts.html>
+    - <http://blog.sigfpe.com/2006/11/yoneda-lemma.html>
+    - <https://www.schoolofhaskell.com/user/bartosz/understanding-yoneda#yoneda-lemma>
 
 # Monads and functional programming
 
@@ -1626,5 +1627,6 @@ Section on 'modularity':
 
 ## Books
 1. Conceptual Mathematics: A first introduction to categories.
-2. Maclane, Category Theory for the working mathematician
+2. S. Mac Lane, Category Theory for the working mathematician
 3. Barr and Wells, Category Theory for Computer Scientists
+4. E. Riehl, Category theory in context,
