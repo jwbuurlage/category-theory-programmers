@@ -1,4 +1,4 @@
-% Category Theory and its Application to (Functional) Programming
+% Categories for the working programmer
 % Jan-Willem Buurlage
 % November 21, 2016
 
@@ -1146,7 +1146,10 @@ One can also show, that this correspondence is 'natural' in $a \in \mathcal{C}$ 
 
 Let us now prove Theorem \ref{thm:yon_full_faithful}.
 
-\begin{proof}
+\begin{proof}[proof of Theorem \ref{thm:yon_full_faithful}]
+By Yoneda's Lemma there is a bijection between the sets:
+$$\text{Nat}(h^b, h^a) \simeq h^a b = \text{Hom}(a, b)$$
+for all objects $a$ and $b$ of $\mathcal{C}$, which directly implies that the functor $Y$ is full and faithful.
 \qedhere
 \end{proof}
 
@@ -1177,18 +1180,18 @@ then the composite $B_{k \times m} A_{m \times n} = C_{k \times n}$ is an arrow 
 \centering
 \begin{tikzcd}[sep=large]
 h_n k \arrow[r, "\mu_k"] \arrow[d, "h_n B"'] & h_n k \arrow[d, "h_n B"]\\
-h_n m \arrow[r, "\mu_k"] & h_n m
+h_n m \arrow[r, "\mu_m"] & h_n m
 \end{tikzcd}
 \end{figure}
 Considering some $n \times k$ matrix $A$, the naturality condition states:
 $$\mu(A) B \overset{?}{=} \mu(AB).$$
 To show this, we observe that for all row transformations we have:
 $$\mu(A) = A + \tilde{A}$$
-where the rows of $A$ are either empty, or are multiples of rows of $A$, or:
+where the rows of $\tilde{A}$ are either empty, or are multiples of rows of $A$, or:
 $$\mu(A) = A + \text{diag}(\lambda_1, \ldots, \lambda_n) A.$$
 This means we have
 $$\mu(A) B = (A + \text{diag}(\lambda_1, \ldots, \lambda_n) A) B = AB + \text{diag}(\lambda_1, \ldots, \lambda_n) AB = \mu(AB).$$
-as required. By Corollary \ref{cor:natural_transformation_arrow} we have that any natural transformation $\mu: h_n \Rightarrow h_n$ is given by postcomposition with a unique arrow $D: n \to n$. The Yoneda lemma allows us to identify this arrow, it is equal to:
+as required. By Corollary \ref{cor:natural_transformation_arrow} we have that any natural transformation $\mu: h_n \Rightarrow h_n$ is given by postcomposition (in this category: left-multiplication) with a unique arrow $D: n \to n$. The Yoneda lemma allows us to identify this arrow; it is equal to:
 $$D = \mu_n(\text{Id}_n),$$
 so to perform row operations on a matrix, one can equivalently left multiply with a matrix obtained by applying these operations to the identity matrix. This powers the technique of manually inverting a matrix $A$, where you perform row operations to the matrix $A$ and simultaneously to another matrix $B$ that is initially the identity matrix, until you reduce $A$ to the identity matrix. The resulting matrix $B$, when left multiplied with the original $A$ will perform the row operations, and hence $BA = \text{Id}$, or $B = A^{-1}$.
 
@@ -1233,7 +1236,7 @@ instance Functor (HomFunctor a) where
     fmap f g = f . g
 ```
 And indeed, we see that we can simply use composition.
-- Yoneda's lemma says that for any other functor `F`, we can produce a natural transformation from the hom-functor for `a` (i.e.\ polymorphic function) by looking at elements of `F a`.
+- Yoneda's lemma says that for any other functor `F`, we can produce a natural transformation (i.e.\ polymorphic function in a type `b`) from the hom-functor for a fixed `a` by looking at elements of `F a`.
 
 Next we look at a simple example.
 
