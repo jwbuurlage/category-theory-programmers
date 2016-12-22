@@ -48,6 +48,7 @@ Although the main focus will be on the mathematics, examples should be made in H
 I would like to thank:
 
 - Tom Bannink for supplying the proof for the bifunctor example in Chapter 3.
+- Peter Kristel for valuable comments with respect to the Yoneda embedding
 
 # Categories
 
@@ -1024,13 +1025,13 @@ Yf^{\text{op}} :& h^c \to h^b \\
 \end{align*}
 \end{definition}
 
-Note that the component is defined using *pre-composition*, it is a contravariant hom-functor, whereas the objects $Ya$ are *covariant* hom-functors, i.e. use *post-composition*. Let us check that $Yf$ is indeed a natural transformation by looking at the naturality square introduced above, let $\ell: a \to c$, and lets trace it through the diagram:
+Note that the component is defined using *pre-composition*, it is a contravariant hom-functor, whereas the objects $Ya$ are *covariant* hom-functors, i.e. use *post-composition*. Let us check that $Yf$ is indeed a natural transformation by looking at the naturality square introduced above, let $\ell: a \to c$, and lets trace it through the diagram for some $k: c \to d$ and $g: b \to a$:
 
 \begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
-\ell \in \text{Hom}(a, c) \arrow[r, "(Yf)_c"] \arrow[d, "h^a(k)"'] & \text{Hom}(b, c) \ni \ell \circ f  \arrow[d, "h^b(k)"] \\
-k \circ \ell \in \text{Hom}(a, d) \arrow[r, "(Yf)_d"] & \text{Hom}(b, d) \ni k \circ (\ell \circ f) = (k \circ \ell) \circ f
+\ell \in \text{Hom}(a, c) \arrow[r, "(Yg^{\text{op}})_c"] \arrow[d, "h^a(k)"'] & \text{Hom}(b, c) \ni \ell \circ g  \arrow[d, "h^b(k)"] \\
+k \circ \ell \in \text{Hom}(a, d) \arrow[r, "(Yg^{\text{op}})_d"] & \text{Hom}(b, d) \ni k \circ (\ell \circ g) = (k \circ \ell) \circ g
 \end{tikzcd}
 \end{figure}
 In other words, the naturality condition corresponds simply to the associativity in $\mathcal{C}$. We say that $Yf$ is the \emph{induced natural transformation} of $f$.
