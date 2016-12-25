@@ -1189,12 +1189,12 @@ $$\mu(A) B \overset{?}{=} \mu(AB).$$
 To show this, we observe that for all row transformations we have:
 $$\mu(A) = A + \tilde{A}$$
 where the rows of $\tilde{A}$ are either empty, or are multiples of rows of $A$, or:
-$$\mu(A) = A + \text{diag}(\lambda_1, \ldots, \lambda_n) A.$$
-This means we have
-$$\mu(A) B = (A + \text{diag}(\lambda_1, \ldots, \lambda_n) A) B = AB + \text{diag}(\lambda_1, \ldots, \lambda_n) AB = \mu(AB).$$
+$$\mu(A) = A + \Lambda A.$$
+Where $\Lambda$ is a matrix whose elements $\Lambda_{ij}$ represent how many times row $j$ should be added to row $i$. This means we have
+$$\mu(A) B = (A + \Lambda A) B = AB + \Lambda AB = \mu(AB).$$
 as required. By Corollary \ref{cor:natural_transformation_arrow} we have that any natural transformation $\mu: h_n \Rightarrow h_n$ is given by postcomposition (in this category: left-multiplication) with a unique arrow $D: n \to n$. The Yoneda lemma allows us to identify this arrow; it is equal to:
 $$D = \mu_n(\text{Id}_n),$$
-so to perform row operations on a matrix, one can equivalently left multiply with a matrix obtained by applying these operations to the identity matrix. This powers the technique of manually inverting a matrix $A$, where you perform row operations to the matrix $A$ and simultaneously to another matrix $B$ that is initially the identity matrix, until you reduce $A$ to the identity matrix. The resulting matrix $B$, when left multiplied with the original $A$ will perform the row operations, and hence $BA = \text{Id}$, or $B = A^{-1}$.
+so to perform row operations on a matrix, one can equivalently left multiply with a matrix obtained by applying these operations to the identity matrix. This powers the technique for manually inverting a matrix $A$, where you perform row operations to the matrix $A$ and simultaneously to another matrix $B$ that is initially the identity matrix, until you reduce $A$ to the identity matrix. The resulting matrix $B$, when left multiplied with the original $A$ will perform the row operations, and hence $BA = \text{Id}$, or $B = A^{-1}$.
 
 \end{example}
 
