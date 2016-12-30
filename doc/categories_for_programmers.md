@@ -6,6 +6,7 @@
 numbersections: true
 documentclass: book
 classoption: oneside
+classoption: 14pt
 header-includes:
     - \usepackage{tikz-cd}
     - \usepackage{amsthm}
@@ -242,7 +243,7 @@ Functors can be composed, and this allows one to define a category of categories
 
 * From many categories representing 'sets with added structure' (groups, vector spaces, rings, topological spaces, ...) there is a *forgetful functor* going to **Set**, where objects are sent to their underlying sets.
 
-    There is also a forgetful functor $F: \mathbf{Cat} \to \mathbf{Graph}$, sending each category to the graph defined by its objects and arrows.
+    As an additional example, there is also a forgetful functor $F: \mathbf{Cat} \to \mathbf{Graph}$, sending each category to the graph defined by its objects and arrows.
 
 * Dual-set functor
 \begin{align*}
@@ -1496,7 +1497,7 @@ join :: F (F a) -> F a
 lift_one :: (a -> F b) -> (F a -> F b)
 ```
 
-Because of currying, which we will describe this in more detail in the section on Cartesian Closed Categories (CCCs), we can reorder parentheses, and because the order of arguments does not matter -- we can write `life_one` equivalently as:
+Because of currying, which we will describe this in more detail in the section on Cartesian Closed Categories (CCCs), we can reorder parentheses, and because the order of arguments does not matter -- we can write `lift_one` equivalently as:
 ```haskell
 >>= :: F a -> (a -> F b) -> F b
 ```
