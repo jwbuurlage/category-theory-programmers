@@ -2,7 +2,7 @@
 
 \newcommand*{\titleGM}{\begingroup % Create the command for including the title page in the document
 \hbox{ % Horizontal box
-\hspace*{0.1\textwidth} % Whitespace to the left of the title page
+\hspace*{0.0\textwidth} % Whitespace to the left of the title page
 \rule{1pt}{\textheight} % Vertical line
 \hspace*{0.05\textwidth} % Whitespace between the vertical line and title page text
 \parbox[b]{0.75\textwidth}{ % Paragraph box which restricts text to less than the width of the page

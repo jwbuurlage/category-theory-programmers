@@ -4,11 +4,13 @@
 
 ---
 numbersections: true
-documentclass: book
+documentclass: memoir
 classoption: oneside
+classoption: 12pt
 header-includes:
     - \usepackage{tikz-cd}
     - \usepackage{amsthm}
+    - \usepackage{palatino}
     - \usepackage{float}
     - \usepackage{epigraph}
     - \usepackage{hyperref}
@@ -55,8 +57,10 @@ header-includes:
     - \renewcommand{\theexample}{\thechapter.\arabic{example}}
     - \renewcommand{\theproposition}{\thechapter.\arabic{proposition}}
     - \renewcommand{\thecorollary}{\thechapter.\arabic{corollary}}
+    - \setlength{\parskip}{0.3cm}
+    - \setlength{\parindent}{0.0cm}
     - \usepackage{geometry}
-    - \geometry{margin=4cm}
+    - \geometry{margin=3.2cm}
 ---
 
 \chapter*{Introduction}
@@ -69,6 +73,12 @@ I would like to thank:
 
 - Tom Bannink for supplying the proof for the bifunctor example in Chapter 3.
 - Peter Kristel for valuable comments on the Yoneda embedding
+
+\chapter*{Preliminaries?}
+
+- Maybe some notes on functional languages?
+
+- Some notes on Haskell
 
 # Categories
 
