@@ -1,4 +1,4 @@
-% Categories for the working programmer
+% Category theory for programmers
 % Jan-Willem Buurlage
 % November 21, 2016
 
@@ -6,7 +6,6 @@
 numbersections: true
 documentclass: book
 classoption: oneside
-classoption: 14pt
 header-includes:
     - \usepackage{tikz-cd}
     - \usepackage{amsthm}
@@ -59,6 +58,8 @@ header-includes:
     - \usepackage{geometry}
     - \geometry{margin=4cm}
 ---
+
+\chapter*{Introduction}
 
 This document contains notes for a small-scale seminar on category theory in the context of (functional) programming, organized at CWI. The goal of the seminar is to gain familiarity with concepts of category theory that apply (in a broad sense) to the field of functional programming. It could be an idea to have an associated (toy) project that examplifies the concepts that are discussed.
 
@@ -1352,6 +1353,10 @@ Other results:
 
 ## $\lambda$-calculus and categories
 
+One of the interesting features of a CCC is that it can model a $\lambda$-calculus, which is one of the universal models of computations and can famously model turing machines. The $\lambda$-calculus is implemented by functional languages, and can be seen as the fundamental theory that underpin these programming languages.
+
+In this section we will give an introduction to (typed) $\lambda$-calculus, and later we will relate them to CCCs.
+
 - Introduce lambda calculus
 
 - Define $\mathcal{C}(\mathcal{L})$
@@ -1657,10 +1662,6 @@ Some posts dealing specifically with Monads from a Haskell perspective:
 - <http://blog.sigfpe.com/2006/08/you-could-have-invented-monads-and.html>
 - <https://bartoszmilewski.com/2013/03/07/the-tao-of-monad/>
 
-# Purely functional datastructures
-
-- https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504
-
 # Adjunctions, Free monads
 
 Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
@@ -1673,36 +1674,38 @@ Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
 - <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
 - <https://github.com/ekmett/lens>
 
-# Limits and colimits
+# Purely functional datastructures
 
-# Ends and co-ends
-
-# 'Theorems for free!'
-
-# 'Fast and loose reasoning is morally correct'
-
-## References
-
-- About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
-- <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
-
-# F-algebras:
-
-Recursion, coalgebras and streams
-
-# Denotational semantics
-
-# Homotopy type theory
-
-# Quantum computations?
-
-(Bert Jacobs)
+- https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504
 
 # Ideas
 
 Section on 'modularity':
 
 > *Bartosz Milewski*: "... Elegant code creates chunks that are just the right size and come in just the right number for our mental digestive system to assimilate them. So what are the right chunks for the composition of programs? Their surface area has to increase slower than their volume ... The surface area is the information we need in order to compose chunks. The volume is the information we need in order to implement them ...  Category theory is extreme in the sense that it actively discourages us from looking inside the objects ... The moment you have to dig into the implementation of the object in order to understand how to compose it with other objects, you’ve lost the advantages of your programming paradigm."
+
+## Limits and colimits
+
+## Ends and co-ends
+
+## 'Theorems for free!'
+
+## 'Fast and loose reasoning is morally correct'
+
+### References
+
+- About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
+- <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
+
+## F-algebras:
+
+Recursion, coalgebras and streams
+
+## Homotopy type theory
+
+## Quantum computations?
+
+(Bert Jacobs)
 
 # Literature
 
