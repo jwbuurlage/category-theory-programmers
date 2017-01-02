@@ -1220,26 +1220,25 @@ Recall that $\text{Aut}(G_{\text{set}})$ is a group (a permutation group), and n
 \qedhere
 \end{proof}
 
-
 \end{example}
 
 ## Yoneda in Haskell
 
-We will discuss two examples, the first is a hopefully intuitive way of looking at Yoneda's lemma, by pinpointing a function with a single evaluation, while the second has to do with Generalized ADTs.
+We will discuss a hopefully intuitive way of looking at the Yoneda lemma in Haskell, by pinpointing a function with a single evaluation. In later parts we will discuss many more applications of Yoneda to Haskell, in particular when we discuss *generalized ADTs* and *lenses*.
 
 Let us first see how we can translate the relevant tools of Yoneda to Haskell. We have the following concepts:
 
 - *hom-sets* : the hom-set of types `a` and `b` are the arrows between `a` and `b`, i.e. functions of the type `(a -> b)`. Note that this hom-set is again in the category of types.
 - The *hom-functor* corresponding to a type `a` should be a functor, i.e. a type constructor, that produces the hom-set `(a -> b)` when given a type `b`, for some fixed type `a`. On functions `(b -> c)` it should get a function between the hom-sets of `a` and `b, c` respectively, i.e.:
 ```haskell
-instance Functor (HomFunctor a) where
-    fmap :: (b -> c) -> (a -> b) -> (a -> c)
-    fmap f g = f . g
+    instance Functor (HomFunctor a) where
+        fmap :: (b -> c) -> (a -> b) -> (a -> c)
+        fmap f g = f . g
 ```
 And indeed, we see that we can simply use composition.
 - Yoneda's lemma says that for any other functor `F`, we can produce a natural transformation (i.e.\ polymorphic function in a type `b`) from the hom-functor for a fixed `a` by looking at elements of `F a`.
 
-Next we look at a simple example.
+Next we look at a simple example of how to apply this final point in Haskell.
 
 ### Reverse engineering machines
 
@@ -1267,8 +1266,6 @@ What if `F` is not the identity function, but say the `List` functor. The story 
 machine :: (a -> b)     ->   [b]
 ```
 the Yoneda lemma says that internally, any function of this signature should maintain a list of the type `[a]`, and when given a function `f :: a -> b` it fmaps this over the internal list to produce a value of the type `[b]`. Again, we can get this list by feeding the `id` function into the machine.
-
-### Generalized ADTs
 
 ## References
 
