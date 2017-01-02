@@ -1,14 +1,16 @@
-% Categories for the working programmer
+% Category theory for programmers
 % Jan-Willem Buurlage
 % November 21, 2016
 
 ---
 numbersections: true
-documentclass: book
+documentclass: memoir
 classoption: oneside
+classoption: 12pt
 header-includes:
     - \usepackage{tikz-cd}
     - \usepackage{amsthm}
+    - \usepackage{palatino}
     - \usepackage{float}
     - \usepackage{epigraph}
     - \usepackage{hyperref}
@@ -55,9 +57,13 @@ header-includes:
     - \renewcommand{\theexample}{\thechapter.\arabic{example}}
     - \renewcommand{\theproposition}{\thechapter.\arabic{proposition}}
     - \renewcommand{\thecorollary}{\thechapter.\arabic{corollary}}
+    - \setlength{\parskip}{0.3cm}
+    - \setlength{\parindent}{0.0cm}
     - \usepackage{geometry}
-    - \geometry{margin=4cm}
+    - \geometry{margin=3.2cm}
 ---
+
+\chapter*{Introduction}
 
 This document contains notes for a small-scale seminar on category theory in the context of (functional) programming, organized at CWI. The goal of the seminar is to gain familiarity with concepts of category theory that apply (in a broad sense) to the field of functional programming. It could be an idea to have an associated (toy) project that examplifies the concepts that are discussed.
 
@@ -66,7 +72,13 @@ Although the main focus will be on the mathematics, examples should be made in H
 I would like to thank:
 
 - Tom Bannink for supplying the proof for the bifunctor example in Chapter 3.
-- Peter Kristel for valuable comments with respect to the Yoneda embedding
+- Peter Kristel for valuable comments on the Yoneda embedding
+
+\chapter*{Preliminaries?}
+
+- Maybe some notes on functional languages?
+
+- Some notes on Haskell
 
 # Categories
 
@@ -242,7 +254,7 @@ Functors can be composed, and this allows one to define a category of categories
 
 * From many categories representing 'sets with added structure' (groups, vector spaces, rings, topological spaces, ...) there is a *forgetful functor* going to **Set**, where objects are sent to their underlying sets.
 
-    There is also a forgetful functor $F: \mathbf{Cat} \to \mathbf{Graph}$, sending each category to the graph defined by its objects and arrows.
+    As an additional example, there is also a forgetful functor $F: \mathbf{Cat} \to \mathbf{Graph}$, sending each category to the graph defined by its objects and arrows.
 
 * Dual-set functor
 \begin{align*}
@@ -910,6 +922,7 @@ class Bifunctor f where
 Here you see a circular definition. This means it is enough to *either* provide the `bimap`, or the `first` and `second` functions, powered by Proposition \ref{prop:bifunctorcomponents}.
 
 \begin{example}
+\label{exa:productbifunctor}
 Whenever you have a category $\mathcal{C}$ where the product of two objects exists for all pairs of objects, then this gives rise to a bifunctor:
 \begin{align*}
 \times&: \mathcal{C} \times \mathcal{C} \to \mathcal{C}\\
@@ -1189,12 +1202,12 @@ $$\mu(A) B \overset{?}{=} \mu(AB).$$
 To show this, we observe that for all row transformations we have:
 $$\mu(A) = A + \tilde{A}$$
 where the rows of $\tilde{A}$ are either empty, or are multiples of rows of $A$, or:
-$$\mu(A) = A + \text{diag}(\lambda_1, \ldots, \lambda_n) A.$$
-This means we have
-$$\mu(A) B = (A + \text{diag}(\lambda_1, \ldots, \lambda_n) A) B = AB + \text{diag}(\lambda_1, \ldots, \lambda_n) AB = \mu(AB).$$
+$$\mu(A) = A + \Lambda A.$$
+Where $\Lambda$ is a matrix whose elements $\Lambda_{ij}$ represent how many times row $j$ should be added to row $i$. This means we have
+$$\mu(A) B = (A + \Lambda A) B = AB + \Lambda AB = \mu(AB).$$
 as required. By Corollary \ref{cor:natural_transformation_arrow} we have that any natural transformation $\mu: h_n \Rightarrow h_n$ is given by postcomposition (in this category: left-multiplication) with a unique arrow $D: n \to n$. The Yoneda lemma allows us to identify this arrow; it is equal to:
 $$D = \mu_n(\text{Id}_n),$$
-so to perform row operations on a matrix, one can equivalently left multiply with a matrix obtained by applying these operations to the identity matrix. This powers the technique of manually inverting a matrix $A$, where you perform row operations to the matrix $A$ and simultaneously to another matrix $B$ that is initially the identity matrix, until you reduce $A$ to the identity matrix. The resulting matrix $B$, when left multiplied with the original $A$ will perform the row operations, and hence $BA = \text{Id}$, or $B = A^{-1}$.
+so to perform row operations on a matrix, one can equivalently left multiply with a matrix obtained by applying these operations to the identity matrix. This powers the technique for manually inverting a matrix $A$, where you perform row operations to the matrix $A$ and simultaneously to another matrix $B$ that is initially the identity matrix, until you reduce $A$ to the identity matrix. The resulting matrix $B$, when left multiplied with the original $A$ will perform the row operations, and hence $BA = \text{Id}$, or $B = A^{-1}$.
 
 \end{example}
 
@@ -1279,6 +1292,131 @@ the Yoneda lemma says that internally, any function of this signature should mai
     - <http://blog.sigfpe.com/2006/11/yoneda-lemma.html>
     - <https://www.schoolofhaskell.com/user/bartosz/understanding-yoneda#yoneda-lemma>
 
+# Cartesian closed categories and function types
+
+In Haskell, functions that take two arguments are often written as:
+```haskell
+-- 1) in haskell
+f :: a -> b -> c
+-- 2) more conventional style
+f :: (a, b) -> c
+```
+the first style can be read as "for any fixed value `x` of type `a`, you are given a function `b -> c` which sends `y` to `f(x, y)`". In this part we will discuss why we are allowed to do this, and see the theory that underpins this. The process of converting the second to the first style is called *currying* (the reverse is called *uncurrying*) and can be described in the context of category theory.
+
+In the language of category theory, we are trying to show the equivalence between arrows of the form $a \times b \to c$ and arrows of the form $a \to [b \to c]$, where $[b \to c]$ is some 'function object'. We will first state what it means to *curry* a function between sets.
+
+\begin{definition}
+Let $A, B, C$ be sets. We define $[A \to B]$ to be the \emph{set of functions} between $A$ and $B$. Given a function of two variables:
+$$f: A \times B \to C,$$
+we have a function:
+$$\lambda f: A \to [B \to C],$$
+defined by $\lambda f(a)(b) = f(a, b)$. We say that $\lambda f$ is the \emph{curried} version of $f$, and going from $f$ to $\lambda f$ is called \emph{currying}.
+
+Going the other way around is called \emph{uncurrying}. Let
+$$g: A \to [B \to C],$$
+be a function, then we can define $\lambda^{-1}g: A \times B \to C$ by setting $\lambda^{-1}g(a, b) = g(a)(b)$. In other words, we have an isomorphism $\lambda$ between the hom-sets:
+$$\text{Hom}_{\mathbf{Set}}(A \times B, C) \simeq \text{Hom}_{\mathbf{Set}}(A, [B \to C]).$$
+\end{definition}
+
+We are now ready to discuss this process more generally, but for this we need to specify what properties our category should have in order for this to work.
+
+\begin{definition}[Cartesian closed category]
+A category $\mathcal{C}$ is called \emph{cartesian closed} (or a \emph{CCC}), if the following conditions are satisfied:
+\begin{enumerate}
+\item It has a terminal object $t$.
+\item For each pair $a, b \in \mathcal{C}$ there exists a product $a \times b$.
+\item For each pair $a, b \in \mathcal{C}$ there exists an object $[a \to b]$ called the \emph{exponential} such that:
+\begin{itemize}
+\item there exists an arrow: $\text{eval}^a_b: [a \to b] \times a \to b.$
+\item For any arrow $f: a \times b \to c$ there is an arrow $\lambda f: a \to [b \to c]$ so that the following diagram commutes:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+& {[}b \to c{]} \times b \arrow[rd, "\text{eval}^a_b"] & \\
+a \times b \arrow[ru, "\lambda f \times \text{id}_b"] \arrow[rr, "f"'] & & c \\
+\end{tikzcd}
+\end{figure}
+Here, the product of arrows $f \times g$ is as given in Example \ref{exa:productbifunctor}.
+\end{itemize}
+\end{enumerate}
+\end{definition}
+
+Wherever possible, we will denote $\text{eval}_b^a$ simply as $\text{eval}$. Another common notation for the exponential $[a \to b]$ is $b^a$.
+
+Todo
+
+- Show that the homsets are (naturally) isomorphic
+- Show that exponential is unique
+
+Examples:
+
+- Example of boolean algebra
+- Another example
+
+Other results:
+
+- Natural isomorphism 6.2.2
+- Number of isomorphisms 6.2.4 in Wells (use Yoneda)
+
+## $\lambda$-calculus and categories
+
+One of the interesting features of a CCC is that it can model a $\lambda$-calculus, which is one of the universal models of computations and can famously model turing machines. The $\lambda$-calculus is implemented by functional languages, and can be seen as the fundamental theory that underpin these programming languages.
+
+In this section we will give an introduction to (typed) $\lambda$-calculus, and later we will relate them to CCCs.
+
+- Introduce lambda calculus
+
+- Define $\mathcal{C}(\mathcal{L})$
+
+- Discuss Curry-Howard Isomorphism?
+
+## References
+
+- 1.9 of the 'Category Theory for Programmers' blog by Bartosz Milewski
+- 6.1, 6.2, 6.3 of Barr and Wells
+- \url{https://en.wikibooks.org/wiki/Haskell/The_Curry-Howard_isomorphism}
+
+# Monads in category theory
+
+\begin{definition}
+A \textbf{monad} $M = (T, \eta, \mu)$ on a category $\mathcal{C}$, consists of
+an endofunctor $T: \mathcal{C} \to \mathcal{C}$ together with natural
+transformations:
+\begin{align*}
+\eta&: \text{Id} \Rightarrow T\\
+\mu&: T^2 \Rightarrow T
+\end{align*}
+so that the following diagrams commute:
+\end{definition}
+We call $\eta$ the _unit_, and $\mu$ the _multiplication_.
+
+## Examples
+
+Example: power set
+
+## Algebras of monads
+
+## Kleisli categories
+
+Reader writer
+
+## Background
+
+- <https://golem.ph.utexas.edu/category/2012/09/where_do_monads_come_from.html>
+
+
+
+## References
+
+- 6.1 and parts of 6.3 and 6.4 of Mac Lane
+- Blogs:
+    - <https://bartoszmilewski.com/2016/11/21/monads-programmers-definition/>
+    - <https://bartoszmilewski.com/2016/11/30/monads-and-effects/>
+    - <http://www.stephendiehl.com/posts/monads.html>
+- Catsters
+
+
+
 # Monads and functional programming
 
 \epigraph{"Mathematics is the art of giving the same name to different things"}{\emph{Henri Poincar\'e}}
@@ -1309,10 +1447,9 @@ We want to perform `g . f`, and output the result.
 
 ### IO actions
 
-First, assume that the input is static. The 'function' executed by Haskell is called `main`, and say there is some `print :: a -> ??` function that prints the value of any type to standard output. Then our code would look something like this
+First, assume that the input is static. The 'function' executed by Haskell is called `main`, and there is a `print :: a -> IO ()` function that prints the value of any type to standard output. Our code will look like this:
 
 ```haskell
--- NOTE: not real Haskell
 main = print(g(f 123))
 ```
 
@@ -1326,7 +1463,7 @@ Here, `$` makes sure that all the fucntions on the right have been evaluated bef
 - If `main` should *behave*, then it should return the same function every time. However, we would like to support user input (`cin, scanf, getLine, ..)` so what should be its type if it should 'behave mathematically'?
 - Similarly, for `print`, what would be its type? It should take a value, convert it to a string, and output this in a terminal somewhere. The first part seems doable, but what is the *type* of *printing to screen*?
 
-Although this is quite a fundamental problem, Haskell 'fixes this' using *IO actions*. This is not limited to input/output for terminal, it can also be network related, or mouse/keyboard input for a video game!
+Although this is quite a fundamental problem, Haskell 'fixes this' using *IO actions*. This is not limited to input/output for terminal, it can also be network related, file related, or mouse/keyboard input for a video game!
 
 An IO action is a *value* with a type of `IO a`. We can also have an 'empty IO action', if the result is not used. Let us look at some examples:
 
@@ -1337,8 +1474,7 @@ An IO action is a *value* with a type of `IO a`. We can also have an 'empty IO a
     ```
     To print the value of any type, we precompose this function with `show :: a -> String`.
 
-- The function `main` itself is an IO action! `main :: IO ()`.
-- The `getLine` function is an IO action `getLine :: IO String`.
+- The function `main` itself is an IO action! `main :: IO ()`.  - The `getLine` function is an IO action `getLine :: IO String`.
 
 
 ### Handling input
@@ -1373,7 +1509,7 @@ join :: F (F a) -> F a
 lift_one :: (a -> F b) -> (F a -> F b)
 ```
 
-Since parantheses can be placed however (currying, we will describe this in more detail in the section on Closed Cartesian Categories (CCCs)), and order of arguments does not matter -- we can write `life_one` equivalently as:
+Because of currying, which we will describe this in more detail in the section on Cartesian Closed Categories (CCCs), we can reorder parentheses, and because the order of arguments does not matter -- we can write `lift_one` equivalently as:
 ```haskell
 >>= :: F a -> (a -> F b) -> F b
 ```
@@ -1533,88 +1669,50 @@ Some posts dealing specifically with Monads from a Haskell perspective:
 - <http://blog.sigfpe.com/2006/08/you-could-have-invented-monads-and.html>
 - <https://bartoszmilewski.com/2013/03/07/the-tao-of-monad/>
 
-# Monads
-
-Definition of a Monad
-
-Example: power set
-
-Algebras of a monad
-
-## References
-
-- 6.1 and parts of 6.3 and 6.4 of Mac Lane
-- Blogs:
-    - <https://bartoszmilewski.com/2016/11/21/monads-programmers-definition/>
-    - <https://bartoszmilewski.com/2016/11/30/monads-and-effects/>
-    - <http://www.stephendiehl.com/posts/monads.html>
-- Catsters
-
-# Monads II
-
-## Monads in programming
-
-## Kleisli categories
-
-Reader writer
-
-## Background
-
-- <https://golem.ph.utexas.edu/category/2012/09/where_do_monads_come_from.html>
-
-# Closed cartesian categories, function types
-
-Discuss Curry-Howard Isomorphism?
-
-## References
-
-- 1.9 of the 'Category Theory for Programmers' blog by Bartosz Milewski
-- 6.1, 6.2, 6.3 of Barr and Wells
-- <https://en.wikibooks.org/wiki/Haskell/The_Curry–Howard_isomorphism>
-
-# Purely functional datastructures
-
-- https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504
-
 # Adjunctions, Free monads
 
+Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
+
 - https://www.youtube.com/watch?v=K8f19pXB3ts
+- Chapter 13 of Barr and Wells
 
 # Lenses; Yoneda, adjunctions and profunctors
 
 - <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
 - <https://github.com/ekmett/lens>
 
-# Limits and colimits
+# Purely functional datastructures
 
-# Ends and co-ends
-
-# 'Theorems for free!'
-
-# 'Fast and loose reasoning is morally correct'
-
-## References
-
-- About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
-- <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
-
-# F-algebras:
-
-Recursion, coalgebras and streams
-
-# Denotational semantics
-
-# Homotopy type theory
-
-# Quantum computations?
-
-(Bert Jacobs)
+- https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504
 
 # Ideas
 
 Section on 'modularity':
 
 > *Bartosz Milewski*: "... Elegant code creates chunks that are just the right size and come in just the right number for our mental digestive system to assimilate them. So what are the right chunks for the composition of programs? Their surface area has to increase slower than their volume ... The surface area is the information we need in order to compose chunks. The volume is the information we need in order to implement them ...  Category theory is extreme in the sense that it actively discourages us from looking inside the objects ... The moment you have to dig into the implementation of the object in order to understand how to compose it with other objects, you’ve lost the advantages of your programming paradigm."
+
+## Limits and colimits
+
+## Ends and co-ends
+
+## 'Theorems for free!'
+
+## 'Fast and loose reasoning is morally correct'
+
+### References
+
+- About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
+- <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
+
+## F-algebras:
+
+Recursion, coalgebras and streams
+
+## Homotopy type theory
+
+## Quantum computations?
+
+(Bert Jacobs)
 
 # Literature
 
