@@ -1,6 +1,6 @@
 % Category theory for programmers
 % Jan-Willem Buurlage
-% November 21, 2016
+% 2016 -- 2017
 
 ---
 numbersections: true
@@ -1292,7 +1292,7 @@ the Yoneda lemma says that internally, any function of this signature should mai
     - <http://blog.sigfpe.com/2006/11/yoneda-lemma.html>
     - <https://www.schoolofhaskell.com/user/bartosz/understanding-yoneda#yoneda-lemma>
 
-# Cartesian closed categories and function types
+# Cartesian closed categories and $\lambda$-calculus
 
 In Haskell, functions that take two arguments are often written as:
 ```haskell
@@ -1360,11 +1360,88 @@ Other results:
 
 ## $\lambda$-calculus and categories
 
-One of the interesting features of a CCC is that it can model a $\lambda$-calculus, which is one of the universal models of computations and can famously model turing machines. The $\lambda$-calculus is implemented by functional languages, and can be seen as the fundamental theory that underpin these programming languages.
+One of the interesting features of a CCC is that it can model a $\lambda$-calculus, which is one of the universal models of computations, and corresponds to underlying computational model for functional programming (whereas imperative languages are based on Turing machines).
 
-In this section we will give an introduction to (typed) $\lambda$-calculus, and later we will relate them to CCCs.
+In this section we will give a brief and incomplete introduction to (typed) $\lambda$-calculus. Our reason to discuss them is to better understand functional languages, and to give further motivation to the definition of CCCs.
 
-- Introduce lambda calculus
+*Expressions*, or *$\lambda$-terms*, form the key component of $\lambda$-calculus. In these expressions there can be *variables* which are identifiers that can be seens as placeholders, and *applications*. An expression is defined recursively as one of the following:
+
+- a *variable* $x$.
+- if $t$ is an expression and $x$ a variable, $\lambda x.t$ is an expression (called an *abstraction*).
+- if $t$ and $s$ are expressions, then so is $ts$ (called an *application*).
+
+The only 'keywords' that are used in the $\lambda$-calculus language are the $\lambda$ and the dot. Multiple applications can be dismbiguated using parentheses, where the convention is that they associate from the left if these are omitted, i.e.
+$$t_1 t_2 t_3 \ldots t_n = (\ldots((t_1 t_2) t_3) \ldots t_n).$$
+Abstractions can model functions, for example the identity function could be written as:
+$$\lambda x . x$$
+Note that the choice for the name $x$ is completely arbitrary, equivalently we could have written
+$$\lambda y . y \equiv \lambda z . z$$
+and so on. This is called **$\alpha$-reduction**.
+
+Note that we do not have to give this function any name, but is simply defined to be the given expression. This is why anonymous functions in programming are often called $\lambda$-functions. On the left of the dot we have the *arguments* preceded by a $\lambda$. On the right of the dot we have the *body* expression. 
+
+Functions like this can be *applied* to expressions, by **substituting** the expressions as the 'value' for the argument, i.e.\ say we have a function evaluated at some point:
+$$f(x) = ax,~ f(y)$$
+then the corresponding expression would be:
+$$(\lambda x . ax)y \equiv ay$$
+This substitution process is called **$\beta$-reduction**, and can be seen as a computational step.
+
+A *variable* can be free or bound, for example in our example
+$$\lambda x . ax,$$
+$a$ is free, while $x$ is bound -- i.e. associated to an argument. We can make this formal:
+\begin{definition}[Free and bound variables]
+A variable $x$ is \textbf{free} only in the following cases:
+
+\begin{itemize}
+\item $x$ is free in $x$.
+\item $x$ is free in $\lambda y.t$ if $y \neq x$ are not the same identifier, and $x$ is free in $t$.
+\item $x$ is free in $st$ if it is free in either $s$ or $t$.
+\end{itemize}
+
+A variable $x$ is \textbf{bound} in the following cases:
+\begin{itemize}
+\item $x$ is bound in $\lambda y.t$ is $y = x$ is the same identifier, or if $x$ is bound in $t$.
+\item $x$ is bound in $st$ if it is bound in either $s$ or $t$.
+\end{itemize}
+
+\end{definition}
+Note that a variable can be both bound *and* free in the same expression. For example, $y$ is both bound and free in:
+$$(\lambda y.y)(\lambda x.xy).$$
+Also, note that this implies that the same identifiers may be used indepently in multiple expressions, but should not be mixed up. We should rename identifiers wherever necessary when applying functions.
+
+\begin{example}[Natural numbers]
+Since the $\lambda$-calculus forms a very minimal programming language, we may expect it to be able to form basic mathematical tasks. Indeed it can, and as an example we will see how we can model the natural numbers as expressions in $\lambda$-calculus.
+
+We define:
+$$0 \equiv \lambda s.(\lambda z.z) \equiv \lambda sz.z.$$
+We also introduced syntax for function of multiple parameters. Note that by convention these associate from the right, contrary to expressions.
+
+The natural numbers are defined recursively by applying $s$ to the body of the function corresponding previous number:
+\begin{align*}
+1 &= \lambda sz.sz\\
+2 &= \lambda sz.s(sz)\\
+3 &= \lambda sz.s(s(sz))\\
+&\ldots
+\end{align*}
+This leads naturally to the \emph{succesor function}, which correspond to the following expression:
+$$S = \lambda wyx.y(wyx).$$
+Writing $s^k z = s(s(s(s(s \ldots (sz)))))$, with $k$ occurences of $s$, we can see that:
+\begin{align*}
+S n &= (\lambda wyx.y(wyx))(\lambda sz. s^k z) \\
+    &= (\lambda yx.y((\lambda sz. s^k z)yx)) \\
+    &= (\lambda yx.y(y^k x)) \\
+    &= (\lambda yx.y^{k+1} x) \\
+    &\equiv (\lambda sz.s^{k+1} z) \\
+    &\equiv n + 1
+\end{align*}
+\end{example}
+In similar ways, one can define addition and multiplication, logical operations, equality, and ultimately even simulate a Turing machine using $\lambda$-calculus.
+
+## Typed $\lambda$-calculus
+
+In the context of typed functional languages, we are interested in *typed* $\lambda$-calculus.
+
+## $\lambda$-calculus as a category
 
 - Define $\mathcal{C}(\mathcal{L})$
 
@@ -1375,6 +1452,7 @@ In this section we will give an introduction to (typed) $\lambda$-calculus, and 
 - 1.9 of the 'Category Theory for Programmers' blog by Bartosz Milewski
 - 6.1, 6.2, 6.3 of Barr and Wells
 - \url{https://en.wikibooks.org/wiki/Haskell/The_Curry-Howard_isomorphism}
+- Raul Rojas: A tutorial introduction to $\lambda$-calculus
 
 # Monads in category theory
 
