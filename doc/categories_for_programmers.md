@@ -1241,7 +1241,7 @@ We will discuss a hopefully intuitive way of looking at the Yoneda lemma in Hask
 
 Let us first see how we can translate the relevant tools of Yoneda to Haskell. We have the following concepts:
 
-- *hom-sets* : the hom-set of types `a` and `b` are the arrows between `a` and `b`, i.e. functions of the type `(a -> b)`. Note that this hom-set is again in the category of types.
+- *hom-sets*: the hom-set of types `a` and `b` are the arrows between `a` and `b`, i.e. functions of the type `(a -> b)`. Note that this hom-set is again in the category of types.
 - The *hom-functor* corresponding to a type `a` should be a functor, i.e. a type constructor, that produces the hom-set `(a -> b)` when given a type `b`, for some fixed type `a`. On functions `(b -> c)` it should get a function between the hom-sets of `a` and `b, c` respectively, i.e.:
 ```haskell
     instance Functor (HomFunctor a) where
@@ -1410,11 +1410,11 @@ $$(\lambda y.y)(\lambda x.xy).$$
 Also, note that this implies that the same identifiers may be used indepently in multiple expressions, but should not be mixed up. We should rename identifiers wherever necessary when applying functions.
 
 \begin{example}[Natural numbers]
-Since the $\lambda$-calculus forms a very minimal programming language, we may expect it to be able to form basic mathematical tasks. Indeed it can, and as an example we will see how we can model the natural numbers as expressions in $\lambda$-calculus.
+Since the $\lambda$-calculus forms a very minimal programming language, we may expect it to be able to perform basic mathematical tasks. Indeed it can, and as an example we will see how we can model the natural numbers as expressions in $\lambda$-calculus.
 
 We define:
-$$0 \equiv \lambda s.(\lambda z.z) \equiv \lambda sz.z.$$
-We also introduced syntax for function of multiple parameters. Note that by convention these associate from the right, contrary to expressions.
+$$0 \equiv \lambda s.(\lambda z.z) \equiv \lambda sz.z,$$
+where we also introduced syntax for functions of multiple parameters. Note that by convention these associate from the right, contrary to expressions.
 
 The natural numbers are defined recursively by applying $s$ to the body of the function corresponding previous number:
 \begin{align*}
@@ -1453,6 +1453,7 @@ In the context of typed functional languages, we are interested in *typed* $\lam
 - 6.1, 6.2, 6.3 of Barr and Wells
 - \url{https://en.wikibooks.org/wiki/Haskell/The_Curry-Howard_isomorphism}
 - Raul Rojas: A tutorial introduction to $\lambda$-calculus
+- Chapter 7 of van Oosten
 
 # Monads in category theory
 
@@ -1735,8 +1736,9 @@ Note that in categorical terms:
 If you want to learn *yourself a bit of Haskell*, the following resources are helpful as a first step:
 
 - 5 minute tutorial to get an idea: <https://tryhaskell.org/>
-- A book that has quite a (cult) following in the Haskell community: <http://learnyouahaskell.com/chapters>
+- A 'cult' book that is popular in the Haskell community: <http://learnyouahaskell.com/chapters>
 - The wiki book on Haskell is quite good: <https://en.wikibooks.org/wiki/Haskell>
+- There is an excellent accessible Haskell book coming out soon, but it can be found already: http://haskellbook.com/
 
 About IO:
 
@@ -1759,15 +1761,13 @@ Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
 - <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
 - <https://github.com/ekmett/lens>
 
-# Purely functional datastructures
-
-- https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504
-
 # Ideas
 
-Section on 'modularity':
+For talks, not chapters:
 
-> *Bartosz Milewski*: "... Elegant code creates chunks that are just the right size and come in just the right number for our mental digestive system to assimilate them. So what are the right chunks for the composition of programs? Their surface area has to increase slower than their volume ... The surface area is the information we need in order to compose chunks. The volume is the information we need in order to implement them ...  Category theory is extreme in the sense that it actively discourages us from looking inside the objects ... The moment you have to dig into the implementation of the object in order to understand how to compose it with other objects, you’ve lost the advantages of your programming paradigm."
+## Purely functional datastructures
+
+- https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504
 
 ## Limits and colimits
 
@@ -1807,3 +1807,5 @@ Recursion, coalgebras and streams
 2. S. Mac Lane, Category Theory for the working mathematician
 3. Barr and Wells, Category Theory for Computer Scientists
 4. E. Riehl, Category theory in context,
+5. T. Leinster, Basic Category Theory
+6. J. van Ooosten, Basic Category Theory
