@@ -3,14 +3,16 @@
 % 2016 -- 2017
 
 ---
+toc: true
 numbersections: true
 documentclass: memoir
-classoption: oneside
-classoption: 12pt
+classoption: 12pt,openany,oneside
 header-includes:
     - \usepackage{tikz-cd}
     - \usepackage{amsthm}
+    - \usepackage[T1]{fontenc}
     - \usepackage{palatino}
+    - \usepackage[scaled]{beramono}
     - \usepackage{float}
     - \usepackage{epigraph}
     - \usepackage{hyperref}
@@ -57,6 +59,8 @@ header-includes:
     - \renewcommand{\theexample}{\thechapter.\arabic{example}}
     - \renewcommand{\theproposition}{\thechapter.\arabic{proposition}}
     - \renewcommand{\thecorollary}{\thechapter.\arabic{corollary}}
+    - \newcommand{\alongtop}{\raisebox{-0.5em}{\tikz{\draw[->] (0,0) -- (0.9em,0); \draw[->] (1em,0) -- (1em,-0.9em);}}}
+    - \newcommand{\alongbottom}{\raisebox{-0.5em}{\tikz{\draw[->] (0,0) -- (0,-0.9em); \draw[->] (0, -1em) -- (0.9em,-1.0em);}}}
     - \setlength{\parskip}{0.3cm}
     - \setlength{\parindent}{0.0cm}
     - \usepackage{geometry}
@@ -80,7 +84,9 @@ I would like to thank:
 
 - Some notes on Haskell
 
-# Categories
+\part{Basic theory}
+
+# Categories, functors and natural transformations
 
 ## Core definitions
 
@@ -608,7 +614,7 @@ template <>
 int f(int a) { return 2 * a; }
 
 template <>
-float f(float a) { return 2.0f * a; }
+double f(double a) { return 2.0 * a; }
 ```
 Here, e.g. `f<int>(1)` would yield `2`, while `f<char>('a')` would result in a compilation error.
 
@@ -642,7 +648,7 @@ Here, the fmap on the lhs corresonds to the `Maybe` functor, while on the rhs it
 
 - 1.2, 1.7 of the 'Category Theory for Programmers' blog by Bartosz Milewski
 
-# Products, Co-products and Algebraic Datatypes
+# Products, co-products and algebraic data types
 
 ## Duality and products of objects
 
@@ -788,7 +794,7 @@ Here, we give the unique value constructor the same name as its type constructor
 
 In C++ this is known as a `std::pair` (or a `std::tuple` for n-ary products). However, its implementation (and also usage) is awkward and convoluted. Functional programming (and product/coproduct types) is not yet a first-class citizen in C++.
 
-The coproduct (or _sum type_ corresponds to a value that has either type $a$, or type $b$. This is implemented as the `Either` datatype:
+The coproduct (or _sum type_ corresponds to a value that has either type $a$, or type $b$. This is implemented as the `Either` data type:
 ```haskell
 data Either a b = Left a | Right b
 ```
@@ -1332,7 +1338,7 @@ A category $\mathcal{C}$ is called \emph{cartesian closed} (or a \emph{CCC}), if
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-& {[}b \to c{]} \times b \arrow[rd, "\text{eval}^a_b"] & \\
+& {[}b \to c{]} \times b \arrow[rd, "\text{eval}^b_c"] & \\
 a \times b \arrow[ru, "\lambda f \times \text{id}_b"] \arrow[rr, "f"'] & & c \\
 \end{tikzcd}
 \end{figure}
@@ -1343,20 +1349,91 @@ Here, the product of arrows $f \times g$ is as given in Example \ref{exa:product
 
 Wherever possible, we will denote $\text{eval}_b^a$ simply as $\text{eval}$. Another common notation for the exponential $[a \to b]$ is $b^a$.
 
-Todo
+Note that the commutative diagram that shows up in the definition directly implies that we indeed have a bijection of hom-sets (i.e. it makes sense to curry). That is to say, let $\mathcal{C}$ be a CCC:
+$$\text{Hom}_{\mathcal{C}}(a \times b, c) \simeq \text{Hom}_{\mathcal{C}}(a, [b \rightarrow c])$$
+are isomorphic, by sending a $f: a \times b \to c$ using:
+$$\lambda: f \mapsto \lambda f,$$
+and vice versa:
+$$\lambda^{-1} g = \text{eval}_b^c \circ (g \times \text{id}_b).$$
+which is an isomorphism by the commutativity of the diagram.
 
-- Show that the homsets are (naturally) isomorphic
-- Show that exponential is unique
+To prove that curried and uncurried version of binary functions are actually *equivalent* we would have to show something stronger, that there is an arrow between $[a \times b \to c] \to [a \to [b \to c]]$ that is *iso*, but for this we some more complicated machinery which for now would be too big of a diversion.
 
-Examples:
+One can show also show that exponentials are unique up to unique isomorphism, but this also requires some machinery that we have not yet developed. We may revisit this when when we get to discuss adjunctions.
 
-- Example of boolean algebra
-- Another example
+We have already seen that \textbf{Set} is a CCC. Before we give some additional properties of CCCs and the exponential objects in them, let us look at some additional examples of CCCs:
 
-Other results:
+\begin{example}[Boolean algebras as CCCs]
+\begin{definition}
+A \textbf{Boolean algebra} is a partially ordered set $B$ such that:
+\begin{itemize}
+\item For all $x, y \in B$, there exists an infimum $x \wedge y$ and a supremum $x \vee y$.
+\item For all $x, y, z$ we have a distributive property:
+$$x \wedge (y \vee z) = (x \wedge y) \vee (x \wedge z).$$
+\item There exists a \emph{smallest} element $0$, and a \emph{greatest} element $1$.
+\item There exists a complement $x \vee \neg x = 0$, $x \wedge \neg x = 1$.
+\end{itemize}
+\end{definition}
+Let us check that a Boolean algebra is a CCC.
+\begin{itemize}
+\item It has a terminal object $1$.
+\item It has infimums (i.e. products) for all pairs of elements.
+\item We define $[a \to b] = \neg a \vee b$. Since $\text{eval}^a_b: [a \to b] \times a \to b$ and arrows between objects of posets are unique, we simply have to show that $[a \to b] \wedge a \leq b$ to obtain evaluation arrows:
+\begin{align*}
+[a \to b] \wedge a &= (\neg a \vee b) \wedge a = (\neg a \wedge a) \vee (b \wedge a) \\
+                   &= 0 \vee (b \wedge a) = b \wedge a \leq a
+\end{align*}
+Where we used a distributive property, and in the final step the definition of an infimum.
+\item Next we need to be able to curry, i.e. show that $\lambda f$ exists. Note that indeed we only have to show that such an arrow exists, by definition every diagram in a poset category commutes, since arrows between objects are unique. Say we have an arrow from $a \times b \to c$, i.e. we have $a \wedge b \leq c$. Then:
+\begin{align*}
+a &= a \wedge 1 = a \wedge (b \vee \neg b) = (a \wedge b) \vee (a \wedge \neg b) \leq c \vee (a \wedge \neg b) \\
+&\leq c \vee \neg b \equiv \neg b \vee c \equiv [b \to c]
+\end{align*}
+So there is indeed an arrow from $a \to [b \to c]$, as required.
+\end{itemize}
+\end{example}
 
-- Natural isomorphism 6.2.2
-- Number of isomorphisms 6.2.4 in Wells (use Yoneda)
+\begin{example}[Small categories as a CCC]
+Before, we briefly discussed $\mathbf{Cat}$, the category of small categories. Let $\mathcal{C}, \mathcal{D} \in \mathbf{Cat}$, then we can define:
+$$[\mathcal{C} \to \mathcal{D}] \equiv \mathbf{Fun}(\mathcal{C}, \mathcal{D}).$$
+So the exponentials correspond to the \emph{functor categories} between the categories in question.
+
+Let $F: \mathcal{C} \times \mathcal{D} \to \mathcal{E}$ be a functor, then we want to construct a functor $\lambda F: \mathcal{C} \to [\mathcal{D} \rightarrow \mathcal{E}]$. This functor should sends each object $c$ to a functor $\lambda F(c)$ between $\mathcal{D}$ and $\mathcal{E}$, and arrows of $\mathcal{C}$ to natural transformations between $\mathcal{D}$ and $\mathcal{E}$. We define this, using $F$, as:
+\begin{itemize}
+\item The functor for $c \in \mathcal{C}$:
+    \begin{itemize}
+        \item For objects $d \in \mathcal{D}$ we have $\lambda F(c)(d) = F(c, d).$
+        \item For arrows $g: d \to d'$ we have $\lambda F(c)(g) = F(\text{id}_c, g).$
+    \end{itemize}
+\item The natural transformations for $f: c \to c'$ in $\mathcal{C}$ should be between the functors $F(c), F(c')$:
+    \begin{itemize}
+    \item For $d \in \mathcal{D}$, the component of $\lambda F f \equiv \mu$ at $d$ is given by:
+    \begin{align*}
+    \mu: &F(c) \Rightarrow F(c') \\
+    \mu_d: &F(c)(d) \rightarrow F(c')(d) \\
+         : &F(c, d) \rightarrow F(c', d) \\
+    \mu_d \equiv &F(f, \text{id}_d)
+    \end{align*}
+    Let us check that this indeed defines a natural transformation. Let $g: d \to d'$ in $\mathcal{D}$:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+F(c, d) \arrow[d, "F(c)(g)"'] \arrow[r, "\mu_d"] & F(c', d) \arrow[d, "F(c')(g)"] \\
+F(c, d') \arrow[r, "\mu_{d'}"] & F(c', d')
+\end{tikzcd}
+\end{figure}
+    To show that this commutes, we compute:
+    \begin{align*}
+    \alongtop &= F(c')(g) \circ \mu_d = F(\text{id}_{c'}, g) \circ F(f, \text{id}_d) \\
+              &= F(\text{id}_{c'} \circ f, g \circ \text{id}_d) \\
+              &= F(f \circ \text{id}_{c'}, \text{id}_{d'} \circ g) \\
+              &= F(f, \text{id}_{d'}) \circ F(\text{id}_{c}, g) = \mu_{d'} \circ F(c)(g) = \alongbottom
+    \end{align*}
+    Where we used the definition of composition in a product category, and the fact that $F$ is a functor so it plays nice with composition.
+    \end{itemize}
+\end{itemize}
+So we can indeed 'curry' in the category of small categories, the other properties are easy to check.
+\end{example}
 
 ## $\lambda$-calculus and categories
 
@@ -1439,13 +1516,53 @@ In similar ways, one can define addition and multiplication, logical operations,
 
 ## Typed $\lambda$-calculus
 
-In the context of typed functional languages, we are interested in *typed* $\lambda$-calculus.
+In the context of typed functional languages, we are interested in *typed* $\lambda$-calculus. This is an extension of $\lambda$-calculus, where each expression has a *type*. We will sketch this extension and the associated category here, but note that we will freely glance over some technicalities and will not prove anything in too much detail. The goal of this part is to give an idea of how CCCs can be applied more broadly to functional program than just formalizing the notion of function types and currying.
 
-## $\lambda$-calculus as a category
+To define what a type is, we introduce the set of *symbols* as:
+$$\mathcal{S} = \{ S_1, S_2, S_3, \ldots \}.$$
+A *type* is defined recursively as either:
 
-- Define $\mathcal{C}(\mathcal{L})$
+- A *symbol* $S_i$
+- If $T_1, T_2$ are types, then so is $T_1 \rightarrow T_2$.
 
-- Discuss Curry-Howard Isomorphism?
+If $t$ is an expression then we write $t:T$ to indicate that its type is $T$. Types corresponding to expressions have to obey a number of rules, e.g.:
+
+- $c:T$ denotes a constant of type $T$.
+- For each type, there is a countable number of variables $x_1:T$, $x_2:T$, \ldots
+- If $t:T_1 \rightarrow T_2$ and $s : T_1$ then $ts:T_2$
+- For a variable $x : T_0$, given an expression $t:T_2$, we obtain a *function* $\lambda x.t : T_1 \to T_2$.
+- There is a singleton type $1$ with an expression $* : 1$. Any other expression of this type is equal (see below) to $*$ as seen from $\Gamma = \emptyset$.
+
+*Equations*, or *equality judgements* in this calculus have the form:
+$$\Gamma|t = s:T.$$
+Here, $\Gamma$ is some set of variables that at least contains *all* the free variables in both $t$ and $s$. Such an equation means that according to $\Gamma$ (i.e. with respect to its variables), the expressions $t$ and $s$ of type $T$ are equal. These equations are subjects to some rules, e.g. for fixed $\Gamma$ they define an equivalence relation of expressions of type $T$, but we will not list these here. For an overview, see the suggested literature at the end of this chapter.
+
+## Typed $\lambda$-calculus as a CCC
+
+We can go back and forth between CCCs and $\lambda$-calculus. Let us describe how we can obtain a CCC from a typed $\lambda$-calculus.
+
+\begin{definition}
+Given a typed $\lambda$-calculus $\mathcal{L}$, we associate it to a category $\mathcal{C}(\mathcal{L})$ where:
+
+\begin{itemize}
+\item The objects are types $T$.
+\item The arrows $T \to T'$ are pairs of
+\begin{itemize}
+    \item an equivalence class of expressions of types $T'$. The equivalence of two expressions $t, s$ where $t$ may contain the variable $x$, and $s$ may contain the variable $y$, is defined as follows:
+    \begin{itemize}
+    \item both $s, t$ are of the same type $T$
+    \item $x$ has the same type as $y$ and is substitutable for it in $s$ (this means that no free variables in $x$ become bound after substituting it for $y$ in $s$)
+    \item $\{x\} | (\lambda y . s)x = s : T.$
+    \end{itemize}
+    There are multiple reasons for needing this relation, e.g. we want all the expressions of a type $T$ that correspond to single variables to correspond to the same identity arrow of the type $T$. Also, together with the properties of the singleton type $1$, this ensures that we get a terminal object corresponding to the type $1$.
+    \item a free variable $x$ of type $T$ (that does not necessarily have to occur in the expression(s))
+\end{itemize}
+\end{itemize}
+\end{definition}
+
+You can prove $\mathcal{C}(\mathcal{L})$ is indeed cartesian closed, and also that any CCC defines a $\lambda$-calculus, but we will not do this here primarily because the definition given here is incomplete and would be overly long otherwise.
+
+There are a number of advantages of viewing a $\lambda$-calculus from the viewpoint of a CCC. For example, often variables (identifiers) clash between expressions, and this requires carefully renaming variables where necessary. When considering the arrows of the associated CCC, all placeholders have been identified by means of the equivalence relation, and this is no longer an issue. Also, the fact that we can compose arrows means that results from category theory can be used for further reduction of expressions.
 
 ## References
 
@@ -1756,14 +1873,14 @@ Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
 - https://www.youtube.com/watch?v=K8f19pXB3ts
 - Chapter 13 of Barr and Wells
 
+\part{Advanced theory and applications}
+
 # Lenses; Yoneda, adjunctions and profunctors
 
 - <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
 - <https://github.com/ekmett/lens>
 
 # Ideas
-
-For talks, not chapters:
 
 ## Purely functional datastructures
 

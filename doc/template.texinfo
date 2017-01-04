@@ -246,6 +246,8 @@ $abstract$
 \end{abstract}
 $endif$
 
+\newpage
+
 $for(include-before)$
 $include-before$
 
