@@ -397,7 +397,19 @@ Let $\mathcal{C}$ be a category, and let $f: a \to b$ in $\mathcal{C}$ be iso wi
 \end{exercise}
 
 \begin{exercise}
-Let $\mathcal{C}$ be a category, and let $f: a \to b$ in $\mathcal{C}$ be iso with inverse $g: b \to a$. Show that $g$ is unique, i.e. for any $g'$ that is an inverse of $f$ we have $g' = g$.
+Let $F: \mathcal{C} \to \mathcal{D}$, and let $f: a \to b$ be an isomorphism in $\mathcal{C}$. Show that $F f: F a \to F b$ is an isomorphism in $\mathcal{D}$.
+\end{exercise}
+
+\begin{exercise}
+Is there a functor $Z: \mathbf{Grp} \to \mathbf{Grp}$ so that $Z(G)$ is the center of $G$?
+\end{exercise}
+
+\begin{exercise}
+Let $F: \mathcal{C} \to \mathcal{D}, G: \mathcal{D} \to \mathcal{E}$ be functors, define $G \circ F: \mathcal{C} \to \mathcal{E}$ and show that it is a functor.
+\end{exercise}
+
+\begin{exercise}
+Let $F, G: \mathcal{C} \to \mathcal{D}$ be functors, and let $\mu: F \Rightarrow G$. Show that $\mu_a$ is natural if and only if its components are isomorphisms (in $\mathcal{D}$) for all $a \in \mathcal{C}$.
 \end{exercise}
 
 ## References
@@ -972,6 +984,12 @@ instance Bifunctor Either where
 ```
 
 These are examples of type constructors (or algebraic data types, as we have seen). Since functors compose, we could ask ourselves: "Are all algebraic data types functors?". The answer is positive, and this allows the Haskell language to derive an implementation of `fmap` for all ADTs!
+
+## Exercises
+
+\begin{exercise}
+In the category $\mathbf{Vect}$, show that the product corresponds to the direct sum.
+\end{exercise}
 
 ## References
 
