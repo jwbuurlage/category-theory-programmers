@@ -35,6 +35,7 @@ header-includes:
     - \newtheorem{proposition}{Proposition}
     - \newtheorem{corollary}{Corollary}
     - \newtheorem{example}{Example}
+    - \newtheorem{exercise}{Exercise}
     - \newcounter{common}
     - \usepackage{aliascnt}
     - \makeatletter
@@ -59,6 +60,7 @@ header-includes:
     - \renewcommand{\theexample}{\thechapter.\arabic{example}}
     - \renewcommand{\theproposition}{\thechapter.\arabic{proposition}}
     - \renewcommand{\thecorollary}{\thechapter.\arabic{corollary}}
+    - \renewcommand{\theexercise}{\thechapter.\arabic{exercise}}
     - \newcommand{\alongtop}{\raisebox{-0.5em}{\tikz{\draw[->] (0,0) -- (0.9em,0); \draw[->] (1em,0) -- (1em,-0.9em);}}}
     - \newcommand{\alongbottom}{\raisebox{-0.5em}{\tikz{\draw[->] (0,0) -- (0,-0.9em); \draw[->] (0, -1em) -- (0.9em,-1.0em);}}}
     - \setlength{\parskip}{0.3cm}
@@ -387,6 +389,16 @@ commutes. This diagram is called the \emph{naturality square}.  We write $\mu: F
 We can \emph{compose} natural transformations, turning the set of functors from $\mathcal{C} \to \mathcal{D}$ into a category. Let $\mu: F \Rightarrow G$ and $\nu: G \Rightarrow H$, then we have $\nu \circ \mu: F \Rightarrow H$ defined by (in components):
 $$(\nu \circ \mu)_a = \nu_a \circ \mu_a.$$
 Where the composition of the rhs is simply composition in $\mathcal{D}$.
+
+## Exercises
+
+\begin{exercise}
+Let $\mathcal{C}$ be a category, and let $f: a \to b$ in $\mathcal{C}$ be iso with inverse $g: b \to a$. Show that $g$ is unique, i.e. for any $g'$ that is an inverse of $f$ we have $g' = g$.
+\end{exercise}
+
+\begin{exercise}
+Let $\mathcal{C}$ be a category, and let $f: a \to b$ in $\mathcal{C}$ be iso with inverse $g: b \to a$. Show that $g$ is unique, i.e. for any $g'$ that is an inverse of $f$ we have $g' = g$.
+\end{exercise}
 
 ## References
 
@@ -1334,7 +1346,7 @@ A category $\mathcal{C}$ is called \emph{cartesian closed} (or a \emph{CCC}), if
 \item For each pair $a, b \in \mathcal{C}$ there exists an object $[a \to b]$ called the \emph{exponential} such that:
 \begin{itemize}
 \item there exists an arrow: $\text{eval}^a_b: [a \to b] \times a \to b.$
-\item For any arrow $f: a \times b \to c$ there is an arrow $\lambda f: a \to [b \to c]$ so that the following diagram commutes:
+\item For any arrow $f: a \times b \to c$ there is a unique arrow $\lambda f: a \to [b \to c]$ so that the following diagram commutes:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
@@ -1355,7 +1367,7 @@ are isomorphic, by sending a $f: a \times b \to c$ using:
 $$\lambda: f \mapsto \lambda f,$$
 and vice versa:
 $$\lambda^{-1} g = \text{eval}_b^c \circ (g \times \text{id}_b).$$
-which is an isomorphism by the commutativity of the diagram.
+which is an isomorphism by the commutativity of the diagram and the uniqueness of $\lambda f$.
 
 To prove that curried and uncurried version of binary functions are actually *equivalent* we would have to show something stronger, that there is an arrow between $[a \times b \to c] \to [a \to [b \to c]]$ that is *iso*, but for this we some more complicated machinery which for now would be too big of a diversion.
 
