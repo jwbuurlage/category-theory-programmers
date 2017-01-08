@@ -1916,10 +1916,13 @@ Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
 
 ## 'Fast and loose reasoning is morally correct'
 
+- Note that `newtype` and bottom cause issues.
+
 ### References
 
 - About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
 - <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
+- <https://wiki.haskell.org/Newtype>
 
 ## F-algebras:
 
@@ -1928,6 +1931,7 @@ Recursion, coalgebras and streams
 ## Homotopy type theory
 
 ## Quantum computations?
+
 
 (Bert Jacobs)
 
