@@ -270,7 +270,7 @@ for all objects $a$ and $b$ of $\mathcal{C}$, which directly implies that the fu
 - \underline{hom-functors}
 - \underline{Yoneda embedding} of category into set-valued functors
 - Any natural transformation between hom-functors is given by composition with arrows of $\mathcal{C}$
-- \underline{Yoneda lemma}: binjection between $F a$ and natural transformations from $h^a$ to $F$,
+- \underline{Yoneda lemma}: bijection between $F a$ and natural transformations from $h^a$ to $F$,
 
 All functors in Haskell are set-valued, since that is our category of interest.
 
@@ -279,14 +279,22 @@ All functors in Haskell are set-valued, since that is our category of interest.
 **Examples**
 
 \begin{example}[Matrix row operations]
-Let $\mathcal{C}$ be the category where the objects are natural numbers $1, 2, 3, \ldots$, and where arrows $n \to m$ correspond to $m \times n$ matrices. Composition is given by matrix multiplication, indeed if we have arrows:
+Let $\mathcal{C}$ be the category where:
+\begin{itemize}
+\item \underline{objects} $1, 2, 3, \ldots$
+\item \underline{arrows} $n \to m$ correspond to $m \times n$ matrices.
+\item Composition is given by matrix multiplication
+\end{itemize}
+indeed if we have arrows:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
 n \arrow[r, "A_{m \times n}"] & m \arrow[r, "B_{k \times m}"] & k
 \end{tikzcd}
 \end{figure}
-then the composite $B_{k \times m} A_{m \times n} = C_{k \times n}$ is an arrow from $n$ to $k$, as required. Consider contravariant hom-functors $h_n$ for this category. The hom-set $h_n k = \text{Hom}(k, n)$ consists of $n \times k$ matrices. To show that row operations can be seen as natural transformations $\mu: h_n \Rightarrow h_n$, we fix some $k \times m$ matrix $B$, and look at the following naturality square:
+then the composite $B_{k \times m} A_{m \times n} = C_{k \times n}$ is an arrow from $n$ to $k$, as required.
+
+Consider contravariant hom-functors $h_n$ for this category. The hom-set $h_n k = \text{Hom}(k, n)$ consists of $n \times k$ matrices. To show that row operations can be seen as natural transformations $\mu: h_n \Rightarrow h_n$, we fix some $k \times m$ matrix $B$, and look at the following naturality square:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
@@ -304,22 +312,17 @@ Where $\Lambda$ is a matrix whose elements $\Lambda_{ij}$ represent how many tim
 $$\mu(A) B = (A + \Lambda A) B = AB + \Lambda AB = \mu(AB).$$
 as required. By Corollary \ref{cor:natural_transformation_arrow} we have that any natural transformation $\mu: h_n \Rightarrow h_n$ is given by postcomposition (in this category: left-multiplication) with a unique arrow $D: n \to n$. The Yoneda lemma allows us to identify this arrow; it is equal to:
 $$D = \mu_n(\text{Id}_n),$$
-so to perform row operations on a matrix, one can equivalently left multiply with a matrix obtained by applying these operations to the identity matrix. This powers the technique for manually inverting a matrix $A$, where you perform row operations to the matrix $A$ and simultaneously to another matrix $B$ that is initially the identity matrix, until you reduce $A$ to the identity matrix. The resulting matrix $B$, when left multiplied with the original $A$ will perform the row operations, and hence $BA = \text{Id}$, or $B = A^{-1}$.
-
+so to perform row operations on a matrix, one can equivalently left multiply with a matrix obtained by applying these operations to the identity matrix.
 \end{example}
 
 **Yoneda in Haskell**
 
-We will discuss a hopefully intuitive way of looking at the Yoneda lemma in Haskell, by pinpointing a function with a single evaluation. In later parts we will discuss many more applications of Yoneda to Haskell, in particular when we discuss *generalized ADTs* and *lenses*.
-
-Let us first see how we can translate the relevant tools of Yoneda to Haskell. We have the following concepts:
-
 - *hom-sets*: the hom-set of types `a` and `b` are the arrows between `a` and `b`, i.e. functions of the type `(a -> b)`. Note that this hom-set is again in the category of types.
-- The *hom-functor* corresponding to a type `a` should be a functor, i.e. a type constructor, that produces the hom-set `(a -> b)` when given a type `b`, for some fixed type `a`. On functions `(b -> c)` it should get a function between the hom-sets of `a` and `b, c` respectively, i.e.:
+- The *hom-functor* corresponding to a type `a` should be a functor, i.e. a type constructor, that produces the hom-set `(a -> b)` when given a type `b`, for some fixed type `a`. On functions `(b -> c)` it should get a function between the hom-sets of `a` and `b`, and `a` and `c` respectively, i.e.:
 ```haskell
-    instance Functor (HomFunctor a) where
-        fmap :: (b -> c) -> (a -> b) -> (a -> c)
-        fmap f g = f . g
+instance Functor (HomFunctor a) where
+      fmap :: (b -> c) -> (a -> b) -> (a -> c)
+      fmap f g = f . g
 ```
 And indeed, we see that we can simply use composition.
 - Yoneda's lemma says that for any other functor `F`, we can produce a natural transformation (i.e.\ polymorphic function in a type `b`) from the hom-functor for a fixed `a` by looking at elements of `F a`.
@@ -328,21 +331,24 @@ Next we look at a simple example of how to apply this final point in Haskell.
 
 ### Reverse engineering machines
 
-We set `F` equal to `Id`, the identity functor, and consider a natural transformation between `HomFunctor a` and `Id`, this has the form (at the component `b`):
+Set `F` equal to `Id`, natural transformation:
 
 ```haskell
 --    (HomFunctor a) b      Id b
 --            |               |
 machine :: (a -> b)     ->    b
 ```
-Say we are given any function with this signature, and we want to know how it is implemented. We can actually do this in a *single evaluation*, using the Yoneda lemma. The Yoneda lemma says precisely that such a *machine* is given uniquely by any element of `Id a = a`, i.e. some value of the type `a`. This makes a lot of sense in this context, since we can be given *any* `b`, and the only tool that we have to produce a value for `b` is to use the function `f :: a -> b` that is supplied to us. Furthermore, the polymorphic function should behave the same for any type, so it can only be implemented as:
+How can `machine` be implemented? Know the function in a *single evaluation*.
+
+Given uniquely by any element of `Id a = a`, i.e. some value of the type `a`. Can only be implemented as:
 ```haskell
 machine :: (a -> b) -> b
 machine f = f x
 ```
-where `x` is some fixed element of type `a`. Now, the Yoneda lemma also tells us a way to obtain `x`, we simply supply `f = id`:
+`x` is fixed value of type `a`. The Yoneda lemma also tells us a way to obtain `x`, we simply supply `f = id`:
 ```haskell
-x <- machine id -- obtain the 'hidden element'
+-- obtain the 'hidden element'
+x <- machine id
 ```
 
 What if `F` is not the identity function, but say the `List` functor. The story actually does not change much, we now have a function with the signature:
