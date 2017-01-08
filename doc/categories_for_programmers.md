@@ -1572,7 +1572,9 @@ There are a number of advantages of viewing a $\lambda$-calculus from the viewpo
 - Raul Rojas: A tutorial introduction to $\lambda$-calculus
 - Chapter 7 of van Oosten
 
-# Monads in category theory
+# Monads
+
+\epigraph{"Mathematics is the art of giving the same name to different things"}{\emph{Henri Poincar\'e}}
 
 \begin{definition}
 A \textbf{monad} $M = (T, \eta, \mu)$ on a category $\mathcal{C}$, consists of
@@ -1586,7 +1588,7 @@ so that the following diagrams commute:
 \end{definition}
 We call $\eta$ the _unit_, and $\mu$ the _multiplication_.
 
-## Examples
+### Examples
 
 Example: power set
 
@@ -1596,26 +1598,7 @@ Example: power set
 
 Reader writer
 
-## Background
-
-- <https://golem.ph.utexas.edu/category/2012/09/where_do_monads_come_from.html>
-
-
-
-## References
-
-- 6.1 and parts of 6.3 and 6.4 of Mac Lane
-- Blogs:
-    - <https://bartoszmilewski.com/2016/11/21/monads-programmers-definition/>
-    - <https://bartoszmilewski.com/2016/11/30/monads-and-effects/>
-    - <http://www.stephendiehl.com/posts/monads.html>
-- Catsters
-
-
-
-# Monads and functional programming
-
-\epigraph{"Mathematics is the art of giving the same name to different things"}{\emph{Henri Poincar\'e}}
+## Monads and functional programming
 
 Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. This is originally described by mathematicians such as Turing and von Neuman in the 30s.
 
@@ -1627,7 +1610,7 @@ Something else that would allow us to more accurately describe our programs in a
 
 We will explore what this means for actual programs, and discover what problems and difficulties pop up. In the coming chapters we will fix these problems (and go beyond!) using our categorical language.
 
-## Problem 1: Computations and IO in Haskell
+### Problem 1: Computations and IO in Haskell
 
 A typical Haskell program consists of the description of a number of functions, which are 'composed', and then run against some input^[In this section (and the following sections) we will write in 'pseudo-Haskell' to illustrate some points, not all examples will be valid Haskell programs.] Say we two functions:
 
@@ -1766,7 +1749,7 @@ The `>>` (pronounced: then) function can be implemented as:
 
 To summarize, `bind` and `return` allows us to **compose functions that may or may not require IO operations**.
 
-## Problem 2: Data structures in Haskell
+### Problem 2: Data structures in Haskell
 
 Trivial (finite) data structures are easily implemented in Haskell as product types, but we have also seen a different type of container namely a *functorial* one. The examples we have looked at so far are `[]` and `Maybe`. Let us explore these more deeply, and see how we can make their usage more flexible. First consider the `Maybe` functor. Say we have a number of functions, where some may or may not produce a result:
 
@@ -1828,11 +1811,11 @@ x = Logger x
 
 Note, as suggested by the way `Writer m a` was introduced, that if we would use some other *monoid* instead of `String`^[Indeed, String gives rise to a monoid with binary operation `++` (concatenation)], we could accomplish different goals than logging.
 
-## Problem 4: Random numbers in Haskell
+### Problem 4: Random numbers in Haskell
 
 `State` monad
 
-## Putting it together; Monads
+### Putting it together; the Monads type class
 
 In this section we have talked about `return` and *bind* `>>=`.
 
@@ -1849,6 +1832,15 @@ Note that in categorical terms:
 - `join` is a natural transformation between `F^2` and `F`.
 
 ## References
+
+- <https://golem.ph.utexas.edu/category/2012/09/where_do_monads_come_from.html>
+
+- 6.1 and parts of 6.3 and 6.4 of Mac Lane
+- Blogs:
+    - <https://bartoszmilewski.com/2016/11/21/monads-programmers-definition/>
+    - <https://bartoszmilewski.com/2016/11/30/monads-and-effects/>
+    - <http://www.stephendiehl.com/posts/monads.html>
+- Catsters
 
 If you want to learn *yourself a bit of Haskell*, the following resources are helpful as a first step:
 
