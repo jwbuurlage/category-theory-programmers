@@ -1060,7 +1060,7 @@ For any category $\mathcal{C}$ the Yoneda embedding is a functor between the opp
 Let $\mathcal{C}$ and $\mathcal{D}$ be two categories, then we define $\mathbf{Fun}(\mathcal{C}, \mathcal{D})$ as the category with as objects functors $\mathcal{C} \to \mathcal{D}$, and as arrows natural transformations between these functors.
 \end{definition}
 
-Now, we are ready to describe the Yonedda embedding. Note that because it is a functor between *the opposite of* $\mathcal{C}$ and the category of *functors* between $\mathcal{C}$ and **Set**, it should take objects to functors, and arrows to natural transfomrations. For all objects, we have introduced a functor associated to it in the previous section; the *hom-functor*.
+Now, we are ready to describe the Yonedda embedding. Note that because it is a functor between *the opposite of* $\mathcal{C}$ and the category of *functors* between $\mathcal{C}$ and **Set**, it should take objects to functors, and arrows to natural transformations. For all objects, we have introduced a functor associated to it in the previous section; the *hom-functor*.
 
 \begin{figure}[H]
 \centering
@@ -1126,12 +1126,12 @@ Corollary \ref{cor:natural_transformation_arrow} tells us that any natural trans
 
 Less obviously, this result holds also for natural transformations between $h^a$ and any other set-valued functor $F$.
 
-What would a function between $h^a$ and $F$ look like? We see that a component of the natural transformation should take an element from $h^a b$, i.e. an arrow $g: a \to b$, to some element of $Fb$. We can do this by *evaluating* the lifted arrow $Fg$ , which is a map between the sets $Fa$ and $Fb$, at a fixed $x \in \mathcal{C}$.
+What would a function between $h^a$ and $F$ look like? We see that a component of the natural transformation should take an element from $h^a b$, i.e. an arrow $g: a \to b$, to some element of $Fb$. We can do this by *evaluating* the lifted arrow $Fg$ , which is a map between the sets $Fa$ and $Fb$, at a fixed $x \in F a$.
 
 This gives us an idea for a natural transformation corresponding to an element of $Fa$. We summarize this in the following proposition:
 
 \begin{proposition}
-Let $F: \mathcal{C} \to \mathbf{Set}$ be a functor, and $a \in \mathcal{C}$. Any element $x \in Fa$ induces a natural transformation from $h^A$ to $f$, by evaluating any lifted arrow in $x$.
+Let $F: \mathcal{C} \to \mathbf{Set}$ be a functor, and $a \in \mathcal{C}$. Any element $x \in Fa$ induces a natural transformation from $h^A$ to $F$, by evaluating any lifted arrow in $x$.
 \end{proposition}
 
 \begin{proof}
