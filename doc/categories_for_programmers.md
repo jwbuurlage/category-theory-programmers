@@ -409,7 +409,7 @@ Let $F: \mathcal{C} \to \mathcal{D}, G: \mathcal{D} \to \mathcal{E}$ be functors
 \end{exercise}
 
 \begin{exercise}
-Let $F, G: \mathcal{C} \to \mathcal{D}$ be functors, and let $\mu: F \Rightarrow G$. Show that $\mu_a$ is natural if and only if its components are isomorphisms (in $\mathcal{D}$) for all $a \in \mathcal{C}$.
+Let $F, G: \mathcal{C} \to \mathcal{D}$ be functors, and let $\mu: F \Rightarrow G$. Show that $\mu$ is an isomorphism (in the category of functors between $\mathcal{C}$ and $\mathcal{D}$) if and only if its components are isomorphisms (in $\mathcal{D}$) for all $a \in \mathcal{C}$.
 \end{exercise}
 
 ## References
