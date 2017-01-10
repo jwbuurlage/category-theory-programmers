@@ -1131,7 +1131,7 @@ What would a function between $h^a$ and $F$ look like? We see that a component o
 This gives us an idea for a natural transformation corresponding to an element of $Fa$. We summarize this in the following proposition:
 
 \begin{proposition}
-Let $F: \mathcal{C} \to \mathbf{Set}$ be a functor, and $a \in \mathcal{C}$. Any element $x \in Fa$ induces a natural transformation from $h^A$ to $F$, by evaluating any lifted arrow in $x$.
+Let $F: \mathcal{C} \to \mathbf{Set}$ be a functor, and $a \in \mathcal{C}$. Any element $x \in Fa$ induces a natural transformation from $h^a$ to $F$, by evaluating any lifted arrow in $x$.
 \end{proposition}
 
 \begin{proof}
