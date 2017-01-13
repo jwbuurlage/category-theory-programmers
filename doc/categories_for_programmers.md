@@ -1606,6 +1606,14 @@ There are a number of advantages of viewing a $\lambda$-calculus from the viewpo
 
 \epigraph{"Mathematics is the art of giving the same name to different things"}{\emph{Henri Poincar\'e}}
 
+Monads are used all throughout functional programming. In this part, we will try to illucidate them by studying their mathematical definition. Afterwards, we describe their use in functional programing by giving a number of motivating examples.
+
+Any endofunctor $T: \mathcal{C} \to \mathcal{C}$ can be composed with itself, to obtain e.g. $T^2$ and $T^3$ (which are both again endofunctors from $\mathcal{C}$ to $\mathcal{C}$. A monad concerns an endofunctor, together with natural transformation between this functor and its composites that give it a "monoid-like structure". Say $\alpha$ is a natural transformation $T \Rightarrow T'$, where $T, T'$ are endofunctors of $\mathcal{C}$, then note that $\alpha_x$ is a morphism from $Tx \to T'x$ in the category $\mathcal{C}$. Since this is a morphism, we can use $T$ or $T'$ to lift it, i.e. we obtain arrows at components $(T \alpha)_a \equiv T (\alpha_a)$ and $(\alpha T)_a \equiv \alpha_{Ta}$.
+
+In particular, note that this defines natural transformations between the appropraite composite functors since the image of any commutative diagram under a functor is again commutative.
+
+We are now ready to dive into the definition of a monad:
+
 \begin{definition}
 A \textbf{monad} $M = (T, \eta, \mu)$ on a category $\mathcal{C}$, consists of
 an endofunctor $T: \mathcal{C} \to \mathcal{C}$ together with natural
@@ -1615,18 +1623,37 @@ transformations:
 \mu&: T^2 \Rightarrow T
 \end{align*}
 so that the following diagrams commute:
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+T^3 \arrow[d, "T\mu"'] \arrow[r, "\mu T"] & T^2 \arrow[d, "\mu"] \\
+T^2 \arrow[r, "\mu"] & T
+\end{tikzcd}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+T \arrow[r, "\eta T"] \arrow[dr, "\text{id}"'] & T^2 \arrow[d, "\mu"] & \arrow[l, "T \eta"'] \arrow[dl, "\text{id}"] T\\
+  & T &
+\end{tikzcd}
+\end{figure}
+The first of these is called the \emph{associativity square} while the second is called the \emph{unit triangle}.
 \end{definition}
 We call $\eta$ the _unit_, and $\mu$ the _multiplication_.
 
-### Examples
-
-Example: power set
-
-## Algebras of monads
+Let us look at a familiar example:
+\begin{example}[Power-set monad]
+Let $T$ be the power-set functor that we defined before. Eta: singleton set. Multiplication: union.
+Proof that it works.
+\end{example}
 
 ## Kleisli categories
 
-Reader writer
+Every monad defines a new category, called the *Kleisli category*.
+
+<http://www.stephendiehl.com/posts/monads.html>
 
 ## Monads and functional programming
 
@@ -1861,6 +1888,12 @@ Note that in categorical terms:
 - `unit` can be seen as a natural transformation between the identity endofunctor `Identity`, and `F`.
 - `join` is a natural transformation between `F^2` and `F`.
 
+## Exercises
+
+\begin{exercise}
+Show that the image of any commutative diagram under a functor $F$ is again commutative.
+\end{exercise}
+
 ## References
 
 - <https://golem.ph.utexas.edu/category/2012/09/where_do_monads_come_from.html>
@@ -1887,6 +1920,8 @@ Some posts dealing specifically with Monads from a Haskell perspective:
 
 - <http://blog.sigfpe.com/2006/08/you-could-have-invented-monads-and.html>
 - <https://bartoszmilewski.com/2013/03/07/the-tao-of-monad/>
+
+# Algebras of monads, traversals as special arrows
 
 # Adjunctions, Free monads
 
@@ -1938,7 +1973,7 @@ Recursion, coalgebras and streams
 # Literature
 
 ## Blogs
-1. *Bartosz Milewski*: "Category Theory for Programmers", a blog post series that gives an excellent overview of interesting topics. <https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/>
+1. *Bartosz Milewski*: "Category Theory for Programmers", a blog post series that gives a good overview of interesting topics. <https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/>
 
 ## Papers
 1. About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
