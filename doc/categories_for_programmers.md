@@ -1359,7 +1359,7 @@ We are now ready to discuss this process more generally, but for this we need to
 \begin{definition}[Cartesian closed category]
 A category $\mathcal{C}$ is called \emph{cartesian closed} (or a \emph{CCC}), if the following conditions are satisfied:
 \begin{enumerate}
-\item It has a terminal object $t$.
+\item It has a terminal object $1$.
 \item For each pair $a, b \in \mathcal{C}$ there exists a product $a \times b$.
 \item For each pair $a, b \in \mathcal{C}$ there exists an object $[a \to b]$ called the \emph{exponential} such that:
 \begin{itemize}
@@ -1400,18 +1400,18 @@ A \textbf{Boolean algebra} is a partially ordered set $B$ such that:
 \item For all $x, y \in B$, there exists an infimum $x \wedge y$ and a supremum $x \vee y$.
 \item For all $x, y, z$ we have a distributive property:
 $$x \wedge (y \vee z) = (x \wedge y) \vee (x \wedge z).$$
-\item There exists a \emph{smallest} element $0$, and a \emph{greatest} element $1$.
-\item There exists a complement $x \vee \neg x = 0$, $x \wedge \neg x = 1$.
+\item There exists a \emph{smallest} element $0$, and a \emph{greatest} element $1$, which satisfiy e.g. $0 \vee x = x$, $1 \vee x = 1$.
+\item There exists a complement $x \vee \neg x = 1$, $x \wedge \neg x = 0$.
 \end{itemize}
 \end{definition}
 Let us check that a Boolean algebra is a CCC.
 \begin{itemize}
 \item It has a terminal object $1$.
 \item It has infimums (i.e. products) for all pairs of elements.
-\item We define $[a \to b] = \neg a \vee b$. Since $\text{eval}^a_b: [a \to b] \times a \to b$ and arrows between objects of posets are unique, we simply have to show that $[a \to b] \wedge a \leq b$ to obtain evaluation arrows:
+\item We define the exponential as Boolean implication, i.e. $[a \to b] = \neg a \vee b$. Since $\text{eval}^a_b: [a \to b] \times a \to b$ and arrows between objects of posets are unique, we simply have to show that $[a \to b] \wedge a \leq b$ to obtain evaluation arrows:
 \begin{align*}
 [a \to b] \wedge a &= (\neg a \vee b) \wedge a = (\neg a \wedge a) \vee (b \wedge a) \\
-                   &= 0 \vee (b \wedge a) = b \wedge a \leq a
+                   &= 0 \vee (b \wedge a) = b \wedge a \leq b
 \end{align*}
 Where we used a distributive property, and in the final step the definition of an infimum.
 \item Next we need to be able to curry, i.e. show that $\lambda f$ exists. Note that indeed we only have to show that such an arrow exists, by definition every diagram in a poset category commutes, since arrows between objects are unique. Say we have an arrow from $a \times b \to c$, i.e. we have $a \wedge b \leq c$. Then:
@@ -1462,7 +1462,7 @@ F(c, d') \arrow[r, "\mu_{d'}"] & F(c', d')
     Where we used the definition of composition in a product category, and the fact that $F$ is a functor so it plays nice with composition.
     \end{itemize}
 \end{itemize}
-So we can indeed 'curry' in the category of small categories, the other properties are easy to check.
+So we can indeed 'curry' in the category of small categories, the other properties (e.g. that it has a terminal object, the category with one object and its identity arrow) are easy to check.
 \end{example}
 
 ## $\lambda$-calculus and categories
@@ -1483,7 +1483,7 @@ Abstractions can model functions, for example the identity function could be wri
 $$\lambda x . x$$
 Note that the choice for the name $x$ is completely arbitrary, equivalently we could have written
 $$\lambda y . y \equiv \lambda z . z$$
-and so on. This is called **$\alpha$-reduction**.
+and so on. This is called **$\alpha$-conversion**.
 
 Note that we do not have to give this function any name, but is simply defined to be the given expression. This is why anonymous functions in programming are often called $\lambda$-functions. On the left of the dot we have the *arguments* preceded by a $\lambda$. On the right of the dot we have the *body* expression. 
 
@@ -1507,7 +1507,7 @@ A variable $x$ is \textbf{free} only in the following cases:
 
 A variable $x$ is \textbf{bound} in the following cases:
 \begin{itemize}
-\item $x$ is bound in $\lambda y.t$ is $y = x$ is the same identifier, or if $x$ is bound in $t$.
+\item $x$ is bound in $\lambda y.t$ if $y = x$ is the same identifier, or if $x$ is bound in $t$.
 \item $x$ is bound in $st$ if it is bound in either $s$ or $t$.
 \end{itemize}
 
@@ -1515,6 +1515,10 @@ A variable $x$ is \textbf{bound} in the following cases:
 Note that a variable can be both bound *and* free in the same expression. For example, $y$ is both bound and free in:
 $$(\lambda y.y)(\lambda x.xy).$$
 Also, note that this implies that the same identifiers may be used indepently in multiple expressions, but should not be mixed up. We should rename identifiers wherever necessary when applying functions.
+
+Say $f$ does not contain $x$ as a free variable, then we can equivalently write:
+$$\lambda x.fx \equiv f,$$
+this is called $\eta$-conversion.
 
 \begin{example}[Natural numbers]
 Since the $\lambda$-calculus forms a very minimal programming language, we may expect it to be able to perform basic mathematical tasks. Indeed it can, and as an example we will see how we can model the natural numbers as expressions in $\lambda$-calculus.
@@ -1534,12 +1538,12 @@ This leads naturally to the \emph{succesor function}, which correspond to the fo
 $$S = \lambda wyx.y(wyx).$$
 Writing $s^k z = s(s(s(s(s \ldots (sz)))))$, with $k$ occurences of $s$, we can see that:
 \begin{align*}
-S n &= (\lambda wyx.y(wyx))(\lambda sz. s^k z) \\
+S k &= (\lambda wyx.y(wyx))(\lambda sz. s^k z) \\
     &= (\lambda yx.y((\lambda sz. s^k z)yx)) \\
     &= (\lambda yx.y(y^k x)) \\
     &= (\lambda yx.y^{k+1} x) \\
     &\equiv (\lambda sz.s^{k+1} z) \\
-    &\equiv n + 1
+    &\equiv k + 1
 \end{align*}
 \end{example}
 In similar ways, one can define addition and multiplication, logical operations, equality, and ultimately even simulate a Turing machine using $\lambda$-calculus.
@@ -1560,7 +1564,7 @@ If $t$ is an expression then we write $t:T$ to indicate that its type is $T$. Ty
 - $c:T$ denotes a constant of type $T$.
 - For each type, there is a countable number of variables $x_1:T$, $x_2:T$, \ldots
 - If $t:T_1 \rightarrow T_2$ and $s : T_1$ then $ts:T_2$
-- For a variable $x : T_0$, given an expression $t:T_2$, we obtain a *function* $\lambda x.t : T_1 \to T_2$.
+- For a variable $x : T_1$, given an expression $t:T_2$, we obtain a *function* $\lambda x.t : T_1 \to T_2$.
 - There is a singleton type $1$ with an expression $* : 1$. Any other expression of this type is equal (see below) to $*$ as seen from $\Gamma = \emptyset$.
 
 *Equations*, or *equality judgements* in this calculus have the form:
@@ -1581,8 +1585,8 @@ Given a typed $\lambda$-calculus $\mathcal{L}$, we associate it to a category $\
     \item an equivalence class of expressions of types $T'$. The equivalence of two expressions $t, s$ where $t$ may contain the variable $x$, and $s$ may contain the variable $y$, is defined as follows:
     \begin{itemize}
     \item both $s, t$ are of the same type $T$
-    \item $x$ has the same type as $y$ and is substitutable for it in $s$ (this means that no free variables in $x$ become bound after substituting it for $y$ in $s$)
-    \item $\{x\} | (\lambda y . s)x = s : T.$
+    \item $x$ has the same type as $y$ and is substitutable for it in $s$ (this means that occurence of $x$ becomes bound after substituting it for $y$ in $s$)
+    \item $\{x\} | (\lambda y . s)x = t : T.$
     \end{itemize}
     There are multiple reasons for needing this relation, e.g. we want all the expressions of a type $T$ that correspond to single variables to correspond to the same identity arrow of the type $T$. Also, together with the properties of the singleton type $1$, this ensures that we get a terminal object corresponding to the type $1$.
     \item a free variable $x$ of type $T$ (that does not necessarily have to occur in the expression(s))
