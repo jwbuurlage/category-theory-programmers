@@ -1330,9 +1330,9 @@ the Yoneda lemma says that internally, any function of this signature should mai
 
 # Cartesian closed categories and $\lambda$-calculus
 
-In Haskell, functions that take two arguments are often written as:
+In Haskell, functions that take two arguments can be written as:
 ```haskell
--- 1) in haskell
+-- 1) idiomatic haskell
 f :: a -> b -> c
 -- 2) more conventional style
 f :: (a, b) -> c
@@ -1619,7 +1619,7 @@ In particular, note that this defines natural transformations between the approp
 We are now ready to dive into the definition of a monad:
 
 \begin{definition}
-A \textbf{monad} $M = (T, \eta, \mu)$ on a category $\mathcal{C}$, consists of
+A \textbf{monad} $M = (T, \eta, \mu)$ over a category $\mathcal{C}$, consists of
 an endofunctor $T: \mathcal{C} \to \mathcal{C}$ together with natural
 transformations:
 \begin{align*}
@@ -1657,7 +1657,19 @@ Proof that it works.
 
 Every monad defines a new category, called the *Kleisli category*.
 
-<http://www.stephendiehl.com/posts/monads.html>
+\begin{definition}
+Let $\mathcal{C}$ be a caegory, and let $(T, \mu, \eta)$ be a monad over this category. Then the Kleisli category $\mathcal{C}_T$ is the category where:
+\begin{itemize}
+\item The \emph{objects} of $\mathcal{C}_T$ are the objects of $\mathcal{C}$.
+\item The \emph{arrows} of $\mathcal{C}_T$ are the arrows of the form $a \to T b$ in $\mathcal{C}$. In other words,
+$$\text{Hom}_{\mathcal{C}_T}(a, b) = \text{Hom}_{\mathcal{C}}(a, Tb).$$
+\item Composition between two arrows $f: a \to b$ and $g: b \to c$ in $\mathcal{C}_T$ is given by:
+$$g \circ_T f = \mu_c \circ Tg \circ f.$$
+\item The \emph{identity arrows} $\text{id}_a$ are equal to $\eta_a$.
+\end{itemize}
+\end{definition}
+
+Especially Kleisli composition can be a convenient way to work with Monads in Haskell.
 
 ## Monads and functional programming
 
@@ -1925,8 +1937,6 @@ Some posts dealing specifically with Monads from a Haskell perspective:
 - <http://blog.sigfpe.com/2006/08/you-could-have-invented-monads-and.html>
 - <https://bartoszmilewski.com/2013/03/07/the-tao-of-monad/>
 
-# Algebras of monads, traversals as special arrows
-
 # Adjunctions, Free monads
 
 Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
@@ -1940,6 +1950,8 @@ Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
 
 - <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
 - <https://github.com/ekmett/lens>
+
+# Algebras of monads, traversals as special arrows
 
 # Ideas
 
