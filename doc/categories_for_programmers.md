@@ -84,7 +84,115 @@ I would like to thank:
 
 - Maybe some notes on functional languages?
 
-- Some notes on Haskell
+\section*{Haskell}
+
+In this section we will give an introduction to programming using Haskell. It will not be an extensive introduction, in fact it will be very brief. However, studying this section should be enough to allow you to follow along with the rest of the text even if you have no experience with Haskell. You are encouraged to look for additional material online, see also the references at the end of this section. You are assumed to have access to the Glasgow Haskell Compiler (GHC) and its interactive REPL GHCi.
+
+To follow along, open `ghci` and play around with the code snippets that we provide.
+
+We will dicuss te topics suggested by the NICTA Haskell course^[https://github.com/NICTA/course].
+
+**Values and assignment**
+
+A value can be assigned to a variable as follows:
+```haskell
+let x = 'a'
+let y = 3
+let xs = [1,2,3]
+let f x = x * x
+let g x y = x * y
+```
+
+**Type signatures**
+
+In GHCi, you can see the type of the variable using:
+```haskell
+:t x -- x :: Char
+:t y -- y :: Num a => a
+:t xs -- g :: Num t => [t]
+:t f -- f :: Num a => a -> a
+:t g -- g :: Num a => a -> a -> a
+```
+Here `::` means "has the type of".
+
+The `->` in a type is right associative, i.e.
+```haskell
+a -> a -> a == a -> (a -> a)
+```
+and so on. You can read this as 'for an `a`, we get a function from `a` to `a`'.
+
+**Functions are values**
+
+Functions can be used as arguments to other (higher order) functions. E.g.
+```haskell
+:t (2*) -- Num a => a -> a
+map :: (a -> b) -> [a] -> [b]
+map (2*) xs -- [2,4,6]
+```
+Here we *map* a function over a list.
+
+**Functions take arguments**
+
+On thing to notice about the `map` example, is that it although it is a function that technically takes a single argument (and produces a function from a list to a list), it can also be viewed as a function of two arguments. We will not explicitely distinguish between these two views.
+
+We can also make anonymous 'lambda' functions:
+```haskell
+map (\x -> x * x) xs -- [1,4,9]
+```
+The backslash is inteded to look like a $\lambda$.
+
+**Infix operators**
+
+An operator starts with a non-alphanumeric character, e.g. `+`, `++`, `>>=`, `:` are all operators, and they use *infix* notation by default. For example:
+```haskell
+1 + 2 -- 3
+[1,2] ++ [3,4] -- [1,2,3,4]
+1 : [2,3] -- [1,2,3]
+```
+To use them with *prefix* notation, we surround the with parenthesis:
+```haskell
+(+) 1 2 -- 3
+```
+Any function (which by default uses prefix notation) can be used infix as well:
+```haskell
+let f x y = x * x + y * y
+2 `f` 3 -- 13
+```
+this can make code significantly more clear when defining e.g. operations that act on multiple lists, sets, or maps.
+
+**Polymorphism**
+
+We already saw the type signature of `map`:
+```haskell
+map :: (a -> b) -> [a] -> [b]
+```
+This is an example of a polymorphic function, it is defined for any type `a` and `b`. We refer to these 'wildcard types' as *type variables*. These always start with a lowercase letter.
+
+**Data types**
+
+TODO:
+data types, declared using the data keyword
+following the data keyword is the data type name
+following the data type name are zero of more type variables
+then = sign
+data types have zero or more constructors
+data type constructors start with an upper-case character, or colon (:)
+following each constructor is a list of zero or more constructor arguments
+between each constructor is a pipe symbol (|)
+the deriving keyword gives us default implementations for some functions on that data type
+when constructors appear on the left side of = we are pattern-matching
+when constructors appear on the right side of = we are constructing
+
+**Type classes**
+
+\section*{References}
+
+If you want to learn Haskell, the following resources are helpful as a first step:
+
+- 5 minute tutorial to get an idea: <https://tryhaskell.org/>
+- A 'cult' book that is popular in the Haskell community: <http://learnyouahaskell.com/chapters>
+- The wiki book on Haskell is quite good: <https://en.wikibooks.org/wiki/Haskell>
+- There is an excellent accessible Haskell book coming out soon, but it can be found already: <http://haskellbook.com/>
 
 \part{Basic theory}
 
@@ -1920,13 +2028,6 @@ Show that the image of any commutative diagram under a functor $F$ is again comm
     - <https://bartoszmilewski.com/2016/11/30/monads-and-effects/>
     - <http://www.stephendiehl.com/posts/monads.html>
 - Catsters
-
-If you want to learn *yourself a bit of Haskell*, the following resources are helpful as a first step:
-
-- 5 minute tutorial to get an idea: <https://tryhaskell.org/>
-- A 'cult' book that is popular in the Haskell community: <http://learnyouahaskell.com/chapters>
-- The wiki book on Haskell is quite good: <https://en.wikibooks.org/wiki/Haskell>
-- There is an excellent accessible Haskell book coming out soon, but it can be found already: http://haskellbook.com/
 
 About IO:
 
