@@ -82,7 +82,7 @@ I would like to thank:
 
 \chapter*{Preliminaries?}
 
-- Maybe some notes on functional languages?
+TODO: Maybe some notes on functional languages?
 
 \section*{Haskell}
 
@@ -170,20 +170,26 @@ This is an example of a polymorphic function, it is defined for any type `a` and
 
 **Data types**
 
-TODO:
-data types, declared using the data keyword
-following the data keyword is the data type name
-following the data type name are zero of more type variables
-then = sign
-data types have zero or more constructors
-data type constructors start with an upper-case character, or colon (:)
-following each constructor is a list of zero or more constructor arguments
-between each constructor is a pipe symbol (|)
-the deriving keyword gives us default implementations for some functions on that data type
-when constructors appear on the left side of = we are pattern-matching
-when constructors appear on the right side of = we are constructing
+To work with custom data structures, we create new *data types*. These are declared as follows:
+```haskell
+data DataTypeName a b = Zero | One a | One' b | Both a b
+```
+A data type is declared using the `data` keyword, and the *type constructor* is given a name (here `DataTypeName`). A data type depends on a number of type variables, here `a` and `b`. After the `=` sign, there are zero or more *data constructors*, here `Zero`, `One`, `One'`, and `Both`, each depending on one or more of the type variables of the type constructor and separated by a pipe `|`.
+
+Data constructors can be used for *constructing* a value of the data type, or for pattern-matching on values of the data type (i.e. retrieve which constructor was used to construct the given value).
 
 **Type classes**
+
+Type classes are a way to have *ad-hoc polymorphism* in Haskell, while the ordinary polymorphic functions discussed before are *parametric*. This means that we can have different behaviour for different types. Type classes are introduced as follows:
+```haskell
+class Eq a where
+  (==) :: a -> a -> Bool
+```
+Here, we state that in order for a type `a` to be part of the *type class* `Eq`, we have to implement an equality function with the given signature. We can then restrict functions definitions to only work on types in this type class in the following manner:
+```haskell
+(!=) :: Eq a => a -> a -> Bool
+x != y = not (x == y)
+```
 
 \section*{References}
 
@@ -193,6 +199,7 @@ If you want to learn Haskell, the following resources are helpful as a first ste
 - A 'cult' book that is popular in the Haskell community: <http://learnyouahaskell.com/chapters>
 - The wiki book on Haskell is quite good: <https://en.wikibooks.org/wiki/Haskell>
 - There is an excellent accessible Haskell book coming out soon, but it can be found already: <http://haskellbook.com/>
+- If you are looking to do exercises, there is a guide to different courses available here: <https://github.com/bitemyapp/learnhaskell>
 
 \part{Basic theory}
 
