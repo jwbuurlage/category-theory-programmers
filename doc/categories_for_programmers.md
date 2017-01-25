@@ -82,7 +82,13 @@ I would like to thank:
 
 \chapter*{Preliminaries?}
 
-TODO: Maybe some notes on functional languages?
+Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. This is originally described by mathematicians such as Turing and von Neuman in the 30s.
+
+A constrasting way of programming is *declarative programming*, which is a way of expressing *what* you want the program to compute (without explicitely saying how it should do this). A good way of expressing what you want to have computed, is by describing your program mathematically, i.e. *using functions*, which is what we explore here. This functional style of looking at computations is based on work in the 20s/30s by Curry and Church among others.
+
+The difficulty in using a *(typed, pure) functional* programming language, is that the **functions that you write** between types **should behave like mathematical functions** on the corresponding sets. This means, for example, that if you call a function multiple times with the same arguments, it should produce the same result every time. This is often summarized as a *side-effect free function*. Other difficulties are that values are in principle immutable.
+
+Something else that would allow us to more accurately describe our programs in a mathematical way is if execution is *lazy*, and Haskell indeed is lazy. This means we can work with **infinite lists and sequences**, and only peeking inside such as a list causes the necessary computations to be done (or 'collapses the wave function' if you want a quantum analogy).
 
 \section*{Haskell}
 
@@ -622,7 +628,7 @@ type Continuation a = a -> Void
 ```
 In other words, a continuation is a function that *never returns*, which can be used to manipulate control flows (in a type-safe manner).
 
-Recall that an initial object has exactly one arrow to each other object, and a terminal object has exactly one arrow coming from each other object. These objects are unique up to isomorphism. In the category of types, they correspond to `Void` and `()` respectively. 
+Recall that an initial object has exactly one arrow to each other object, and a terminal object has exactly one arrow coming from each other object. These objects are unique up to isomorphism. In the category of types, they correspond to `Void` and `()` respectively.
 
 To summarize this introduction, in the category of 'computer programs', types are objects, and *pure* functions between these types are arrows. Next, we consider how we can apply some of the concepts we have seen, such as functors and natural transformations, to this category.
 
@@ -1600,7 +1606,7 @@ Note that the choice for the name $x$ is completely arbitrary, equivalently we c
 $$\lambda y . y \equiv \lambda z . z$$
 and so on. This is called **$\alpha$-conversion**.
 
-Note that we do not have to give this function any name, but is simply defined to be the given expression. This is why anonymous functions in programming are often called $\lambda$-functions. On the left of the dot we have the *arguments* preceded by a $\lambda$. On the right of the dot we have the *body* expression. 
+Note that we do not have to give this function any name, but is simply defined to be the given expression. This is why anonymous functions in programming are often called $\lambda$-functions. On the left of the dot we have the *arguments* preceded by a $\lambda$. On the right of the dot we have the *body* expression.
 
 Functions like this can be *applied* to expressions, by **substituting** the expressions as the 'value' for the argument, i.e.\ say we have a function evaluated at some point:
 $$f(x) = ax,~ f(y)$$
@@ -1760,12 +1766,17 @@ T \arrow[r, "\eta T"] \arrow[dr, "\text{id}"'] & T^2 \arrow[d, "\mu"] & \arrow[l
 \end{figure}
 The first of these is called the \emph{associativity square} while the second is called the \emph{unit triangle}.
 \end{definition}
-We call $\eta$ the _unit_, and $\mu$ the _multiplication_.
-
-Let us look at a familiar example:
+We call $\eta$ the _unit_, and $\mu$ the _multiplication_. Let us look at a familiar example:
 \begin{example}[Power-set monad]
-Let $T$ be the power-set functor that we defined before. Eta: singleton set. Multiplication: union.
-Proof that it works.
+Let $\mathcal{P}$ be the power-set functor that we defined before. We define $\eta$ as the natural transformation:
+$$\eta: \text{Id} \Rightarrow \mathcal{P},$$
+with components that send elements to the singleton set corresponding to that element:
+$$\eta_A: A \rightarrow \mathcal{P}(A),~a \mapsto \{ a \}.$$
+We define $\mu$ as the natural transformation:
+$$\mu: \mathcal{P}^2 \to \mathcal{P},$$
+with components that send each set of sets, to the union of those sets.
+$$\mu_A: \mathcal{P}(\mathcal{P}(A)) \to \mathcal{P}(A),~\{ B_1, B_2, \ldots \} \mapsto \bigcup B_i,$$
+where $B_i \subseteq A$.
 \end{example}
 
 ## Kleisli categories
@@ -1788,15 +1799,7 @@ Especially Kleisli composition can be a convenient way to work with Monads in Ha
 
 ## Monads and functional programming
 
-Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. This is originally described by mathematicians such as Turing and von Neuman in the 30s.
-
-A constrasting way of programming is *declarative programming*, which is a way of expressing *what* you want the program to compute (without explicitely saying how it should do this). A good way of expressing what you want to have computed, is by describing your program mathematically, i.e. *using functions*, which is what we explore here. This functional style of looking at computations is based on work in the 20s/30s by Curry and Church among others.
-
-The difficulty in using a *(typed, pure) functional* programming language, is that the **functions that you write** between types **should behave like mathematical functions** on the corresponding sets. This means, for example, that if you call a function multiple times with the same arguments, it should produce the same result every time. This is often summarized as a *side-effect free function*. Other difficulties are that values are in principle immutable.
-
-Something else that would allow us to more accurately describe our programs in a mathematical way is if executing is *lazy*, and Haskell indeed is lazy. This means we can work with **infinite lists and sequences**, and only peeking inside such as a list causes the necessary computations to be done (or 'collapses the wave function' if you want a quantum analogy).
-
-We will explore what this means for actual programs, and discover what problems and difficulties pop up. In the coming chapters we will fix these problems (and go beyond!) using our categorical language.
+Because valid functional programs can seem quite restrictive, we need non-standard tools to perform operations that you take for granted in imperative languages. We will explore what this statement means for some real world programs, and discover what problems and difficulties pop up. In this part and the following we will see how to circumvent these problems (and go beyond!) using the categorical language that we developed prior.
 
 ### Problem 1: Computations and IO in Haskell
 
