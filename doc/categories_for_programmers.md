@@ -84,7 +84,7 @@ I would like to thank:
 
 Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. This is originally described by mathematicians such as Turing and von Neuman in the 30s.
 
-A constrasting way of programming is *declarative programming*, which is a way of expressing *what* you want the program to compute (without explicitely saying how it should do this). A good way of expressing what you want to have computed, is by describing your program mathematically, i.e. *using functions*, which is what we explore here. This functional style of looking at computations is based on work in the 20s/30s by Curry and Church among others.
+A different way of programming is *declarative programming*, which is a way of expressing *what* you want the program to compute (without explicitely saying how it should do this). A good way of expressing what you want to have computed, is by describing your program mathematically, i.e. *using functions*, which is what we explore here. This functional style of looking at computations is based on work in the 20s/30s by Curry and Church among others.
 
 The difficulty in using a *(typed, pure) functional* programming language, is that the **functions that you write** between types **should behave like mathematical functions** on the corresponding sets. This means, for example, that if you call a function multiple times with the same arguments, it should produce the same result every time. This is often summarized as a *side-effect free function*. Other difficulties are that values are in principle immutable.
 
@@ -108,6 +108,11 @@ let xs = [1,2,3]
 let f x = x * x
 let g x y = x * y
 ```
+We note that these variables are only valid inside an expression, using a:
+```haskell
+let [variable = value] in [expression]
+```
+syntax, but you can also use this style of variable definition inside `ghci`.
 
 **Type signatures**
 
@@ -155,11 +160,11 @@ An operator starts with a non-alphanumeric character, e.g. `+`, `++`, `>>=`, `:`
 [1,2] ++ [3,4] -- [1,2,3,4]
 1 : [2,3] -- [1,2,3]
 ```
-To use them with *prefix* notation, we surround the with parenthesis:
+To use them with *prefix* notation, we surround them with parenthesis:
 ```haskell
 (+) 1 2 -- 3
 ```
-Any function (which by default uses prefix notation) can be used infix as well:
+Any function (which by default uses prefix notation) can be used infix as well using backticks:
 ```haskell
 let f x y = x * x + y * y
 2 `f` 3 -- 13
@@ -202,10 +207,11 @@ x != y = not (x == y)
 If you want to learn Haskell, the following resources are helpful as a first step:
 
 - 5 minute tutorial to get an idea: <https://tryhaskell.org/>
-- A 'cult' book that is popular in the Haskell community: <http://learnyouahaskell.com/chapters>
 - The wiki book on Haskell is quite good: <https://en.wikibooks.org/wiki/Haskell>
 - There is an excellent accessible Haskell book coming out soon, but it can be found already: <http://haskellbook.com/>
+- A book that teaches Haskell in a different way: <http://learnyouahaskell.com/chapters>
 - If you are looking to do exercises, there is a guide to different courses available here: <https://github.com/bitemyapp/learnhaskell>
+- A handy search engine for library functions is Hoogle: <https://www.haskell.org/hoogle/>
 
 \part{Basic theory}
 
@@ -689,7 +695,7 @@ If we want to express the concept^[In C++, type constructors are referred to as 
 class Functor F where
     fmap :: (a -> b) -> F a -> F b
 ```
-This says that `F` is a functor, if there is a function `fmap` that takes a function `f :: a -> b` and maps it to a function `fmap f :: F a -> F b`. Note that we dont explicitely have to state that `F` sends types to types, because this can be induced from the fact that we use `F a` where the compiler expects a type.
+This says that `F` is a functor, if there is a function `fmap` that takes a function `f :: a -> b` and maps it to a function `fmap f :: F a -> F b`. Note that we do not explicitely have to state that `F` sends types to types, because this can be induced from the fact that we use `F a` where the compiler expects a type.
 
 \subsection*{The List functor}
 
@@ -1437,6 +1443,57 @@ machine :: (a -> b)     ->   [b]
 ```
 the Yoneda lemma says that internally, any function of this signature should maintain a list of the type `[a]`, and when given a function `f :: a -> b` it fmaps this over the internal list to produce a value of the type `[b]`. Again, we can get this list by feeding the `id` function into the machine.
 
+### Continuation Passing Style
+
+In programming, there is an equivalence between what is called *direct* style, where functions return values, and *continuation passing style* (CPS), where each *called function* takes an additional argument which is a *handler function* that does something with the result of the called function.
+
+Say we have some function
+```cpp
+T add(T a, T b) {
+    return a + b;
+}
+```
+Which we can use by calling e.g. `auto x = add(1, 2)`. The CPS version of this function looks like
+```cpp
+void add_cps(T a, T b, F cont) {
+    cont(a + b);
+}
+```
+and the way it is used is:
+```cpp
+add_cps(1, 2, [](auto result) {
+    // ...
+});
+```
+In other words, the CPS version of the function does not *return a value*, but rather passes the result to a handler. We do not bind the result of a function to a value, but rather to the *argument of a handler function*.
+
+You may recognize this style of programming from writing concurrent programs, where continuations can be used to deal with values produced in the future by other threads without blocking. Continuations are also often used in UI frameworks, where a handler is used whenever e.g. a button is pressed, or the value of a slider has changed.
+
+This CPS passing style can also be used to implement exceptions. Say we have a function that can throw:
+```cpp
+void can_throw(F raise, G cont) {
+    // ...
+}
+```
+Here, the idea is that `raise` gets called if an error occurs, while `cont` gets called when a result has been computed succesfully. What is also interesting is that CPS can be used to implement *control flow*. For example, the called function can call cont multiple times (loops), or only conditionally.
+
+Let us show that the *continuation passing transform* (CPT), i.e. going from direct style to CPS, is nothing more then the Yoneda embedding. Say we have a function:
+```haskell
+f :: a -> b
+```
+Let us remind ourselves that the Yoneda embedding takes such an arrow, and produces a map $(Yf)_c = \text{Hom}(c, b) \rightarrow \text{Hom}(c, a)$ for all $c \in \mathcal{C}$. In Haskell, this embedding could be implemented like this:
+```haskell
+yoneda :: forall x. (a -> b) -> (b -> x) -> (a -> x)
+yoneda f = \k -> k . f
+```
+Going the other way around is easy, we simply pass `id` as our continuation `k`.
+
+We will revisit continuations when we discuss monads.
+
+- <https://en.wikibooks.org/wiki/Haskell/Continuation_passing_style>
+- <https://golem.ph.utexas.edu/category/2008/01/the_continuation_passing_trans.html>
+- <https://github.com/manzyuk/blog/blob/master/yoneda-embedding-is-cps.org>
+
 ## References
 
 - 2.3, 2.4 and 2.5 of the 'Category Theory for Programmers' blog by Bartosz Milewski
@@ -2006,6 +2063,8 @@ Note, as suggested by the way `Writer m a` was introduced, that if we would use 
 
 `State` monad
 
+### Problem 5: Continuation passing
+
 ### Putting it together; the Monads type class
 
 In this section we have talked about `return` and *bind* `>>=`.
@@ -2064,6 +2123,10 @@ Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
 
 # Algebras of monads, traversals as special arrows
 
+Catamorphisms, Anamorphisms, Hylomorphisms
+- <http://files.meetup.com/3866232/foldListProduct.pdf>
+- <https://deque.blog/2017/01/17/catamorph-your-dsl-introduction/>
+
 # Ideas
 
 ## Purely functional datastructures
@@ -2096,6 +2159,10 @@ Recursion, coalgebras and streams
 
 
 (Bert Jacobs)
+
+## Haskell tricks and gems
+
+- <https://deque.blog/2016/11/27/open-recursion-haskell/>
 
 # Literature
 
