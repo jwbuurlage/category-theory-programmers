@@ -2,17 +2,31 @@ module DSL where
 
 import Control.Applicative
 import Data.Char (isAlpha, isAlphaNum, isDigit, isSpace)
-import Data.Maybe (isJust)
+import Data.Map (Map, (!), fromList)
+import Data.Maybe (isJust, fromMaybe)
 import Data.Monoid
 
 -- Basic Expression definitions
 type Id = String
 
 data OperatorType = Add | Multiply
-  deriving (Show)
+  deriving (Show, Eq)
 
 operatorLiterals :: [(Char, OperatorType)]
 operatorLiterals = [('+', Add), ('*', Multiply)]
+
+operatorFunctions :: [(Int -> Int -> Int, OperatorType)]
+operatorFunctions = [((+), Add), ((*), Multiply)]
+
+seek :: Eq a => a -> [(b, a)] -> Maybe b
+seek x [] = Nothing
+seek x ((y, x'):ys) = if x == x' then Just y else seek x ys
+
+getLiteral :: OperatorType -> Maybe Char
+getLiteral o = seek o operatorLiterals
+
+getOp :: OperatorType -> Maybe (Int -> Int -> Int)
+getOp o = seek o operatorFunctions
 
 data Expression =
   Constant Int
@@ -98,13 +112,22 @@ expressionParser = spaces *> (operatorParser <|> reducableParser) <* spaces
 prettyPrint :: Expression -> String
 prettyPrint (Constant n) = show n
 prettyPrint (Variable v) = v
-prettyPrint (BinaryOperation Add (x, y)) = "(" ++ prettyPrint x ++ "+" ++ prettyPrint y ++ ")"
-prettyPrint (BinaryOperation Multiply (x, y)) = "(" ++ prettyPrint x ++ "*" ++ prettyPrint y ++ ")"
+prettyPrint (BinaryOperation o (x, y)) = "(" ++ prettyPrint x ++
+                                          [fromMaybe '?' (getLiteral o)]
+                                          ++ prettyPrint y ++ ")"
 
 -- Evaluation
--- TODO
+type Environment = Map String Int
+
+eval :: Environment -> Expression -> Int
+eval _ (Constant n) = n
+eval env (Variable x) = env ! x
+eval env (BinaryOperation o (x, y)) = fromMaybe const (getOp o) (eval env x) (eval env y)
+
+-- Optimization
 
 main = do 
   print $ runParser expressionParser "  (   (  2 * 3) + (4 + x))";
   print $ runParser expressionParser "x + y";
   print $ prettyPrint . fst <$> runParser expressionParser "  (   (  2 * 3) + (4 + x))";
+  print $ eval (fromList [("x", 3)]) . fst <$> runParser expressionParser "  (   (  2 * 3) + (4 + x))";
