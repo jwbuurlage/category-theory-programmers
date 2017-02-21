@@ -2,7 +2,7 @@
 % Jan-Willem Buurlage
 
 ---
-tagline: An introduction to the mathematics behind functional programming
+tagline: An introduction to the mathematics of functional programming
 date: \today
 toc: true
 numbersections: true
@@ -72,14 +72,16 @@ header-includes:
 
 \chapter*{Introduction}
 
-This document contains notes for a small-scale seminar on category theory in the context of (functional) programming, organized at CWI. The goal of the seminar is to gain familiarity with concepts of category theory that apply (in a broad sense) to the field of functional programming. It could be an idea to have an associated (toy) project that examplifies the concepts that are discussed.
+This document contains notes for a small-scale seminar on category theory in the context of (functional) programming, organized at Centrum Wiskunde \& Informatica, the national Dutch research centre for mathematics and computer science. The goal of the seminar is to gain familiarity with concepts of category theory (and other branches of mathematics) that apply (in a broad sense) to the field of functional programming.
 
-Although the main focus will be on the mathematics, examples should be made in Haskell to illustrate how to apply the concepts, and possibly examples in other languages as well (such as Python and C++).
+Although the main focus is on the mathematics, examples are given in Haskell to illustrate how to apply the concepts. In some places, examples are given in other languages as well (such as Python and C++).
 
 I would like to thank:
 
 - Tom Bannink for supplying the proof for the bifunctor example in Chapter 3.
 - Peter Kristel for valuable comments on the Yoneda embedding
+
+-- Jan-Willem Buurlage (<janwillembuurlage@gmail.com>)
 
 \chapter*{Preliminaries}
 

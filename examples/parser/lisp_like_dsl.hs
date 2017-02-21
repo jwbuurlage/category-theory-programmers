@@ -178,6 +178,6 @@ main = do
   print $ runParser expressionParser "x + y";
   print $ prettyPrint . fst <$> runParser expressionParser "  (   (  2 * 3) + (4 + x))";
   print $ eval (fromList [("x", 3)]) . fst <$> runParser expressionParser "  (   (  2 * 3) + (4 + x))";
-  let expr = fromMaybe (Constant 1234) (fst <$> runParser expressionParser "(((zoo123 * y) + (0 + x)) + ((1 * 2) + (0 * y1)))")
-  let env = fromList [("x", 3)]
+  let expr = fromMaybe (Constant 1234) (fst <$> runParser expressionParser "(((5 * y) + (0 + x)) + ((1 * 2) + (0 * zoo123)))")
+  let env = fromList [("x", 3), ("y", 1)]
   print $ result $ eval' env expr
