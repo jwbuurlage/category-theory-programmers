@@ -1,19 +1,23 @@
 \documentclass[$if(fontsize)$$fontsize$,$endif$$if(lang)$$babel-lang$,$endif$$if(papersize)$$papersize$paper,$endif$$for(classoption)$$classoption$$sep$,$endfor$]{$documentclass$}
 
-\newcommand*{\titleGM}{\begingroup % Create the command for including the title page in the document
-\hbox{ % Horizontal box
-\hspace*{0.0\textwidth} % Whitespace to the left of the title page
-\rule{1pt}{\textheight} % Vertical line
-\hspace*{0.05\textwidth} % Whitespace between the vertical line and title page text
-\parbox[b]{0.75\textwidth}{ % Paragraph box which restricts text to less than the width of the page
+\newcommand*{\titleTH}{\begingroup % Create the command for including the title page in the document
+\center % center the text
+\vspace*{\baselineskip} % Whitespace at the top of the page
+\vspace*{5 cm} % Whitespace at the top of the page
 
-{\noindent\Huge\bfseries $title$}\\[2\baselineskip] % Title
-{\large \textit{$date$}}\\[4\baselineskip] % Tagline or further description
-{\Large \textsc{$author$}} % Author name
+%{\LARGE\bfseries The Big Book of}\\[\baselineskip] % First part of the title, if it is unimportant consider making the font size smaller to accentuate the main title
 
-\vspace{0.5\textheight}
+{\Huge $title$}\\[\baselineskip] % Main title which draws the focus of the reader
 
-}}
+{\Large \emph{$tagline$}}\par % Tagline or further description
+
+\vfill % Whitespace between the title block and the publisher
+
+{\Large $author$}\\[0.167\textheight] % Author name
+
+%{\large The Publisher}\par % Publisher and logo
+
+\vspace*{3\baselineskip} % Whitespace at the bottom of the page
 \endgroup}
 
 $if(beamerarticle)$
@@ -238,7 +242,7 @@ $endif$
 \begin{document}
 $if(title)$
 \pagestyle{empty} % Removes page numbers
-\titleGM
+\titleTH
 $endif$
 $if(abstract)$
 \begin{abstract}

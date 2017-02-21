@@ -75,6 +75,13 @@ instance Alternative Parser where
   x <|> y = Parser (either (runParser x) (runParser y))
     where either f g x = f x <|> g x
 
+-- Explicit implementations of `some` or `many` for Parser
+-- oneOrMore :: Parser a -> Parser [a]
+-- oneOrMore x = (:) <$> x <*> zeroOrMore x
+--
+-- zeroOrMore :: Parser a -> Parser [a]
+-- zeroOrMore x = oneOrMore x <|> pure []
+
 satisfy :: (Char -> Bool) -> Parser Char
 satisfy predicate = Parser f
   where f [] = Nothing
@@ -83,12 +90,6 @@ satisfy predicate = Parser f
 char :: Char -> Parser Char
 char x = satisfy (== x)
 
-oneOrMore :: Parser a -> Parser [a]
-oneOrMore x = (:) <$> x <*> zeroOrMore x
-
-zeroOrMore :: Parser a -> Parser [a]
-zeroOrMore x = oneOrMore x <|> pure []
-
 -- Monoid instance for Parser of a Monoid
 instance Monoid a => Monoid (Parser a) where
   mempty = pure mempty
@@ -96,10 +97,10 @@ instance Monoid a => Monoid (Parser a) where
   f `mappend` g = fmap (<>) f <*> g
 
 idParser :: Parser String
-idParser = (pure <$> satisfy isAlpha) <> zeroOrMore (satisfy isAlphaNum)
+idParser = (pure <$> satisfy isAlpha) <> many (satisfy isAlphaNum)
 
 spaces :: Parser String
-spaces = zeroOrMore (satisfy isSpace)
+spaces = many (satisfy isSpace)
 
 intParser :: Parser Int
 intParser = Parser f
@@ -108,7 +109,6 @@ intParser = Parser f
           | null literal = Nothing
           | otherwise = Just (read literal, remainder)
           where (literal, remainder) = span isDigit xs
-
 
 opParser :: Parser OperatorType
 opParser = spaces *> foldl (<|>) Appl.empty (map (\(c, o) -> const o <$> char c) operatorLiterals) <* spaces
@@ -171,13 +171,13 @@ dependencies expr = toList $ getvars expr
 
 result :: Expression -> Either String Int
 result (Constant n) = Right n
-result expr = Left ("Missing variable bindings: " ++ fold (dependencies expr))
+result expr = Left ("Missing variable bindings: " ++ show (dependencies expr))
 
 main = do
   print $ runParser expressionParser "  (   (  2 * 3) + (4 + x))";
   print $ runParser expressionParser "x + y";
   print $ prettyPrint . fst <$> runParser expressionParser "  (   (  2 * 3) + (4 + x))";
   print $ eval (fromList [("x", 3)]) . fst <$> runParser expressionParser "  (   (  2 * 3) + (4 + x))";
-  let expr = fromMaybe (Constant 1234) (fst <$> runParser expressionParser "(((z * y) + (0 + x)) + ((1 * 2) + (0 * y)))")
+  let expr = fromMaybe (Constant 1234) (fst <$> runParser expressionParser "(((zoo123 * y) + (0 + x)) + ((1 * 2) + (0 * y1)))")
   let env = fromList [("x", 3)]
   print $ result $ eval' env expr

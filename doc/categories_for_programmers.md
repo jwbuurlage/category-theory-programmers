@@ -1,8 +1,9 @@
 % Category theory for programmers
 % Jan-Willem Buurlage
-% 2016 -- 2017
 
 ---
+tagline: An introduction to the mathematics behind functional programming
+date: \today
 toc: true
 numbersections: true
 documentclass: memoir
@@ -80,7 +81,7 @@ I would like to thank:
 - Tom Bannink for supplying the proof for the bifunctor example in Chapter 3.
 - Peter Kristel for valuable comments on the Yoneda embedding
 
-\chapter*{Preliminaries?}
+\chapter*{Preliminaries}
 
 Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. This is originally described by mathematicians such as Turing and von Neuman in the 30s.
 
@@ -200,6 +201,118 @@ Here, we state that in order for a type `a` to be part of the *type class* `Eq`,
 ```haskell
 (!=) :: Eq a => a -> a -> Bool
 x != y = not (x == y)
+```
+
+**Monoids, Functors, Applicative and Alternative**
+
+Here we give a whirlwind tour of some interesting type classes used in Haskell, the majority of the category theory that we will discuss will explain the mathematical background and uses of these typeclasses in detail, here we summarize the resulting classes as a reference. Feel free to skip or skim them, and to come back after studying the material presented in later chapters.
+
+_Monoid_
+
+Many types have one (or even multiple) _monoidal_ structure, which means that it is possible to combine two elements to a single element, and that this way of combining has some special (but common) properties.
+```haskell
+class Monoid m where
+    mempty :: m
+    mappend :: m -> m -> m -- infix operator alias: <>
+```
+The implementations depend on the type `m`, but when implementing a Monoid instance, it is the task of the implementor to adher to the following laws:
+```haskell
+-- forall x, y, z :: m
+x <> mempty == x -- identity
+mempty <> x == x
+(x <> y) <> z == x <> (y <> z) -- associativity
+```
+
+For example, the following are all possible Monoid instances (given as `(m, mempty, mappend)`):
+
+- `(Int, 0, (+))`
+- `(Int, 1, (*))`
+- `(Int32, minBound, max)`
+- `(Int32, maxBound, min)`
+- `(String, "", (++))`
+- `(Maybe, Nothing, (<|))`, here `(<|)` denotes the binary function that yields the left-most non-`Nothing` value if anything (obviously there is also a right-most equivalent `(|>)`).
+
+and so on.
+
+_Functor_
+
+A functor can take an 'ordinary' function, and apply it to a `context`. This context can be a list, the result of a computation that may have failed, a value from input/output and so on. You can also view the functor itself as the context.
+```haskell
+class Functor f where
+  fmap :: (a -> b) -> f a -> f b -- infix operator alias: <$>
+```
+Again, each instance should satisfy certain laws. For `Functor`, these are:
+```haskell
+-- forall f, g :: a -> b
+fmap id == id
+fmap (f . g) == fmap f . fmap g
+```
+For example, the `List` functor is implemented as:
+```haskell
+instance Functor [] where
+    fmap = map
+```
+Or the 'composition' functor:
+```haskell
+instance Functor ((->) c) where
+    -- fmap :: (a -> b) -> (c -> a) -> (c -> b)
+    fmap = (.)
+```
+
+_Applicative_
+
+The most obvious use of applicative is to lift functions of multiple arguments into a context. If we have a function of multiple arguments like:
+```haskell
+g :: a -> b -> c
+```
+Then we can't just list it into a functor (context), since we would obtain:
+```haskell
+fmap g :: f a -> f (b -> c)
+```
+If we compose it with a function that has the signature
+```haskell
+apply :: f (b -> c) -> f b -> f c
+```
+then we obtain:
+```haskell
+apply . fmap g :: f a -> f b -> f c
+```
+If we implement `apply`, then we can lift functions with an arbitrary number of arguments (by iteratively calling `apply` after `fmap`). A functor with `apply` is called an _applicative functor_, and the corresponding type class is:
+```haskell
+class Functor f => Applicative f where
+    pure :: a -> f a
+    ap :: f (a -> b) -> f a -> f b -- infix operator alias: <*>
+```
+we see that additionally, `pure` is introduced as a way to put any value into an applicative context. Any applicative instance has to satisfy the following laws:
+```haskell
+-- forall v, w :: a; x, y, z :: f a; g :: a -> b
+pure id <*> x = x -- identity
+pure (.) <*> x <*> y <*> z = x <*> (y <*> z) -- composition
+pure g <*> pure v = pure (g v) -- homomorphism
+y <*> pure v = pure ($ y) <*> v -- interchange
+```
+
+_Alternative_
+
+Now that we have introduced some nomenclature, we can introduce Alternative functors as _giving an applicative context a monoidal structure_.
+```haskell
+class Applicative f => Alternative f where
+    empty :: f a
+    (<|>) :: f a -> f a -> f a
+```
+
+For example, for `Maybe` we can say:
+```haskell
+instance Alternative Maybe where
+    empty = Nothing
+    Nothing <|> right = right
+    left <|> _ = left
+```
+Or for `List` we have the standard concatenation monoid:
+```haskell
+instance Alternative [] where
+    empty = []
+    (<|>) = (++)
 ```
 
 \section*{References}
@@ -2131,7 +2244,8 @@ Catamorphisms, Anamorphisms, Hylomorphisms
 
 ## Purely functional datastructures
 
-- https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504
+- <http://apfelmus.nfshost.com/articles/monoid-fingertree.html>
+- <https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504>
 
 ## Limits and colimits
 
