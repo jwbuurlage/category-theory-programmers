@@ -1,10 +1,13 @@
 module DSL where
 
-import Control.Applicative
+import Control.Applicative as Appl
 import Data.Char (isAlpha, isAlphaNum, isDigit, isSpace)
-import Data.Map (Map, (!), fromList)
+import Data.Map as Map (Map, (!), fromList, lookup)
+import Data.List (partition)
+import Data.Foldable (fold)
 import Data.Maybe (isJust, fromMaybe)
 import Data.Monoid
+import Data.Set as Set (singleton, union, empty, toList)
 
 -- Basic Expression definitions
 type Id = String
@@ -32,7 +35,17 @@ data Expression =
   Constant Int
   | Variable Id
   | BinaryOperation OperatorType (Expression, Expression)
-  deriving (Show)
+
+-- Pretty printer support
+prettyPrint :: Expression -> String
+prettyPrint (Constant n) = show n
+prettyPrint (Variable v) = v
+prettyPrint (BinaryOperation o (x, y)) = "(" ++ prettyPrint x ++
+                                          [fromMaybe '?' (getLiteral o)]
+                                          ++ prettyPrint y ++ ")"
+
+instance Show Expression where
+    show = prettyPrint
 
 constructOp :: Expression -> OperatorType -> Expression -> Expression
 constructOp e o e' = BinaryOperation o (e, e')
@@ -98,26 +111,19 @@ intParser = Parser f
 
 
 opParser :: Parser OperatorType
-opParser = spaces *> foldl (<|>) empty (map (\(c, o) -> const o <$> char c) operatorLiterals) <* spaces
+opParser = spaces *> foldl (<|>) Appl.empty (map (\(c, o) -> const o <$> char c) operatorLiterals) <* spaces
 
 expressionParser :: Parser Expression
 expressionParser = spaces *> (operatorParser <|> reducableParser) <* spaces
-  where 
+  where
     varParser = Variable <$> idParser
     constantParser = Constant <$> intParser
     reducableParser = varParser <|> constantParser <|> (char '(' *> expressionParser <* char ')')
     operatorParser = liftA3 constructOp reducableParser opParser reducableParser
 
--- Pretty printer support
-prettyPrint :: Expression -> String
-prettyPrint (Constant n) = show n
-prettyPrint (Variable v) = v
-prettyPrint (BinaryOperation o (x, y)) = "(" ++ prettyPrint x ++
-                                          [fromMaybe '?' (getLiteral o)]
-                                          ++ prettyPrint y ++ ")"
 
 -- Evaluation
-type Environment = Map String Int
+type Environment = Map Id Int
 
 eval :: Environment -> Expression -> Int
 eval _ (Constant n) = n
@@ -125,9 +131,53 @@ eval env (Variable x) = env ! x
 eval env (BinaryOperation o (x, y)) = fromMaybe const (getOp o) (eval env x) (eval env y)
 
 -- Optimization
+-- Can maybe use monoid structure to get id en assoc binary op for add and sum, so that we dont repeat it here
+-- note that div and minus is not commutative
+optimize :: Expression -> Expression
+optimize operation@(BinaryOperation Add (e, e')) = optimizeBinaryOperation Add (optimize e, optimize e') 0 (+)
+optimize operation@(BinaryOperation Multiply (e, e'))
+    | (null e'' || null e''') = Constant 0
+    | otherwise = optimizeBinaryOperation Multiply (e'', e''') 1 (*)
+    where (e'', e''') = (optimize e, optimize e')
+          null (Constant n) = (n == 0)
+          null e = False
+optimize expr = expr
 
-main = do 
+optimizeBinaryOperation :: OperatorType -> (Expression, Expression) -> Int -> (Int -> Int -> Int) -> Expression
+optimizeBinaryOperation op (Constant a, Constant b) neutral combine = Constant (combine a b)
+optimizeBinaryOperation op c@(Constant a, Variable x) neutral _
+    | a == neutral = Variable x
+    | otherwise = BinaryOperation op c
+optimizeBinaryOperation op c@(Variable x, Constant a) neutral _
+    | a == neutral = Variable x
+    | otherwise = BinaryOperation op c
+optimizeBinaryOperation op (e, e') _ _ = BinaryOperation op (e, e')
+
+partial :: Environment -> Expression -> Expression
+partial env expr@(Variable x) = case Map.lookup x env of
+    Nothing -> expr
+    Just n -> Constant n
+partial env (BinaryOperation op (e, e')) = BinaryOperation op (partial env e, partial env e')
+partial _ expr = expr
+
+eval' :: Environment -> Expression -> Expression
+eval' env expr = optimize  (partial env expr)
+
+dependencies :: Expression -> [Id]
+dependencies expr = toList $ getvars expr
+    where getvars (Variable x) = singleton x
+          getvars (BinaryOperation _ (e, e')) = getvars e `union` getvars e'
+          getvars _ = Set.empty
+
+result :: Expression -> Either String Int
+result (Constant n) = Right n
+result expr = Left ("Missing variable bindings: " ++ fold (dependencies expr))
+
+main = do
   print $ runParser expressionParser "  (   (  2 * 3) + (4 + x))";
   print $ runParser expressionParser "x + y";
   print $ prettyPrint . fst <$> runParser expressionParser "  (   (  2 * 3) + (4 + x))";
   print $ eval (fromList [("x", 3)]) . fst <$> runParser expressionParser "  (   (  2 * 3) + (4 + x))";
+  let expr = fromMaybe (Constant 1234) (fst <$> runParser expressionParser "(((z * y) + (0 + x)) + ((1 * 2) + (0 * y)))")
+  let env = fromList [("x", 3)]
+  print $ result $ eval' env expr
