@@ -1899,6 +1899,13 @@ There are a number of advantages of viewing a $\lambda$-calculus from the viewpo
 - Raul Rojas: A tutorial introduction to $\lambda$-calculus
 - Chapter 7 of van Oosten
 
+# Adjunctions, Free monads
+
+Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
+
+- https://www.youtube.com/watch?v=K8f19pXB3ts
+- Chapter 13 of Barr and Wells
+
 # Monads
 
 \epigraph{"Mathematics is the art of giving the same name to different things"}{\emph{Henri Poincar\'e}}
@@ -2222,12 +2229,9 @@ Some posts dealing specifically with Monads from a Haskell perspective:
 - <http://blog.sigfpe.com/2006/08/you-could-have-invented-monads-and.html>
 - <https://bartoszmilewski.com/2013/03/07/the-tao-of-monad/>
 
-# Adjunctions, Free monads
+# Recursion and F-algebras
 
-Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
-
-- https://www.youtube.com/watch?v=K8f19pXB3ts
-- Chapter 13 of Barr and Wells
+Initial algebras, Lambek's theorem, `Fix f`, recursion.
 
 \part{Advanced theory and applications}
 
@@ -2265,14 +2269,9 @@ Catamorphisms, Anamorphisms, Hylomorphisms
 - <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
 - <https://wiki.haskell.org/Newtype>
 
-## F-algebras:
-
-Recursion, coalgebras and streams
-
 ## Homotopy type theory
 
 ## Quantum computations?
-
 
 (Bert Jacobs)
 
@@ -2297,3 +2296,144 @@ Recursion, coalgebras and streams
 4. E. Riehl, Category theory in context,
 5. T. Leinster, Basic Category Theory
 6. J. van Ooosten, Basic Category Theory
+
+\part{Exercises}
+
+# Parser
+
+_This exercise is based on the parser exercises of (1) and the blog post series of evaluating DSLs (spoilers in the article!) (2)._
+
+**Description**
+
+The goal of this exercise is to parse, and evaluate expressions such as:
+```haskell
+"((x + 3) * (y + 5))"
+"(((x + 3) * (y + 5)) * 5)"
+"(x + y)"
+...
+```
+it is up to you to define precisely the rules of this language, and to enforce (or not) the use of parentheses.
+
+**Preliminaries**
+
+Assume that we have the following definitions:
+
+```haskell
+type Id = String
+
+data OperatorType = Add | Multiply
+  deriving (Show, Eq)
+
+data Expression =
+  Constant Int
+  | Variable Id
+  | BinaryOperation OperatorType (Expression, Expression)
+
+data Parser a = Parser { runParser :: String -> Maybe (a, String) }
+```
+
+**A) Parser**
+
+1. Implement:
+```haskell
+charParser :: Char -> Parser Char
+```
+2. Implement:
+```haskell
+satisfy :: (Char -> Bool) -> Parser Char
+satisfy predicate = ...
+-- such that
+charParser c = satisfy (== c)
+```
+Useful predicates on characters are `isAlpha, isAlphaNum, isDigit, isSpace`, and are found in the `Data.Char` library.
+3. Implement:
+```haskell
+intParser :: Parser Int
+```
+(possibly) useful library functions are:
+```haskell
+null :: [a] -> Bool
+read :: Read a => String -> a -- specialize to Int
+span :: (a -> Bool) -> [a] -> ([a], [a])
+```
+4. Provide instances for `Parser` for the following type classes:
+    - `Functor`: (`<$>`) _given a function `a -> b` and a parser for `a`, return a parser for `b`._
+    - `Applicative`: (`<*>`) _given a parser for a function `a -> b` and a parser for `a`, return a parser for `b`._
+    - `Alternative`: (`<|>`) _given parsers for `a` and `b`, try to parse `a`; if and only if it fails, try to parse `b`._
+
+    _Hint: Use the corresponding instances of `Maybe`. It is also a good exercise to implement these instances for `Maybe` yourself_.
+5. Implement:
+```haskell
+oneOrMore :: Parser a -> Parser [a]
+zeroOrMore :: Parser a -> Parser [a]
+```
+Use the alternative instance of `Parser`. In fact, these functions are already implemented for you in the Alternative type class as `many` and `some` respectfully.
+
+    _Hint: implement both in terms of the other. For example, `oneOrMore` can be seen as parse one, then parse zero or more._
+6. Implement
+```haskell
+spaces :: Parser String
+```
+that parses zero or more whitespace characters (use `isSpace`).
+7. Implement
+```haskell
+idParser :: Parser Id
+```
+A valid identifier is (in most language) a string that starts with an alpha character, followed by zero or more alphanumeric characters (remember to use the character predicates available!).
+8. Implement
+```haskell
+operatorParser :: Parser OperatorType
+```
+9. Combine the different parsers that you have made to make an expression parser:
+```haskell
+expressionParser :: Parser Expression
+```
+It may be useful for debugging to implement `show` for `Expression`:
+    ```haskell
+    instance Show Expression where
+        -- show :: Expression -> String
+        show expr = ...
+    ```
+Also look at the functions `(*>)` and `(<*)` for `Applicative` instances, which ignore the result of a computation but keep the side effect (use this to ignore whitespace).
+
+**B) Evaluation**
+
+We define the `Environment` as a map that holds (integer) values for variables.
+```haskell
+type Environment = Map Id Int
+```
+`Map` is found in the `Data.Map` library. See the documentation for usage.
+
+1. Implement:
+```haskell
+evaluate :: Environment -> Expression -> Maybe Int
+```
+2. Implement:
+```haskell
+optimize :: Expression -> Expression
+```
+for example, `(0 + x)` can be replaced with just `x`, and `(1 + 3)` can just be evaluated to produce `4`, and so on (think of other optimizations).
+3. Implement:
+```haskell
+partial :: Environment -> Expression -> Expression
+```
+that replaces all the variables in the epxression with those that have values in the environment, and leaves the others intact.
+4. Observe that you can implement `evaluate` in terms of `partial` followed by `optimize`, and do this.
+5. Make a function:
+```haskell
+dependencies :: Expression -> [Id]
+```
+returning the variables that occur in expression. Use the `Data.Set` library along with the functions `singleton, union, empty, toList`.
+
+6. Use `dependencies` to improve your error messages by implementing a function
+```haskell
+result :: Expression -> Either String Int
+```
+That returns the result of an expression, or a string containing an error message along with the dependencies that are missing.
+
+*We will revisit our parser when we talk about __catamorphisms__.*
+
+**References**
+
+- (1): <http://cis.upenn.edu/~cis194/spring13/lectures.html>
+- (2): <https://deque.blog/2017/01/17/catamorph-your-dsl-introduction/>
