@@ -400,7 +400,7 @@ Some examples of familiar categories:
 | **Vect** | vector spaces      | linear transformations |
 | **Grp**  | groups             | group homomorphisms    |
 
-In all these cases, arrows correspond to functions, although this is by no means required. All these categories correspond to objects from mathematics, along with *structure preserving maps*. **Set** will also play a role when we discuss the category **Hask** when we start talking about concrete applications to Haskell.
+In all these cases, arrows correspond to functions, although this is by no means required. All these categories correspond to objects from mathematics, along with *structure preserving maps*. **Set** will also play a role when we discuss the category **Type** when we start talking about concrete applications to Haskell.
 
 There are also a number of simple examples of categories:
 
@@ -669,7 +669,7 @@ To establish a link between functional programming and category theory, we need 
 
 Why do we want to look at types? Programming safety and correctness. In this part we will hopefully give an idea of how category theory applies to programming, but we will not go into to much detail yet, this is saved for later parts.
 
-We will take as our model for the category of types the category **Set**. Recall that the elements of **Set** are sets, and the arrows correspond to maps. There is a major issue to address here: Mathematical maps and functions in a computer program are not identical (bottom value $\perp$). We may come back to this, but for now we consider **Set**..
+We will take as our model for the category of types (**Type**) the category **Set**. Recall that the elements of **Set** are sets, and the arrows correspond to maps. There is a major issue to address here: Mathematical maps and functions in a computer program are not identical (bottom value $\perp$). We may come back to this, but for now we consider **Set** and **Type** as the same category.
 
 In Haskell, we can express that an object has a certain type:
 
@@ -755,9 +755,9 @@ To summarize this introduction, in the category of 'computer programs', types ar
 
 ## Containers as functors
 
-When we consider functors in the category of types, the first question is 'to what category?'. Here, we will almost exclusively talk about functors from **Hask** to itself, i.e. _endofunctors_.
+When we consider functors in the category of types, the first question is 'to what category?'. Here, we will almost exclusively talk about functors from **Type** to itself, i.e. _endofunctors_.
 
-Endofunctors in **Hask** map types to types, and functions to functions. There are many examples of functors in programming. Let us first consider the concept of _lists of objects_, i.e. arrays or vectors. In C++ a list would be written as:
+Endofunctors in **Type** map types to types, and functions to functions. There are many examples of functors in programming. Let us first consider the concept of _lists of objects_, i.e. arrays or vectors. In C++ a list would be written as:
 ```cpp
 std::vector<T> xs;
 ```
@@ -775,7 +775,7 @@ Note here that the true type of the numpy array is hidden inside the object, mea
 Let us consider the mathematical way of expressing this:
 
 \begin{example}
-Lists of some type are more generally called \textbf{words over some alphabet} (i.e. a set) $X$, and we denote the set of all finite words of elements in $X$ as $X^*$. Elements in $X^*$ look like:
+Lists of some type are more generally called \textbf{words over some alphabet} (i.e. a set) $X$, and we denote the set of all finite words of elements\footnote{Also called the \emph{Kleene closure} of $X$} in $X$ as $X^*$. Elements in $X^*$ look like:
 $$(x_1, x_2, x_3)$$
 $$(x_1)$$
 $$()$$
@@ -1910,7 +1910,7 @@ Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
 
 \epigraph{"Mathematics is the art of giving the same name to different things"}{\emph{Henri Poincar\'e}}
 
-Monads are used all throughout functional programming. In this part, we will try to illucidate them by studying their mathematical definition. Afterwards, we describe their use in functional programing by giving a number of motivating examples.
+Monads are used all throughout functional programming. In this part, we will try to understand them by first studying their mathematical definition and properties. Afterwards, we describe their use in functional programing by giving a number of motivating examples.
 
 Any endofunctor $T: \mathcal{C} \to \mathcal{C}$ can be composed with itself, to obtain e.g. $T^2$ and $T^3$ (which are both again endofunctors from $\mathcal{C}$ to $\mathcal{C}$. A monad concerns an endofunctor, together with natural transformation between this functor and its composites that give it a "monoid-like structure". Say $\alpha$ is a natural transformation $T \Rightarrow T'$, where $T, T'$ are endofunctors of $\mathcal{C}$, then note that $\alpha_x$ is a morphism from $Tx \to T'x$ in the category $\mathcal{C}$. Since this is a morphism, we can use $T$ or $T'$ to lift it, i.e. we obtain arrows at components $(T \alpha)_a \equiv T (\alpha_a)$ and $(\alpha T)_a \equiv \alpha_{Ta}$.
 
@@ -1974,7 +1974,7 @@ $$g \circ_T f = \mu_c \circ Tg \circ f.$$
 \end{itemize}
 \end{definition}
 
-Especially Kleisli composition can be a convenient way to work with Monads in Haskell.
+Using Kleisli composition can be a convenient stepping stone to understanding how to work with Monads in Haskell.
 
 ## Monads and functional programming
 
@@ -2119,7 +2119,7 @@ The `>>` (pronounced: then) function can be implemented as:
 
 To summarize, `bind` and `return` allows us to **compose functions that may or may not require IO operations**.
 
-### Problem 2: Data structures in Haskell
+## Problem 2: Data structures in Haskell
 
 Trivial (finite) data structures are easily implemented in Haskell as product types, but we have also seen a different type of container namely a *functorial* one. The examples we have looked at so far are `[]` and `Maybe`. Let us explore these more deeply, and see how we can make their usage more flexible. First consider the `Maybe` functor. Say we have a number of functions, where some may or may not produce a result:
 
@@ -2181,11 +2181,14 @@ x = Logger x
 
 Note, as suggested by the way `Writer m a` was introduced, that if we would use some other *monoid* instead of `String`^[Indeed, String gives rise to a monoid with binary operation `++` (concatenation)], we could accomplish different goals than logging.
 
-### Problem 4: Random numbers in Haskell
+### Problem 4: Handling State
 
-`State` monad
+`State` monad, e.g.
 
-### Problem 5: Continuation passing
+- RNG
+- `getUniques` using `Set` as State
+- Parser
+- ...
 
 ### Putting it together; the Monads type class
 
@@ -2233,6 +2236,13 @@ Some posts dealing specifically with Monads from a Haskell perspective:
 
 Initial algebras, Lambek's theorem, `Fix f`, recursion.
 
+## Algebras of monads, traversals as special arrows
+
+Catamorphisms, Anamorphisms, Hylomorphisms
+
+- <http://files.meetup.com/3866232/foldListProduct.pdf>
+- <https://deque.blog/2017/01/17/catamorph-your-dsl-introduction/>
+
 \part{Advanced theory and applications}
 
 # Lenses; Yoneda, adjunctions and profunctors
@@ -2240,18 +2250,16 @@ Initial algebras, Lambek's theorem, `Fix f`, recursion.
 - <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
 - <https://github.com/ekmett/lens>
 
-# Algebras of monads, traversals as special arrows
-
-Catamorphisms, Anamorphisms, Hylomorphisms
-- <http://files.meetup.com/3866232/foldListProduct.pdf>
-- <https://deque.blog/2017/01/17/catamorph-your-dsl-introduction/>
-
-# Ideas
-
 ## Purely functional datastructures
 
 - <http://apfelmus.nfshost.com/articles/monoid-fingertree.html>
 - <https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504>
+
+# Proof assistants
+
+Curry-Howard isomorphism
+
+# Further Ideas
 
 ## Limits and colimits
 
@@ -2265,7 +2273,7 @@ Catamorphisms, Anamorphisms, Hylomorphisms
 
 ### References
 
-- About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
+- About **Type** (or more speficially **Hask**): <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
 - <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
 - <https://wiki.haskell.org/Newtype>
 
@@ -2285,7 +2293,6 @@ Catamorphisms, Anamorphisms, Hylomorphisms
 1. *Bartosz Milewski*: "Category Theory for Programmers", a blog post series that gives a good overview of interesting topics. <https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface/>
 
 ## Papers
-1. About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
 2. Free theorems: <http://ttic.uchicago.edu/~dreyer/course/papers/wadler.pdf> (also Reynold: <http://www.cse.chalmers.se/edu/year/2010/course/DAT140_Types/Reynolds_typesabpara.pdf>).
 3. Recursion as initial objects in F-algebra: <http://homepages.inf.ed.ac.uk/wadler/papers/free-rectypes/free-rectypes.txt>
 
