@@ -55,6 +55,7 @@ header-includes:
     - \newaliascnt{proposition}{common}
     - \newaliascnt{corollary}{common}
     - \numberwithin{common}{chapter}
+    - \numberwithin{exercise}{chapter}
     - \renewcommand{\thetheorem}{\thechapter.\arabic{theorem}}
     - \renewcommand{\thelemma}{\thechapter.\arabic{lemma}}
     - \renewcommand{\thedefinition}{\thechapter.\arabic{definition}}
@@ -1899,11 +1900,135 @@ There are a number of advantages of viewing a $\lambda$-calculus from the viewpo
 - Raul Rojas: A tutorial introduction to $\lambda$-calculus
 - Chapter 7 of van Oosten
 
-# Adjunctions, Free monads
+# Adjunctions
+
+\epigraph{"Adjoint functors arise everywhere"}{\emph{Saunders Mac Lane}}
+
+There are multiple ways to introduce adjunctions, both in terms of the intuition behind them, as well as the actual definition. The setup is that there are two functors $F, G$:
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+\mathcal{C} \arrow[r, "F", bend left=30] & \mathcal{D} \arrow[l, "G", bend left=30]
+\end{tikzcd}
+\end{figure}
+
+that we want to relate. In particular, we want to generalize the _inverse_ of a functor. We say that the functor $F$ is an isomorphism with inverse $G$ if:
+$$\text{Id}_\mathcal{C} = GF,~FG = \text{Id}_\mathcal{D}$$
+where $\text{Id}_\mathcal{C}$ is the identity functor on $\mathcal{C}$, and $GF$ denotes $G \circ F$. A weaker notion is _isomorphism up to natural isomorphism_, where we require that there exists some natural isomorphisms
+$$\text{Id}_\mathcal{C} \stackrel{\sim}{\Rightarrow} GF,~FG \stackrel{\sim}{\Rightarrow} \text{Id}_\mathcal{D}$$
+Even weaker is that we only require that there exists natural transformations:
+$$\text{Id}_\mathcal{C} \Rightarrow GF,~FG \Rightarrow \text{Id}_\mathcal{D}$$
+This is what we are going to explore in this part.
+
+## Units and counits
+
+\begin{definition}[Unit-counit adjunction]
+Let $\mathcal{C}, \mathcal{D}$ be categories. Let $F: \mathcal{C} \to \mathcal{D}$ and $G: \mathcal{D} \to \mathcal{C}$ be functors.
+If there exists a natural transformation:
+$$\eta: \text{Id}_\mathcal{C} \Rightarrow GF,$$
+such that for all objects $c \in \mathcal{C}$ and $d \in \mathcal{D}$, and all arrows $f: c \to Gd$ there exists a unique arrow $g: Fc \to d$ such that the following diagram commutes:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+c \arrow[r, "\eta_c"] \arrow[rd, "f"']  & GFc \arrow[d, "Gg"] \\
+& Gd
+\end{tikzcd}
+\end{figure}
+We call the triple $(F, G, \eta)$ an \emph{adjunction}, and $\eta$ the \emph{unit} of the adjunction. We say that $F \text{ is left adjoint to } G$,  and $G \text{ is right adjoint to } F$, or simply $F \dashv G$.
+\end{definition}
+
+In other words, given an adjunction and any arrow $f: c \to Gd$, i.e. from an arbitrary object of $\mathcal{C}$ to something in the image of $G$ (so _relevant to the functor $G$_), we can equivalently consider an arrow $g: Fc \to d$ in $\mathcal{D}$ relating to the functor $F$, because we use the natural transformation $\eta$ and our functors to convert them to the same arrow.
+
+This means that the _relevant structure_ of $\mathcal{C}$ with respect to the functor $G$, can also be found in $\mathcal{D}$.
+
+There is an alternative way of describing adjunctions, as a natural bijection between hom-sets.
+
+\begin{definition}[Hom-set adjunctions]
+Let $\mathcal{C}, \mathcal{D}$ be categories. Let $F: \mathcal{C} \to \mathcal{D}$ and $G: \mathcal{D} \to \mathcal{C}$ be functors. If there is a natural bijection:
+$$\text{Hom}_{\mathcal{D}}(Fc, d) \stackrel{\phi_{d,c}}{\longrightarrow} \text{Hom}_{\mathcal{C}}(c, Gd),$$
+for each $c \in \mathcal{C}$ and $d \in \mathcal{D}$, where natural means that for all $g: d \to d'$ in $\mathcal{D}$ and $f: c \to c'$ in $\mathcal{C}$ the following diagram commutes:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+\text{Hom}_\mathcal{C}(Gd, c) \arrow[r, "\phi_{d, c}"] & \text{Hom}_\mathcal{D}(d, Fc) \\
+\text{Hom}_\mathcal{C}(Gd', c') \arrow[u, "Ff \circ \_ \circ g"] \arrow[r, "\phi_{d', c'}"] & \text{Hom}_\mathcal{D}(d', Fc')  \arrow[u, "f \circ \_ \circ Gg"']\\
+\end{tikzcd}
+\end{figure}
+then $(F, G, \{ \phi_{d, c} \})$ is an adjunction.
+\end{definition}
+
+\begin{proposition}
+We can construct a unit-counit adjunction $(F, G, \eta, \epsilon)$ from a hom-set adjunction and vice versa.
+\end{proposition}
+
+\begin{proof}
+We define the family of functions between hom-sets:
+$$\phi_{d, c}(f: Gd \to c) = Ff \circ \eta_d \equiv ..$$
+\qedhere
+\end{proof}
+
+You can also go from a hom-set adjunction to a unit-counit adjunction, so both definitions are actually equivalent.
+
+From the hom-set adjunction definition it is easy to obtain the counit.
+
+\begin{proposition}
+Let $(F, G, \eta)$ be an adjunction. Then there exists a natural transformation:
+$$\epsilon: FU \Rightarrow \text{Id}_\mathcal{D},$$
+such that for any $g: Fc \to d$ there exists a unique arrow $f: c \to Gd$ such that the following diagram commutes:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+& FGd \arrow[d, "\epsilon_d"] \\
+Fc\arrow[ur, "Ff"] \arrow[r, "g"] & d
+\end{tikzcd}
+\end{figure}
+We call $\epsilon$ the \emph{counit} of the adjunction.
+\end{proposition}
+
+\begin{proof}
+Choose $\epsilon = ...$
+\end{proof}
+
+Adjunctions can be defined either as:
+
+- One natural transformations, with a universal property (our initial aproach)
+- Our second approach, as bijections between hom-sets
+- Alternatively, you can simply specify the natural transformations, the unit and the counit
+
+## Examples
+
+\begin{example}[Abelianization]
+Consider $G$ and its Abelianization $G^{ab} \equiv G \setminus [G, G]$.
+Free/forgetful functor pairs give rise to adjunctions.
+\end{example}
+
+\begin{example}
+CCCs as adjunction
+\end{example}
+
+As we will see shortly, adjunctions also give rise to monads.
+
+## Exercises
+
+\begin{exercise}
+Let $\Delta: \mathcal{C} \to \mathcal{C} \times \mathcal{C}$ be the \emph{diagonal functor} defined as:
+\begin{align*}
+\Delta a &= (a, a) \\
+\Delta (f: a \to b) &= (f, f) : (a, a) \to (b, b)
+\end{align*}
+Show that if the category $\mathcal{C}$ has binary products if and only if $\Delta$ has a right adjoint $\Pi$. Here, corresponds the functor $\Pi: \mathcal{C} \times \mathcal{C} \to \mathcal{C}$ should send $(a, b) \mapsto a \times b$.
+
+\emph{Hint:} write the components of the counit and the arrows that arise in the property of the adjoint, in terms components of $\mathcal{C} \times \mathcal{C}$, i.e. $\epsilon = (p_1, p_2)$, $f = (q_1, q_2)$.
+
+Use that a diagram in $\mathcal{C} \times \mathcal{C}$ commutes if and only if the diagrams for each component commute, and show that you obtain the definition for the binary product.
+\end{exercise}
+
+## References
 
 Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
 
-- https://www.youtube.com/watch?v=K8f19pXB3ts
+- <https://www.youtube.com/watch?v=K8f19pXB3ts>
 - Chapter 13 of Barr and Wells
 
 # Monads
