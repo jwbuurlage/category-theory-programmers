@@ -1947,7 +1947,7 @@ There is an alternative way of describing adjunctions, as a natural bijection be
 \begin{definition}[Hom-set adjunctions]
 Let $\mathcal{C}, \mathcal{D}$ be categories. Let $F: \mathcal{C} \to \mathcal{D}$ and $G: \mathcal{D} \to \mathcal{C}$ be functors. If there is a natural bijection:
 $$\text{Hom}_{\mathcal{D}}(Fc, d) \stackrel{\phi_{d,c}}{\longrightarrow} \text{Hom}_{\mathcal{C}}(c, Gd),$$
-for each $c \in \mathcal{C}$ and $d \in \mathcal{D}$, where natural means that for all $g: d \to d'$ in $\mathcal{D}$ and $f: c \to c'$ in $\mathcal{C}$ the following diagram commutes:
+for each $c \in \mathcal{C}$ and $d \in \mathcal{D}$, where natural means that for all $g: d \to d'$ in $\mathcal{D}$ and $f: c' \to c$ in $\mathcal{C}$ the following diagrams commute:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
@@ -1955,6 +1955,14 @@ for each $c \in \mathcal{C}$ and $d \in \mathcal{D}$, where natural means that f
 \text{Hom}_\mathcal{C}(Gd', c') \arrow[u, "Ff \circ \_ \circ g"] \arrow[r, "\phi_{d', c'}"] & \text{Hom}_\mathcal{D}(d', Fc')  \arrow[u, "f \circ \_ \circ Gg"']\\
 \end{tikzcd}
 \end{figure}
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+\text{Hom}_\mathcal{C}(Gd, c) \arrow[r, "\phi_{d, c}"] & \text{Hom}_\mathcal{D}(d, Fc) \\
+\text{Hom}_\mathcal{C}(Gd', c') \arrow[u, "Ff \circ \_ \circ g"] \arrow[r, "\phi_{d', c'}"] & \text{Hom}_\mathcal{D}(d', Fc')  \arrow[u, "f \circ \_ \circ Gg"']\\
+\end{tikzcd}
+\end{figure}
+
 then $(F, G, \{ \phi_{d, c} \})$ is an adjunction.
 \end{definition}
 
@@ -1990,11 +1998,13 @@ We call $\epsilon$ the \emph{counit} of the adjunction.
 Choose $\epsilon = ...$
 \end{proof}
 
-Adjunctions can be defined either as:
+Summarizing what we saw so far, adjunctions can be defined either as:
 
-- One natural transformations, with a universal property (our initial aproach)
-- Our second approach, as bijections between hom-sets
-- Alternatively, you can simply specify the natural transformations, the unit and the counit
+1. [Universal arrow adjunction] As a triple $(F, G, \eta)$ together with a universal mapping property.
+2. [Hom-set adjunction] As a natural bijection between hom-sets
+3. [Unit-counit adjunction] As $(F, G, \eta, \epsilon)$.
+
+And we showed $1 \implies 2 \implies 3 \implies 1$, meaning that all these definitions are equivalent.
 
 ## Examples
 

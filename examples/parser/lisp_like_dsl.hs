@@ -91,13 +91,13 @@ char :: Char -> Parser Char
 char x = satisfy (== x)
 
 -- Monoid instance for Parser of a Monoid
-instance Monoid a => Monoid (Parser a) where
+instance Monoid m => Monoid (Parser m) where
   mempty = pure mempty
   -- (<>) :: Monoid a => Parser a -> Parser a -> Parser a
-  f `mappend` g = fmap (<>) f <*> g
+  f `mappend` g = liftA2 (<>) f g
 
 idParser :: Parser String
-idParser = (pure <$> satisfy isAlpha) <> many (satisfy isAlphaNum)
+idParser = fmap pure (satisfy isAlpha) <> many (satisfy isAlphaNum)
 
 spaces :: Parser String
 spaces = many (satisfy isSpace)
@@ -120,7 +120,6 @@ expressionParser = spaces *> (operatorParser <|> reducableParser) <* spaces
     constantParser = Constant <$> intParser
     reducableParser = varParser <|> constantParser <|> (char '(' *> expressionParser <* char ')')
     operatorParser = liftA3 constructOp reducableParser opParser reducableParser
-
 
 -- Evaluation
 type Environment = Map Id Int
@@ -176,6 +175,8 @@ result expr = Left ("Missing variable bindings: " ++ show (dependencies expr))
 main = do
   print $ runParser expressionParser "  (   (  2 * 3) + (4 + x))";
   print $ runParser expressionParser "x + y";
+  print $ runParser expressionParser "x";
+  print $ runParser expressionParser "5";
   print $ prettyPrint . fst <$> runParser expressionParser "  (   (  2 * 3) + (4 + x))";
   print $ eval (fromList [("x", 3)]) . fst <$> runParser expressionParser "  (   (  2 * 3) + (4 + x))";
   let expr = fromMaybe (Constant 1234) (fst <$> runParser expressionParser "(((5 * y) + (0 + x)) + ((1 * 2) + (0 * zoo123)))")
