@@ -17,7 +17,11 @@ header-includes:
     - \usepackage{float}
     - \usepackage{epigraph}
     - \usepackage{hyperref}
-    - \hypersetup{colorlinks, urlcolor=blue}
+    - \usepackage{subcaption}
+    - \usepackage{xcolor}
+    - \definecolor{lightblue}{HTML}{27aae1}
+    - \definecolor{lightred}{HTML}{e12727}
+    - \hypersetup{colorlinks, linkcolor=lightred, urlcolor=lightblue}
     - \urlstyle{tt}
     - \setlength{\epigraphwidth}{0.8\textwidth}
     - \newtheoremstyle{custom}
@@ -56,6 +60,14 @@ header-includes:
     - \newaliascnt{corollary}{common}
     - \numberwithin{common}{chapter}
     - \numberwithin{exercise}{chapter}
+    - \newcommand{\cd}[1]{
+        \begin{figure}
+        \centering
+        \begin{tikzcd}
+            {#1}
+        \end{tikzcd}
+        \end{figure}}
+    - \newcommand{\concat}{\ensuremath{+\!\!+\,}}
     - \renewcommand{\thetheorem}{\thechapter.\arabic{theorem}}
     - \renewcommand{\thelemma}{\thechapter.\arabic{lemma}}
     - \renewcommand{\thedefinition}{\thechapter.\arabic{definition}}
@@ -79,8 +91,10 @@ Although the main focus is on the mathematics, examples are given in Haskell to 
 
 I would like to thank:
 
-- Tom Bannink for supplying the proof for the bifunctor example in Chapter 3.
+- Tom Bannink for supplying the proof for the bifunctor example.
 - Peter Kristel for valuable comments on the Yoneda embedding
+- Willem Jan Palenstijn for corrections and comments regarding cartesian closed categories.
+- Tom de Jong for examples and suggestions for the section on adjunctions
 
 -- Jan-Willem Buurlage (<janwillembuurlage@gmail.com>)
 
@@ -787,6 +801,7 @@ T&: X \to X^*\\
 \end{align*}
 For this second option, we have an obvious candidate for the precise function, let $f: X \to Y$ be some map, then $Tf$ maps a word in $X$ gets to a word in $Y$ in the following way:
 $$Tf(x_1, x_2, x_3, ... x_n) = (f(x_1), f(x_2), f(x_3), \ldots, f(x_n)).$$
+\label{exa:kleene-closure}
 \end{example}
 
 **Type classes and type constructors**
@@ -1921,9 +1936,9 @@ Even weaker is that we only require that there exists natural transformations:
 $$\text{Id}_\mathcal{C} \Rightarrow GF,~FG \Rightarrow \text{Id}_\mathcal{D}$$
 This is what we are going to explore in this part.
 
-## Units and counits
+## Universal arrow adjunctions
 
-\begin{definition}[Unit-counit adjunction]
+\begin{definition}[Universal arrow adjunction]
 Let $\mathcal{C}, \mathcal{D}$ be categories. Let $F: \mathcal{C} \to \mathcal{D}$ and $G: \mathcal{D} \to \mathcal{C}$ be functors.
 If there exists a natural transformation:
 $$\eta: \text{Id}_\mathcal{C} \Rightarrow GF,$$
@@ -1940,69 +1955,220 @@ We call the triple $(F, G, \eta)$ an \emph{adjunction}, and $\eta$ the \emph{uni
 
 In other words, given an adjunction and any arrow $f: c \to Gd$, i.e. from an arbitrary object of $\mathcal{C}$ to something in the image of $G$ (so _relevant to the functor $G$_), we can equivalently consider an arrow $g: Fc \to d$ in $\mathcal{D}$ relating to the functor $F$, because we use the natural transformation $\eta$ and our functors to convert them to the same arrow.
 
-This means that the _relevant structure_ of $\mathcal{C}$ with respect to the functor $G$, can also be found in $\mathcal{D}$.
+This means that the _relevant structure_ of $\mathcal{C}$ with respect to the functor $G$, can also be found in $\mathcal{D}$ with respect to the functor $F$.
+
+\begin{example}
+View $\mathbb{Z}$ and $\mathbb{R}$ as categories, with $a \to b \iff a \leq b$. Let $I: \mathbb{Z} \to \mathbb{R}$ be the inclusion functor that sends $z \to \iota(z)$. $I$ is left adjoint to the functor $\lfloor \cdot \rfloor: \mathbb{R} \to \mathbb{Z}$ that sends $r \to \lfloor r \rfloor$. Indeed, consider the following diagram in $\mathbb{Z}$:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+z \arrow[r, "z \leq z"] \arrow[rd, "z \leq \lfloor r \rfloor"'] & \lfloor \iota(z) \rfloor = z \arrow[d, "G(\iota(z) \leq r)"] \\
+& \lfloor r \rfloor
+\end{tikzcd}
+\end{figure}
+the existence of $g = \iota(z) \leq r$ for such an $f$ corresponds to the statement:
+$$ \iota(z) \leq r \iff z \leq \lfloor r \rfloor.$$
+For the converse, consider the ceiling functor $\lceil \cdot \rceil : \mathbb{R} \to \mathbb{Z}$ and the following diagram in $\mathbb{R}$:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+r \arrow[r, "r \leq \iota(\lceil r \rceil)"] \arrow[rd, "r \leq \iota(z)"'] & \iota(\lceil r \rceil) \arrow[d, "\iota(\lceil r \rceil \leq \iota(z))"] \\
+& \iota(z)
+\end{tikzcd}
+\end{figure}
+Which corresponds to the statement:
+$$r \leq \iota(z) \iff \lceil r \rceil \leq z,$$
+showing that the inclusion functor is right adjoint to the ceil functor.
+\end{example}
+
+\begin{example}
+An important class of adjunctions take the form $\textbf{free} \dashv \textbf{forgetful}$.
+Let $X$ be a set. The free monoid $F(X)$ is defined as:
+$$F(X) = (X^*, \concat, ()),$$
+see Example \ref{exa:kleene-closure} for the definition of $X^*$, $\concat$ denotes the concatenation of words as a binary operator, and $()$ denotes the empty word. $F$ defines a \emph{free functor}:
+$$F: \mathbf{Set} \to \mathbf{Mon},$$
+sending a set to the free monoid over that set. There is also a \emph{forgetful functor}:
+$$U: \mathbf{Mon} \to \mathbf{Set},$$
+sending a monoid to its underlying set, that sends monoid homomorphisms to the corresponding function on sets. We define:
+$$\eta: \text{Id}_{\mathbf{Set}} \Rightarrow U \circ F,$$
+as having components defining a function that sends an element $x \in X$ to a singleton word containing that element:
+$$\eta_X(x) = (x).$$
+To show that $(F, U, \eta)$ form an adjunction, we consider some $f: X \to U(M)$ where $M$ is a monoid, and we want to show that there is a unique monoid homomorphism $g: F(X) \to M$ that makes the following diagram commute:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+X \arrow[r, "\eta_X"] \arrow[rd, "f"']  & U(F(X)) \arrow[d, "U(g)"] \\
+& U(M)
+\end{tikzcd}
+\end{figure}
+We have to define:
+\begin{align*}
+g(()) &= \text{id}_M \\
+g((x)) &= f(x)\\
+g((x_1, x_2, \ldots, x_n)) &= f(x_1) f(x_2) \ldots f(x_n)
+\end{align*}
+to make $g$ into a monoid homomorphism that satisfies also:
+$$f(x) = U(g)(\eta_X x) = U(g)((x)).$$
+\end{example}
+
+Before moving on, we first show that there are other definitions of adjunctions, which we will show are equivalent to the one we gave above, but are useful for describing other examples of adjunctions.
+
+## Equivalent formulations
 
 There is an alternative way of describing adjunctions, as a natural bijection between hom-sets.
 
 \begin{definition}[Hom-set adjunctions]
 Let $\mathcal{C}, \mathcal{D}$ be categories. Let $F: \mathcal{C} \to \mathcal{D}$ and $G: \mathcal{D} \to \mathcal{C}$ be functors. If there is a natural bijection:
-$$\text{Hom}_{\mathcal{D}}(Fc, d) \stackrel{\phi_{d,c}}{\longrightarrow} \text{Hom}_{\mathcal{C}}(c, Gd),$$
-for each $c \in \mathcal{C}$ and $d \in \mathcal{D}$, where natural means that for all $g: d \to d'$ in $\mathcal{D}$ and $f: c' \to c$ in $\mathcal{C}$ the following diagrams commute:
+$$\text{Hom}_{\mathcal{D}}(Fc, d) \stackrel{\phi_{c,d}}{\longrightarrow} \text{Hom}_{\mathcal{C}}(c, Gd),$$
+for each $c \in \mathcal{C}$ and $d \in \mathcal{D}$, then $(F, G, \{ \phi_{c, d} \}_{c \in \mathcal{C}, d \in \mathcal{D}})$ is an \emph{adjunction}. Here, the bijection should be natural in both $c$ and $d$, where in $\mathcal{D}$ we have that for all $g: d \to d'$ in $\mathcal{D}$ the following diagram commutes:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-\text{Hom}_\mathcal{C}(Gd, c) \arrow[r, "\phi_{d, c}"] & \text{Hom}_\mathcal{D}(d, Fc) \\
-\text{Hom}_\mathcal{C}(Gd', c') \arrow[u, "Ff \circ \_ \circ g"] \arrow[r, "\phi_{d', c'}"] & \text{Hom}_\mathcal{D}(d', Fc')  \arrow[u, "f \circ \_ \circ Gg"']\\
+\text{Hom}_\mathcal{D}(Fc, d) \arrow[d, "g \circ \_"'] \arrow[r, "\phi_{c, d}"] & \text{Hom}_\mathcal{C}(c, Gd)  \arrow[d, "Gg \circ \_"] \\
+\text{Hom}_\mathcal{C}(Fc, d') \arrow[r, "\phi_{c, d'}"] & \text{Hom}_\mathcal{C}(c, Gd')
 \end{tikzcd}
 \end{figure}
+while naturality in $\mathcal{C}$ means that for all $f: c' \to c$ the following diagram commutes:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-\text{Hom}_\mathcal{C}(Gd, c) \arrow[r, "\phi_{d, c}"] & \text{Hom}_\mathcal{D}(d, Fc) \\
-\text{Hom}_\mathcal{C}(Gd', c') \arrow[u, "Ff \circ \_ \circ g"] \arrow[r, "\phi_{d', c'}"] & \text{Hom}_\mathcal{D}(d', Fc')  \arrow[u, "f \circ \_ \circ Gg"']\\
+\text{Hom}_\mathcal{D}(Fc, d) \arrow[d, "\_ \circ Ff"'] \arrow[r, "\phi_{c, d}"] & \text{Hom}_\mathcal{C}(c, Gd)  \arrow[d, "\_ \circ f"] \\
+\text{Hom}_\mathcal{C}(Fc', d) \arrow[r, "\phi_{c', d}"] & \text{Hom}_\mathcal{C}(c', Gd)
 \end{tikzcd}
 \end{figure}
-
-then $(F, G, \{ \phi_{d, c} \})$ is an adjunction.
 \end{definition}
 
+We can show that given a universal arrow adjunction, we can obtain a hom-set adjunction.
+
 \begin{proposition}
-We can construct a unit-counit adjunction $(F, G, \eta, \epsilon)$ from a hom-set adjunction and vice versa.
+Let $(F, G, \eta)$ be a univeral arrow adjunction. Then the family of functions:
+\begin{align*}
+\phi_{c, d}:~&\text{Hom}_\mathcal{D}(Fc, d) \to \text{Hom}_\mathcal{C}(c, Gd), \\
+             & (\alpha: Fc \to d) \mapsto G \alpha \circ \eta_c
+\end{align*}
+defines a hom-set adjunction $(F, G, \{ \phi_{c, d} \}_{c \in \mathcal{C}, d \in \mathcal{D}})$.
 \end{proposition}
 
 \begin{proof}
-We define the family of functions between hom-sets:
-$$\phi_{d, c}(f: Gd \to c) = Ff \circ \eta_d \equiv ..$$
+First we show that $\phi_{c, d}$ is a bijection. Because $(F, G, \eta)$ is an adjunction, we know that:
+$$\forall f: c \to Gd, \exists !~g: Fc \to d, \text{ s.t. } f = Gg \circ \eta_c.$$
+Injectivity of $\phi_{c, d}$ is guaranteed by the uniqueness of the arrow $g$, while surjectivity is guaranteed by the existence of such an arrow.
+
+Next we have to show that it is natural in both $\mathcal{C}$, and $\mathcal{D}$ which means respectively that for all $f: c' \to c$ and $g: d \to d'$:
+\begin{align}
+G\alpha \circ \eta_c \circ f &= G(\alpha \circ Ff) \circ \eta_{c'} \label{eqn:natural-in-c}\\
+Gg \circ G\alpha \circ \eta_c &= G(k \circ \alpha) \circ \eta_c \label{eqn:natural-in-d}
+\end{align}
+Equation \ref{eqn:natural-in-c} follows from the functoriality of $G$ and the naturality of $\eta$:
+$$G(\alpha \circ Ff) \circ \eta_{c'} = G(\alpha) \circ G(Ff) \circ \eta_{c'} = G(\alpha) \circ \eta_c \circ f.$$
+Equation \ref{eqn:natural-in-d} follows directly from the functoriality of $G$.
+\end{proof}
+
+\begin{definition}[Unit-counit adjunctions]
+Let $\mathcal{C}, \mathcal{D}$ be categories. Let $F: \mathcal{C} \to \mathcal{D}$ and $G: \mathcal{D} \to \mathcal{C}$ be functors. If there are natural transformations:
+$$\eta: \text{Id}_\mathcal{C} \Rightarrow GF,~\epsilon: FG \Rightarrow \text{Id}_\mathcal{D},$$
+such that the following diagrams (the \emph{triangle identities}) commute:
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+F \arrow[r, Rightarrow, "F\eta"] \arrow[dr, Rightarrow, "\text{id}_F"'] & FGF \arrow[d, Rightarrow, "\epsilon F"] \\
+  & F
+\end{tikzcd}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+G \arrow[r, Rightarrow, "\eta G"] \arrow[dr, Rightarrow, "\text{id}_G"'] & GFG \arrow[d, Rightarrow, "G \epsilon"] \\
+  & G
+\end{tikzcd}
+\end{figure}
+
+where we use the notation (now in components) $(\eta G)_d = \eta_{Gd}$ and $(F \eta)_c = F(\eta_c)$, then $(F, G, \eta, \epsilon)$ is an \emph{adjunction}. We call $\eta$ the \emph{unit} and $\epsilon$ the \emph{counit} of the adjunction.
+\end{definition}
+
+Note that this means that the unit is the \emph{translated inverse} of the counit and vice versa.
+
+\begin{proposition}
+We can construct a unit-counit adjunction $(F, G, \eta, \epsilon)$ from a hom-set adjunction.
+\end{proposition}
+
+\begin{proof}
+We define $\eta$ and $\epsilon$ as having components:
+\begin{align}
+\eta_c: c \to GFc &= \phi_{c, Fc}(\text{id}_{Fc}) \label{eqn:unit-from-hom}\\
+\epsilon_d: FGd \to d &= \phi^{-1}_{Gd, d}(\text{id}_{Gd}) \label{eqn:counit-from-hom}
+\end{align}
+Let us prove that $\eta$ is a natural transformation, the proof of the naturality of $\epsilon$ is dual to this. We want to show that the following diagram commutes for all $f: c \to c'$:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+c \arrow[d, "f"] \arrow[r, "\eta_c"] & GFc \arrow[d, "GFf"] \\
+c'\arrow[r, "\eta_{c'}"] & GFc'
+\end{tikzcd}
+\end{figure}
+
+i.e. that:
+$$\alongtop = GF f \circ \eta_c = \eta_{c'} \circ f = \alongbottom$$
+Plugging in our definition for $\eta_c$, and using the naturality of $\phi_{c, d}$ we see:
+\begin{align*}
+GFf \circ \phi_{c, Fc}(\text{id}_{Fc}) &= \phi_{c, Fc'} (Ff \circ \text{id}_{Fc}) \\
+&=  \phi_{c, Fc'} (\text{id}_{Fc'} \circ Ff) \\
+&=  \phi_{c', Fc'} (\text{id}_{Fc'}) \circ f = \eta_{c'} \circ f
+\end{align*}
+To show the first triangle identity, i.e. that for all $c \in \mathcal{C}$:
+$$\epsilon_{Fc} \circ F(\eta_c) = \text{id}_{Fc},$$
+we use naturality of $\phi_{GFc, Fc}^{-1}$:
+\begin{align*}
+\phi^{-1}_{GFc, Fc}(\text{id}_{GFc}) \circ F(\phi_{c, Fc}(\text{id}_{Fc})) &= \phi^{-1}_{c, Fc} (\text{id}_{GFc} \circ \phi_{c, Fc}(\text{id}_{Fc})) \\
+&= \phi^{-1}_{c, Fc} (\phi_{c, Fc}(\text{id}_{Fc})) = \text{id}_{Fc}
+\end{align*}
+For the second triangle identity, i.e. for all $d \in \mathcal{D}$:
+$$G(\epsilon_d) \circ \eta_{Gd} = \text{id}_{Gd},$$
+we use the naturality of $\phi_{Gd, FGd}$:
+\begin{align*}
+G(\phi^{-1}_{Gd, d}(\text{id}_Gd)) \circ \phi_{Gd, FGd}(\text{id}_{FGd}) &= \phi_{Gd, d}(\phi^{-1}_{Gb, b} (\text{id}_{Gb}) \circ \text{id}_{FGb}) \\
+ &= \phi_{Gd, d}(\phi^{-1}_{Gb, b} (\text{id}_{Gb})) = \text{id}_{Gb}
+\end{align*}
+
 \qedhere
 \end{proof}
 
-You can also go from a hom-set adjunction to a unit-counit adjunction, so both definitions are actually equivalent.
-
-From the hom-set adjunction definition it is easy to obtain the counit.
+To complete the cycle of equalities, we show that we can retrieve our original universal arrow adjunction from the unit-counit adjunction.
 
 \begin{proposition}
-Let $(F, G, \eta)$ be an adjunction. Then there exists a natural transformation:
-$$\epsilon: FU \Rightarrow \text{Id}_\mathcal{D},$$
-such that for any $g: Fc \to d$ there exists a unique arrow $f: c \to Gd$ such that the following diagram commutes:
-\begin{figure}[H]
-\centering
-\begin{tikzcd}
-& FGd \arrow[d, "\epsilon_d"] \\
-Fc\arrow[ur, "Ff"] \arrow[r, "g"] & d
-\end{tikzcd}
-\end{figure}
-We call $\epsilon$ the \emph{counit} of the adjunction.
+Let $(F, G, \eta, \epsilon)$ be a unit-counit adjunction. Then $(F, G, \eta)$ forms a universal arrow adjunction.
 \end{proposition}
 
 \begin{proof}
-Choose $\epsilon = ...$
+Let $f: c \to Gd$. We need to show that there is a unique solution to the equation $G(?) \circ \eta_c = f$.
+
+From the second triangle identity, naturality of $\eta$, and functorality of $G$, we have:
+\begin{align*}
+G(\epsilon_d) \circ \eta_{Gd} &= \text{id}_{Gd} \\
+G(\epsilon_d) \circ \eta_{Gd} \circ f &= f \\
+G(\epsilon_d) \circ GF f \circ \eta_{c} &= f \\
+G(\epsilon_d \circ F f) \circ \eta_{c} &= f
+\end{align*}
+So that the required $g \equiv \epsilon_d \circ F f: F c \rightarrow d$ exists. To show that it is unique, let:
+\begin{align*}
+f &= G(g) \circ \eta_c \\
+Ff &= FG(g) \circ F\eta_c \\
+\epsilon_d \circ Ff &= \epsilon_d \circ FG(g) \circ F\eta_c \\
+\epsilon_d \circ Ff &= g \circ \epsilon_{Fd} \circ F\eta_c \\
+\epsilon_d \circ Ff &= g \circ \text{id}_{Fc} \\
+\epsilon_d \circ Ff &= g
+\end{align*}
+So $g$ must be of this form, as required.
+\qedhere
 \end{proof}
 
 Summarizing what we saw so far, adjunctions can be defined either as:
 
-1. [Universal arrow adjunction] As a triple $(F, G, \eta)$ together with a universal mapping property.
-2. [Hom-set adjunction] As a natural bijection between hom-sets
-3. [Unit-counit adjunction] As $(F, G, \eta, \epsilon)$.
+1. _Universal arrow adjunction_: As a triple $(F, G, \eta)$ together with a universal mapping property.
+2. _Hom-set adjunction_: As a natural bijection between hom-sets
+3. _Unit-counit adjunction_: As $(F, G, \eta, \epsilon)$ satisfying the triangle identities.
 
 And we showed $1 \implies 2 \implies 3 \implies 1$, meaning that all these definitions are equivalent.
 
@@ -2022,6 +2188,11 @@ As we will see shortly, adjunctions also give rise to monads.
 ## Exercises
 
 \begin{exercise}
+Argue using duality that the counit satisfies the following universal mapping property.
+\label{exc:universal-mapping-property-counit}
+\end{exercise}
+
+\begin{exercise}
 Let $\Delta: \mathcal{C} \to \mathcal{C} \times \mathcal{C}$ be the \emph{diagonal functor} defined as:
 \begin{align*}
 \Delta a &= (a, a) \\
@@ -2029,9 +2200,13 @@ Let $\Delta: \mathcal{C} \to \mathcal{C} \times \mathcal{C}$ be the \emph{diagon
 \end{align*}
 Show that if the category $\mathcal{C}$ has binary products if and only if $\Delta$ has a right adjoint $\Pi$. Here, corresponds the functor $\Pi: \mathcal{C} \times \mathcal{C} \to \mathcal{C}$ should send $(a, b) \mapsto a \times b$.
 
-\emph{Hint:} write the components of the counit and the arrows that arise in the property of the adjoint, in terms components of $\mathcal{C} \times \mathcal{C}$, i.e. $\epsilon = (p_1, p_2)$, $f = (q_1, q_2)$.
+\emph{Hint:} write the components of the counit and the arrows that arise in the universal arrow property of the counit (see Exercise \ref{exc:universal-mapping-property-counit}), in terms components of $\mathcal{C} \times \mathcal{C}$, i.e. $\epsilon_d = (p_1, p_2)$, $f = (q_1, q_2)$.
 
 Use that a diagram in $\mathcal{C} \times \mathcal{C}$ commutes if and only if the diagrams for each component commute, and show that you obtain the definition for the binary product.
+\end{exercise}
+
+\begin{exercise}
+Although we proved almost everything equationally in this part, some parts can be proved more efficiently using the Yoneda lemma.
 \end{exercise}
 
 ## References
@@ -2040,6 +2215,8 @@ Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
 
 - <https://www.youtube.com/watch?v=K8f19pXB3ts>
 - Chapter 13 of Barr and Wells
+- Chapter 4 of Riehl
+- Chapter 4 of Mac Lane
 
 # Monads
 
@@ -2049,7 +2226,7 @@ Monads are used all throughout functional programming. In this part, we will try
 
 Any endofunctor $T: \mathcal{C} \to \mathcal{C}$ can be composed with itself, to obtain e.g. $T^2$ and $T^3$ (which are both again endofunctors from $\mathcal{C}$ to $\mathcal{C}$. A monad concerns an endofunctor, together with natural transformation between this functor and its composites that give it a "monoid-like structure". Say $\alpha$ is a natural transformation $T \Rightarrow T'$, where $T, T'$ are endofunctors of $\mathcal{C}$, then note that $\alpha_x$ is a morphism from $Tx \to T'x$ in the category $\mathcal{C}$. Since this is a morphism, we can use $T$ or $T'$ to lift it, i.e. we obtain arrows at components $(T \alpha)_a \equiv T (\alpha_a)$ and $(\alpha T)_a \equiv \alpha_{Ta}$.
 
-In particular, note that this defines natural transformations between the appropraite composite functors since the image of any commutative diagram under a functor is again commutative.
+In particular, note that this defines natural transformations between the appropriate composite functors since the image of any commutative diagram under a functor is again commutative.
 
 We are now ready to dive into the definition of a monad:
 
