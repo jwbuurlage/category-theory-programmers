@@ -311,7 +311,7 @@ y <*> pure v = pure ($ y) <*> v -- interchange
 
 _Alternative_
 
-Now that we have introduced some nomenclature, we can introduce Alternative functors as _giving an applicative context a monoidal structure_.
+Now that we have introduced some terminology, we can introduce Alternative functors as _giving an applicative context a monoidal structure_.
 ```haskell
 class Applicative f => Alternative f where
     empty :: f a
@@ -2058,7 +2058,7 @@ Injectivity of $\phi_{c, d}$ is guaranteed by the uniqueness of the arrow $g$, w
 Next we have to show that it is natural in both $\mathcal{C}$, and $\mathcal{D}$ which means respectively that for all $f: c' \to c$ and $g: d \to d'$:
 \begin{align}
 G\alpha \circ \eta_c \circ f &= G(\alpha \circ Ff) \circ \eta_{c'} \label{eqn:natural-in-c}\\
-Gg \circ G\alpha \circ \eta_c &= G(k \circ \alpha) \circ \eta_c \label{eqn:natural-in-d}
+Gg \circ G\alpha \circ \eta_c &= G(g \circ \alpha) \circ \eta_c \label{eqn:natural-in-d}
 \end{align}
 Equation \ref{eqn:natural-in-c} follows from the functoriality of $G$ and the naturality of $\eta$:
 $$G(\alpha \circ Ff) \circ \eta_{c'} = G(\alpha) \circ G(Ff) \circ \eta_{c'} = G(\alpha) \circ \eta_c \circ f.$$
@@ -2176,7 +2176,7 @@ And we showed $1 \implies 2 \implies 3 \implies 1$, meaning that all these defin
 ## Examples
 
 - Free/forgetful functor pairs give rise to adjunctions.
-- Groups $G$ and their abelianization $G^{ab} \equiv G \setminus [G, G]$ form an adjunction.
+- Groups $G$ and their abelianizations $G^{ab} \equiv G / [G, G]$ form an adjunction.
 - Adjunctions can be used to prove many convenient isomorphisms for exponential objects in CCC's
 - As we will see shortly, adjunctions also give rise to monads.
 
@@ -2190,7 +2190,7 @@ For any $g: Fc \to d$ there is a unique arrow $f: c \to Gd$ such that the follow
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-d  & FGd \arrow[l, "\epsilon_d"] \\
+d  & FGd \arrow[l, "\epsilon_d"'] \\
 & \arrow[lu, "g"] \arrow[u, "Ff"'] Fc
 \end{tikzcd}
 \end{figure}
