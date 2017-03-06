@@ -1966,7 +1966,7 @@ z \arrow[r, "z \leq z"] \arrow[rd, "z \leq \lfloor r \rfloor"'] & \lfloor \iota(
 & \lfloor r \rfloor
 \end{tikzcd}
 \end{figure}
-the existence of $g = \iota(z) \leq r$ for such an $f$ corresponds to the statement:
+the existence of a unique $g = \iota(z) \leq r$ for such an $f$ corresponds to the statement:
 $$ \iota(z) \leq r \iff z \leq \lfloor r \rfloor.$$
 For the converse, consider the ceiling functor $\lceil \cdot \rceil : \mathbb{R} \to \mathbb{Z}$ and the following diagram in $\mathbb{R}$:
 \begin{figure}[H]
@@ -1978,7 +1978,8 @@ r \arrow[r, "r \leq \iota(\lceil r \rceil)"] \arrow[rd, "r \leq \iota(z)"'] & \i
 \end{figure}
 Which corresponds to the statement:
 $$r \leq \iota(z) \iff \lceil r \rceil \leq z,$$
-showing that the inclusion functor is right adjoint to the ceil functor.
+showing that the inclusion functor is right adjoint to the ceil functor. So we have the adjunction chain:
+$$\lceil \cdot \rceil \dashv I \dashv \lfloor \cdot \rfloor.$$
 \end{example}
 
 \begin{example}
@@ -2174,21 +2175,26 @@ And we showed $1 \implies 2 \implies 3 \implies 1$, meaning that all these defin
 
 ## Examples
 
-\begin{example}[Abelianization]
-Consider $G$ and its Abelianization $G^{ab} \equiv G \setminus [G, G]$.
-Free/forgetful functor pairs give rise to adjunctions.
-\end{example}
-
-\begin{example}
-CCCs as adjunction
-\end{example}
-
-As we will see shortly, adjunctions also give rise to monads.
+- Free/forgetful functor pairs give rise to adjunctions.
+- Groups $G$ and their abelianization $G^{ab} \equiv G \setminus [G, G]$ form an adjunction.
+- Adjunctions can be used to prove many convenient isomorphisms for exponential objects in CCC's
+- As we will see shortly, adjunctions also give rise to monads.
 
 ## Exercises
 
 \begin{exercise}
-Argue using duality that the counit satisfies the following universal mapping property.
+Argue using duality that the counit satisfies the following universal mapping property:
+
+For any $g: Fc \to d$ there is a unique arrow $f: c \to Gd$ such that the following diagram commutes:
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+d  & FGd \arrow[l, "\epsilon_d"] \\
+& \arrow[lu, "g"] \arrow[u, "Ff"'] Fc
+\end{tikzcd}
+\end{figure}
+
 \label{exc:universal-mapping-property-counit}
 \end{exercise}
 
@@ -2206,12 +2212,12 @@ Use that a diagram in $\mathcal{C} \times \mathcal{C}$ commutes if and only if t
 \end{exercise}
 
 \begin{exercise}
-Although we proved almost everything equationally in this part, some parts can be proved more efficiently using the Yoneda lemma.
+Although we proved almost everything equationally in this part, some parts can be proved more efficiently using the Yoneda lemma, for example we consider the natural bijection in the definition of a hom-set adjunction as a natural transformation between the hom-functors:
+$$\text{Hom}(F-, -) \Rightarrow \text{Hom}(-, G-)$$
+from $\mathcal{C}^{\text{op}} \times \mathcal{D} \to \mathbf{Set}$. Think about this.
 \end{exercise}
 
 ## References
-
-Currying is adjoint transpose of $f$, counit. See Barr and Wells 6.1.
 
 - <https://www.youtube.com/watch?v=K8f19pXB3ts>
 - Chapter 13 of Barr and Wells
