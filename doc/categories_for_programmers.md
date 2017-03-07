@@ -332,16 +332,85 @@ instance Alternative [] where
     (<|>) = (++)
 ```
 
+_Monads_
+
+A functor lets you lift functions to the functorial context. An applicative functor lets you untangle functions caught in a context (this can be e.g. an artifact of currying functions of multiple arguments) to functions in the functorial context. Another useful operation is to compose functions whose _result lives inside the context_, and this is done through bind `>>=` (with its flipped cousin `=<<`).
+
+To illustrate the similarities between the typeclasses `Functor => Applicative => Monad`:
+```haskell
+(<$>) :: (a -> b)   -> f a -> f b
+(<*>) :: f (a -> b) -> f a -> f b
+(=<<) :: a -> f b   -> f a -> f b
+```
+For us, the interesting part of the definition is:
+```haskell
+class Applicative m => Monad m where
+    return :: a -> m a
+    (>>=) :: m a -> (a -> m b) -> m b
+```
+The default implementation of `return` is to fall back on `pure` from applicative. The bind operation has to satisfy the following laws:
+```haskell
+-- forall v :: a; x :: m a; k :: a -> m b, h :: b -> m c
+return v >>= k = k v
+x >>= return = x
+m >>= (\y -> k y >>= h) = (m >>= k) >>= h
+```
+Thus bind takes a monadic value, and shoves it in a function expecting a non-monadic value (or it can bypass this function completely). A _very_ common usage of bind is the following.
+
+```haskell
+x :: m a
+x >>= (\a -> {- some expression involving a -})
+```
+which we can understand to mean that we _bind_ the name `a` to whatever is inside the monadic value `x`, and then we can reuse it in the expressions that follow. In fact, this is so common that Haskell has convenient syntactic sugar for this pattern called `do`-notation. This notation is recursively desugared according to the following rules (taken from Stephen Diehl's "What I wish I knew when learning Haskell"):
+```haskell
+do { a <- f; m }  ~>  f >>= \a -> do { m }
+do { f; m }  ~>  f >> do { m }
+do { m }  ~>  m
+```
+Curly braces and semicolons are usually omitted. For example, the following two snippets show the sugared and desugared version of `do`-notation:
+```haskell
+do
+  a <- f
+  b <- g
+  c <- h
+  return (a, b, c)
+
+f >>= \a ->
+  g >>= \b ->
+    h >>= \c ->
+      return (a, b, c)
+```
+
+Monads are used to do all kinds of things that are hard to do in a purely functional language such as Haskell:
+
+- Input/output
+- Data structures
+- State
+- Exceptions
+- Logging
+- Continuations (co-routines)
+- Concurrency
+- Random number generation
+- ...
+
 \section*{References}
 
 If you want to learn Haskell, the following resources are helpful as a first step:
 
-- 5 minute tutorial to get an idea: <https://tryhaskell.org/>
-- The wiki book on Haskell is quite good: <https://en.wikibooks.org/wiki/Haskell>
-- There is an excellent accessible Haskell book coming out soon, but it can be found already: <http://haskellbook.com/>
-- A book that teaches Haskell in a different way: <http://learnyouahaskell.com/chapters>
-- If you are looking to do exercises, there is a guide to different courses available here: <https://github.com/bitemyapp/learnhaskell>
-- A handy search engine for library functions is Hoogle: <https://www.haskell.org/hoogle/>
+- 5 minute tutorial to get an idea:
+    * <https://tryhaskell.org/>
+- The wiki book on Haskell is quite good:
+    * <https://en.wikibooks.org/wiki/Haskell>
+- There is an excellent accessible Haskell book coming out soon, but it can be found already:
+    * <http://haskellbook.com/>
+- A book that is written in a light manner:
+    * <http://learnyouahaskell.com/chapters>
+- If you are looking to do exercises, there is a guide to different courses available here:
+    * <https://github.com/bitemyapp/learnhaskell>
+- A handy search engine for library functions is Hoogle:
+    * <https://www.haskell.org/hoogle/>
+- Advanced topics for Haskell:
+    * <http://dev.stephendiehl.com/hask/>
 
 \part{Basic theory}
 
