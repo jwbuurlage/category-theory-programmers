@@ -172,6 +172,25 @@ result :: Expression -> Either String Int
 result (Constant n) = Right n
 result expr = Left ("Missing variable bindings: " ++ show (dependencies expr))
 
+-- Monad stuff
+instance Monad Parser where
+  return = pure
+  -- (>>=) Parser a -> (a -> Parser b) -> Parser b
+  x >>= f = Parser (
+    \s -> do
+      (x', s') <- runParser x s
+      (y, s'')  <- runParser (f x') s'
+      return (y, s''))
+
+testMonad :: Parser [Int]
+testMonad = do
+  x <- intParser
+  spaces;
+  y <- intParser
+  spaces;
+  z <- intParser
+  return [x, y, z]
+
 main = do
   print $ runParser expressionParser "  (   (  2 * 3) + (4 + x))";
   print $ runParser expressionParser "x + y";
@@ -182,3 +201,4 @@ main = do
   let expr = fromMaybe (Constant 1234) (fst <$> runParser expressionParser "(((5 * y) + (0 + x)) + ((1 * 2) + (0 * zoo123)))")
   let env = fromList [("x", 3), ("y", 1)]
   print $ result $ eval' env expr
+  print $ runParser testMonad "123 123 123"
