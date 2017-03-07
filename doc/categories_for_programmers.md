@@ -2831,3 +2831,58 @@ That returns the result of an expression, or a string containing an error messag
 
 - (1): <http://cis.upenn.edu/~cis194/spring13/lectures.html>
 - (2): <https://deque.blog/2017/01/17/catamorph-your-dsl-introduction/>
+
+# Monads
+
+
+**A) IO: Hangman**
+
+_Taken from (1)_
+
+**Description**
+
+The goal is to make an interactive 'hangman' game in Haskell, so that:
+```
+./hangman
+Enter a secret word: *******
+Try to guess: h
+h______
+Try to guess: ha
+ha___a_
+Try to guess: hang
+hang_an
+Try to guess: hangman
+You win!!!
+```
+
+**Preliminaries**
+
+Assume that we have the following definitions:
+
+```haskell
+...
+```
+
+1. Implement:
+    ...
+
+**B) State: Simulating Risk battles**
+
+_Taken from (2)_
+
+**Description**
+
+Simulate Risk
+
+**Preliminaries**
+
+Assume that we have the following definitions:
+
+```haskell
+...
+```
+
+**References**
+
+- (1): <http://www.haskellbook.com>
+- (2): CIS194
