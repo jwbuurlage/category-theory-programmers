@@ -2363,6 +2363,16 @@ $$g \circ_T f = \mu_c \circ Tg \circ f.$$
 
 Using Kleisli composition can be a convenient stepping stone to understanding how to work with Monads in Haskell.
 
+## Adjunctions give rise to Monads
+
+Let $(F, G, \eta, \epsilon)$ be a unit-counit adjunction. We have a functor:
+$$T \equiv FG: \mathcal{D} \to \mathcal{D}.$$
+We can define a functor:
+$$\mu: T^2 \to T, \mu_d = \equiv F(\epsilon_{Gd}).$$
+You can show that $(T, \eta, \mu)$ forms a monad.
+
+IIRC you can show that every monad comes from an adjunction.
+
 ## Monads and functional programming
 
 Because valid functional programs can seem quite restrictive, we need non-standard tools to perform operations that you take for granted in imperative languages. We will explore what this statement means for some real world programs, and discover what problems and difficulties pop up. In this part and the following we will see how to circumvent these problems (and go beyond!) using the categorical language that we developed prior.
