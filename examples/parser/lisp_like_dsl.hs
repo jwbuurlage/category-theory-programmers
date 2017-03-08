@@ -182,14 +182,15 @@ instance Monad Parser where
       (y, s'')  <- runParser (f x') s'
       return (y, s''))
 
-testMonad :: Parser [Int]
-testMonad = do
-  x <- intParser
-  spaces;
-  y <- intParser
-  spaces;
-  z <- intParser
+threeInts :: Parser [Int]
+threeInts = do
+  x <- parseOneInt
+  y <- parseOneInt
+  z <- parseOneInt
   return [x, y, z]
+  where
+    parseOneInt = spaces *> intParser
+
 
 main = do
   print $ runParser expressionParser "  (   (  2 * 3) + (4 + x))";
@@ -201,4 +202,4 @@ main = do
   let expr = fromMaybe (Constant 1234) (fst <$> runParser expressionParser "(((5 * y) + (0 + x)) + ((1 * 2) + (0 * zoo123)))")
   let env = fromList [("x", 3), ("y", 1)]
   print $ result $ eval' env expr
-  print $ runParser testMonad "123 123 123"
+  print $ runParser threeInts "123 123 123"

@@ -108,310 +108,6 @@ The difficulty in using a *(typed, pure) functional* programming language, is th
 
 Something else that would allow us to more accurately describe our programs in a mathematical way is if execution is *lazy*, and Haskell indeed is lazy. This means we can work with **infinite lists and sequences**, and only peeking inside such as a list causes the necessary computations to be done (or 'collapses the wave function' if you want a quantum analogy).
 
-\section*{Haskell}
-
-In this section we will give an introduction to programming using Haskell. It will not be an extensive introduction, in fact it will be very brief. However, studying this section should be enough to allow you to follow along with the rest of the text even if you have no experience with Haskell. You are encouraged to look for additional material online, see also the references at the end of this section. You are assumed to have access to the Glasgow Haskell Compiler (GHC) and its interactive REPL GHCi.
-
-To follow along, open `ghci` and play around with the code snippets that we provide.
-
-We will dicuss te topics suggested by the NICTA Haskell course^[https://github.com/NICTA/course].
-
-**Values and assignment**
-
-A value can be assigned to a variable as follows:
-```haskell
-let x = 'a'
-let y = 3
-let xs = [1,2,3]
-let f x = x * x
-let g x y = x * y
-```
-We note that these variables are only valid inside an expression, using a:
-```haskell
-let [variable = value] in [expression]
-```
-syntax, but you can also use this style of variable definition inside `ghci`.
-
-**Type signatures**
-
-In GHCi, you can see the type of the variable using:
-```haskell
-:t x -- x :: Char
-:t y -- y :: Num a => a
-:t xs -- g :: Num t => [t]
-:t f -- f :: Num a => a -> a
-:t g -- g :: Num a => a -> a -> a
-```
-Here `::` means "has the type of".
-
-The `->` in a type is right associative, i.e.
-```haskell
-a -> a -> a == a -> (a -> a)
-```
-and so on. You can read this as 'for an `a`, we get a function from `a` to `a`'.
-
-**Functions are values**
-
-Functions can be used as arguments to other (higher order) functions. E.g.
-```haskell
-:t (2*) -- Num a => a -> a
-map :: (a -> b) -> [a] -> [b]
-map (2*) xs -- [2,4,6]
-```
-Here we *map* a function over a list.
-
-**Functions take arguments**
-
-On thing to notice about the `map` example, is that it although it is a function that technically takes a single argument (and produces a function from a list to a list), it can also be viewed as a function of two arguments. We will not explicitely distinguish between these two views.
-
-We can also make anonymous 'lambda' functions:
-```haskell
-map (\x -> x * x) xs -- [1,4,9]
-```
-The backslash is inteded to look like a $\lambda$.
-
-**Infix operators**
-
-An operator starts with a non-alphanumeric character, e.g. `+`, `++`, `>>=`, `:` are all operators, and they use *infix* notation by default. For example:
-```haskell
-1 + 2 -- 3
-[1,2] ++ [3,4] -- [1,2,3,4]
-1 : [2,3] -- [1,2,3]
-```
-To use them with *prefix* notation, we surround them with parenthesis:
-```haskell
-(+) 1 2 -- 3
-```
-Any function (which by default uses prefix notation) can be used infix as well using backticks:
-```haskell
-let f x y = x * x + y * y
-2 `f` 3 -- 13
-```
-this can make code significantly more clear when defining e.g. operations that act on multiple lists, sets, or maps.
-
-**Polymorphism**
-
-We already saw the type signature of `map`:
-```haskell
-map :: (a -> b) -> [a] -> [b]
-```
-This is an example of a polymorphic function, it is defined for any type `a` and `b`. We refer to these 'wildcard types' as *type variables*. These always start with a lowercase letter.
-
-**Data types**
-
-To work with custom data structures, we create new *data types*. These are declared as follows:
-```haskell
-data DataTypeName a b = Zero | One a | One' b | Both a b
-```
-A data type is declared using the `data` keyword, and the *type constructor* is given a name (here `DataTypeName`). A data type depends on a number of type variables, here `a` and `b`. After the `=` sign, there are zero or more *data constructors*, here `Zero`, `One`, `One'`, and `Both`, each depending on one or more of the type variables of the type constructor and separated by a pipe `|`.
-
-Data constructors can be used for *constructing* a value of the data type, or for pattern-matching on values of the data type (i.e. retrieve which constructor was used to construct the given value).
-
-**Type classes**
-
-Type classes are a way to have *ad-hoc polymorphism* in Haskell, while the ordinary polymorphic functions discussed before are *parametric*. This means that we can have different behaviour for different types. Type classes are introduced as follows:
-```haskell
-class Eq a where
-  (==) :: a -> a -> Bool
-```
-Here, we state that in order for a type `a` to be part of the *type class* `Eq`, we have to implement an equality function with the given signature. We can then restrict functions definitions to only work on types in this type class in the following manner:
-```haskell
-(!=) :: Eq a => a -> a -> Bool
-x != y = not (x == y)
-```
-
-**Monoids, Functors, Applicative and Alternative**
-
-Here we give a whirlwind tour of some interesting type classes used in Haskell, the majority of the category theory that we will discuss will explain the mathematical background and uses of these typeclasses in detail, here we summarize the resulting classes as a reference. Feel free to skip or skim them, and to come back after studying the material presented in later chapters.
-
-_Monoid_
-
-Many types have one (or even multiple) _monoidal_ structure, which means that it is possible to combine two elements to a single element, and that this way of combining has some special (but common) properties.
-```haskell
-class Monoid m where
-    mempty :: m
-    mappend :: m -> m -> m -- infix operator alias: <>
-```
-The implementations depend on the type `m`, but when implementing a Monoid instance, it is the task of the implementor to adher to the following laws:
-```haskell
--- forall x, y, z :: m
-x <> mempty == x -- identity
-mempty <> x == x
-(x <> y) <> z == x <> (y <> z) -- associativity
-```
-
-For example, the following are all possible Monoid instances (given as `(m, mempty, mappend)`):
-
-- `(Int, 0, (+))`
-- `(Int, 1, (*))`
-- `(Int32, minBound, max)`
-- `(Int32, maxBound, min)`
-- `(String, "", (++))`
-- `(Maybe, Nothing, (<|))`, here `(<|)` denotes the binary function that yields the left-most non-`Nothing` value if anything (obviously there is also a right-most equivalent `(|>)`).
-
-and so on.
-
-_Functor_
-
-A functor can take an 'ordinary' function, and apply it to a `context`. This context can be a list, the result of a computation that may have failed, a value from input/output and so on. You can also view the functor itself as the context.
-```haskell
-class Functor f where
-  fmap :: (a -> b) -> f a -> f b -- infix operator alias: <$>
-```
-Again, each instance should satisfy certain laws. For `Functor`, these are:
-```haskell
--- forall f, g :: a -> b
-fmap id == id
-fmap (f . g) == fmap f . fmap g
-```
-For example, the `List` functor is implemented as:
-```haskell
-instance Functor [] where
-    fmap = map
-```
-Or the 'composition' functor:
-```haskell
-instance Functor ((->) c) where
-    -- fmap :: (a -> b) -> (c -> a) -> (c -> b)
-    fmap = (.)
-```
-
-_Applicative_
-
-The most obvious use of applicative is to lift functions of multiple arguments into a context. If we have a function of multiple arguments like:
-```haskell
-g :: a -> b -> c
-```
-Then we can't just list it into a functor (context), since we would obtain:
-```haskell
-fmap g :: f a -> f (b -> c)
-```
-If we compose it with a function that has the signature
-```haskell
-apply :: f (b -> c) -> f b -> f c
-```
-then we obtain:
-```haskell
-apply . fmap g :: f a -> f b -> f c
-```
-If we implement `apply`, then we can lift functions with an arbitrary number of arguments (by iteratively calling `apply` after `fmap`). A functor with `apply` is called an _applicative functor_, and the corresponding type class is:
-```haskell
-class Functor f => Applicative f where
-    pure :: a -> f a
-    ap :: f (a -> b) -> f a -> f b -- infix operator alias: <*>
-```
-we see that additionally, `pure` is introduced as a way to put any value into an applicative context. Any applicative instance has to satisfy the following laws:
-```haskell
--- forall v, w :: a; x, y, z :: f a; g :: a -> b
-pure id <*> x = x -- identity
-pure (.) <*> x <*> y <*> z = x <*> (y <*> z) -- composition
-pure g <*> pure v = pure (g v) -- homomorphism
-y <*> pure v = pure ($ y) <*> v -- interchange
-```
-
-_Alternative_
-
-Now that we have introduced some terminology, we can introduce Alternative functors as _giving an applicative context a monoidal structure_.
-```haskell
-class Applicative f => Alternative f where
-    empty :: f a
-    (<|>) :: f a -> f a -> f a
-```
-
-For example, for `Maybe` we can say:
-```haskell
-instance Alternative Maybe where
-    empty = Nothing
-    Nothing <|> right = right
-    left <|> _ = left
-```
-Or for `List` we have the standard concatenation monoid:
-```haskell
-instance Alternative [] where
-    empty = []
-    (<|>) = (++)
-```
-
-_Monads_
-
-A functor lets you lift functions to the functorial context. An applicative functor lets you untangle functions caught in a context (this can be e.g. an artifact of currying functions of multiple arguments) to functions in the functorial context. Another useful operation is to compose functions whose _result lives inside the context_, and this is done through bind `>>=` (with its flipped cousin `=<<`).
-
-To illustrate the similarities between the typeclasses `Functor => Applicative => Monad`:
-```haskell
-(<$>) :: (a -> b)   -> f a -> f b
-(<*>) :: f (a -> b) -> f a -> f b
-(=<<) :: a -> f b   -> f a -> f b
-```
-For us, the interesting part of the definition is:
-```haskell
-class Applicative m => Monad m where
-    return :: a -> m a
-    (>>=) :: m a -> (a -> m b) -> m b
-```
-The default implementation of `return` is to fall back on `pure` from applicative. The bind operation has to satisfy the following laws:
-```haskell
--- forall v :: a; x :: m a; k :: a -> m b, h :: b -> m c
-return v >>= k = k v
-x >>= return = x
-m >>= (\y -> k y >>= h) = (m >>= k) >>= h
-```
-Thus bind takes a monadic value, and shoves it in a function expecting a non-monadic value (or it can bypass this function completely). A _very_ common usage of bind is the following.
-
-```haskell
-x :: m a
-x >>= (\a -> {- some expression involving a -})
-```
-which we can understand to mean that we _bind_ the name `a` to whatever is inside the monadic value `x`, and then we can reuse it in the expressions that follow. In fact, this is so common that Haskell has convenient syntactic sugar for this pattern called `do`-notation. This notation is recursively desugared according to the following rules (taken from Stephen Diehl's "What I wish I knew when learning Haskell"):
-```haskell
-do { a <- f; m }  ~>  f >>= \a -> do { m }
-do { f; m }  ~>  f >> do { m }
-do { m }  ~>  m
-```
-Curly braces and semicolons are usually omitted. For example, the following two snippets show the sugared and desugared version of `do`-notation:
-```haskell
-do
-  a <- f
-  b <- g
-  c <- h
-  return (a, b, c)
-
-f >>= \a ->
-  g >>= \b ->
-    h >>= \c ->
-      return (a, b, c)
-```
-
-Monads are used to do all kinds of things that are hard to do in a purely functional language such as Haskell:
-
-- Input/output
-- Data structures
-- State
-- Exceptions
-- Logging
-- Continuations (co-routines)
-- Concurrency
-- Random number generation
-- ...
-
-\section*{References}
-
-If you want to learn Haskell, the following resources are helpful as a first step:
-
-- 5 minute tutorial to get an idea:
-    * <https://tryhaskell.org/>
-- The wiki book on Haskell is quite good:
-    * <https://en.wikibooks.org/wiki/Haskell>
-- There is an excellent accessible Haskell book coming out soon, but it can be found already:
-    * <http://haskellbook.com/>
-- A book that is written in a light manner:
-    * <http://learnyouahaskell.com/chapters>
-- If you are looking to do exercises, there is a guide to different courses available here:
-    * <https://github.com/bitemyapp/learnhaskell>
-- A handy search engine for library functions is Hoogle:
-    * <https://www.haskell.org/hoogle/>
-- Advanced topics for Haskell:
-    * <http://dev.stephendiehl.com/hask/>
-
 \part{Basic theory}
 
 # Categories, functors and natural transformations
@@ -1753,6 +1449,7 @@ a \times b \arrow[ru, "\lambda f \times \text{id}_b"] \arrow[rr, "f"'] & & c \\
 Here, the product of arrows $f \times g$ is as given in Example \ref{exa:productbifunctor}.
 \end{itemize}
 \end{enumerate}
+\label{def:ccc}
 \end{definition}
 
 Wherever possible, we will denote $\text{eval}_b^a$ simply as $\text{eval}$. Another common notation for the exponential $[a \to b]$ is $b^a$.
@@ -2242,12 +1939,80 @@ Summarizing what we saw so far, adjunctions can be defined either as:
 
 And we showed $1 \implies 2 \implies 3 \implies 1$, meaning that all these definitions are equivalent.
 
+## Uniqueness of adjoints
+
+You can show that adjoints are unique up to natural isomorphism. Say $F, F': \mathcal{C} \to \mathcal{D}$ and $G: \mathcal{D} \to \mathcal{C}$. Assume $F \dashv G$ and $F' \dashv G$, with natural bijections $\phi_{c, d}$ and $\phi'_{c, d}$ respectively. Then we have for all $c \in \mathcal{C}$:
+$$\text{Hom}_\mathcal{D}(Fc, -) \simeq \text{Hom}_\mathcal{C}(c, G-) \simeq \text{Hom}_\mathcal{D}(F'c, -),$$
+through natural isomorphisms in $\mathbf{Set}$ defined by $\phi_{c, -}$ and $\phi'_{c, -}$ respectively, by composing them we obtain:
+$$\text{Hom}_\mathcal{D}(Fc, -) \simeq \text{Hom}_\mathcal{D}(F'c, -),$$
+but the Yoneda embedding then says that $Fc$ and $F'c$ are isomorphic (see Corollary \ref{cor:natural_transformation_arrow}). To show that these isomorphisms $Fc \to Fc'$ define the components of a natural isomorphism $F \Rightarrow F'$ we have to show that the following diagram commutes:
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+Fc \arrow[d, "Ff"'] \arrow[r, "\simeq"] & F'c \arrow[d, "F'f"]\\
+Fc' \arrow[r, "\simeq"'] & F'c'
+\end{tikzcd}
+\end{figure}
+Because the Hom-functor $\text{Hom}_\mathcal{C}(-, d)$ is faithful, the above diagram commutes if\footnote{You can prove that faithful functors reflect commutative diagrams, by showing that it preserves non-commutative diagrams}:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+\text{Hom}(d, Fc) \arrow[d, "h^d(Ff)"'] \arrow[r, "\simeq"] & \text{Hom}(d, F'c) \arrow[d, "h^d(F'f)"]\\
+\text{Hom}(d, Fc') \arrow[r, "\simeq"'] & \text{Hom}(d, F'c')
+\end{tikzcd}
+\end{figure}
+which commutes by the naturality of $\phi_{c, d}$ (in $\mathcal{D}$).
+
+We conclude that adjoints are unique up to natural isomorphism.
+
 ## Examples
 
-- Free/forgetful functor pairs give rise to adjunctions.
+\begin{example}
+The exponential object of a CCC is described by an adjunction.
+
+Consider the functor:
+\begin{align*}
+- \times c:~&\mathcal{C} \to \mathcal{C},\\
+&a \mapsto a \times c,\\
+&f: a \to b \mapsto f \times \text{id}_c.
+\end{align*}
+Here, $f \times \text{id}_c$ is the unique arrow from $a \times c \to b \times c$ that makes the following diagram commute:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+a \arrow[dd, "f"'] & a \times c \arrow[l, "p_1"'] \arrow[r, "p_2"] \arrow[d, dashed, "f \times \text{id}_c"] & c \arrow[dd, "\text{id}_c"] \\
+  & b \times c \arrow[dl, "p_1'"'] \arrow[dr, "p_2'"]&   \\
+b &            & c
+\end{tikzcd}
+\end{figure}
+If $- \times c$ has a right adjoint, which we will suggestively denote:
+$$(- \times c) \dashv (c \to -),$$
+then for this adjunction, the universal property in Exercise \ref{exc:universal-mapping-property-counit} states:
+
+For any $g: a \times c \to b$ there exists a unique arrow $f \equiv \lambda g : a \to (c \to b)$ such that the following diagram commutes:
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+b  & (c \to b) \times c \arrow[l, "\epsilon_b"'] \\
+& \arrow[lu, "g"] \arrow[u, "\lambda g \times \text{id}_c"'] a \times c
+\end{tikzcd}
+\end{figure}
+so that the universal property for the counit is identical to the universal property of the evaluation function, compare also with Definition \ref{def:ccc} of a CCC. Since adjoints are essentially unique, the exponential is determined by the adjunction.
+
+You can show that adjunctions preserve (among other constructions involving universal properties) initial objects, terminal objects and products, which can be used to prove many useful and familiar equalities in a CCC. For example, we have $R_a(b \times c) \simeq R_a(b) \times R_a(c)$ which in the notation $a \to b \equiv b^a$ says:
+$$(b \times c)^a \simeq b^a \times c^a.$$
+Conversely, the product functor preservese coproducts, in that $(- \times c)(a + b) \simeq (- \times c)a + (- \times c)b$, or:
+$$(a + b) \times c \simeq (a \times c) + (b \times c),$$
+which shows that CCC's are distributative.
+\end{example}
+
+Other examples:
+
+- Free/forgetful functor pairs.
 - Groups $G$ and their abelianizations $G^{ab} \equiv G / [G, G]$ form an adjunction.
-- Adjunctions can be used to prove many convenient isomorphisms for exponential objects in CCC's
-- As we will see shortly, adjunctions also give rise to monads.
+- As an interesting application that we will see shortly, adjunctions also give rise to monads.
 
 ## Exercises
 
@@ -2273,7 +2038,7 @@ Let $\Delta: \mathcal{C} \to \mathcal{C} \times \mathcal{C}$ be the \emph{diagon
 \Delta a &= (a, a) \\
 \Delta (f: a \to b) &= (f, f) : (a, a) \to (b, b)
 \end{align*}
-Show that if the category $\mathcal{C}$ has binary products if and only if $\Delta$ has a right adjoint $\Pi$. Here, corresponds the functor $\Pi: \mathcal{C} \times \mathcal{C} \to \mathcal{C}$ should send $(a, b) \mapsto a \times b$.
+Show that if the category $\mathcal{C}$ has binary products if and only if $\Delta$ has a right adjoint $\Pi$. Here, the functor $\Pi: \mathcal{C} \times \mathcal{C} \to \mathcal{C}$ should send $(a, b) \mapsto a \times b$.
 
 \emph{Hint:} write the components of the counit and the arrows that arise in the universal arrow property of the counit (see Exercise \ref{exc:universal-mapping-property-counit}), in terms components of $\mathcal{C} \times \mathcal{C}$, i.e. $\epsilon_d = (p_1, p_2)$, $f = (q_1, q_2)$.
 
@@ -2299,7 +2064,11 @@ from $\mathcal{C}^{\text{op}} \times \mathcal{D} \to \mathbf{Set}$. Think about 
 
 Monads are used all throughout functional programming. In this part, we will try to understand them by first studying their mathematical definition and properties. Afterwards, we describe their use in functional programing by giving a number of motivating examples.
 
-Any endofunctor $T: \mathcal{C} \to \mathcal{C}$ can be composed with itself, to obtain e.g. $T^2$ and $T^3$ (which are both again endofunctors from $\mathcal{C}$ to $\mathcal{C}$. A monad concerns an endofunctor, together with natural transformation between this functor and its composites that give it a "monoid-like structure". Say $\alpha$ is a natural transformation $T \Rightarrow T'$, where $T, T'$ are endofunctors of $\mathcal{C}$, then note that $\alpha_x$ is a morphism from $Tx \to T'x$ in the category $\mathcal{C}$. Since this is a morphism, we can use $T$ or $T'$ to lift it, i.e. we obtain arrows at components $(T \alpha)_a \equiv T (\alpha_a)$ and $(\alpha T)_a \equiv \alpha_{Ta}$.
+Any endofunctor $T: \mathcal{C} \to \mathcal{C}$ can be composed with itself, to obtain e.g. $T^2$ and $T^3$ (which are both again endofunctors from $\mathcal{C}$ to $\mathcal{C}$. A monad concerns an endofunctor, together with natural transformation between this functor and its composites that give it a "monoid-like structure".
+
+## Definition
+
+ Say $\alpha$ is a natural transformation $T \Rightarrow T'$, where $T, T'$ are endofunctors of $\mathcal{C}$, then note that $\alpha_x$ is a morphism from $Tx \to T'x$ in the category $\mathcal{C}$. Since this is a morphism, we can use $T$ or $T'$ to lift it, i.e. we obtain arrows at components $(T \alpha)_a \equiv T (\alpha_a)$ and $(\alpha T)_a \equiv \alpha_{Ta}$.
 
 In particular, note that this defines natural transformations between the appropriate composite functors since the image of any commutative diagram under a functor is again commutative.
 
@@ -2318,15 +2087,15 @@ so that the following diagrams commute:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-T^3 \arrow[d, "T\mu"'] \arrow[r, "\mu T"] & T^2 \arrow[d, "\mu"] \\
-T^2 \arrow[r, "\mu"] & T
+T^3 \arrow[d, Rightarrow, "T\mu"'] \arrow[r, Rightarrow, "\mu T"] & T^2 \arrow[d, Rightarrow, "\mu"] \\
+T^2 \arrow[r, Rightarrow, "\mu"] & T
 \end{tikzcd}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-T \arrow[r, "\eta T"] \arrow[dr, "\text{id}"'] & T^2 \arrow[d, "\mu"] & \arrow[l, "T \eta"'] \arrow[dl, "\text{id}"] T\\
+T \arrow[r, Rightarrow, "\eta T"] \arrow[dr, Rightarrow, "\text{id}"'] & T^2 \arrow[d, Rightarrow, "\mu"] & \arrow[l, Rightarrow, "T \eta"'] \arrow[dl, Rightarrow, "\text{id}"] T\\
   & T &
 \end{tikzcd}
 \end{figure}
@@ -2345,6 +2114,49 @@ $$\mu_A: \mathcal{P}(\mathcal{P}(A)) \to \mathcal{P}(A),~\{ B_1, B_2, \ldots \} 
 where $B_i \subseteq A$.
 \end{example}
 
+## Adjunctions give rise to Monads
+
+Let $(F, G, \eta, \epsilon)$ be a unit-counit adjunction. We have a functor:
+$$T \equiv FG: \mathcal{D} \to \mathcal{D}.$$
+We can define a functor:
+$$\mu: T^2 \to T, \mu_d \equiv F(\epsilon_{Gd}).$$
+Let us show that $(T, \eta, \mu)$ indeed forms a monad, first the associtivity square at some $d \in \mathcal{D}$:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+FGFGFG \arrow[d, Rightarrow, "FG\mu"'] \arrow[r, Rightarrow, "\mu FG"] & FGFG \arrow[d, Rightarrow, "\mu"] \\
+FGFG \arrow[r, Rightarrow, "\mu"] & FG
+\end{tikzcd}
+\end{figure}
+Looking at this diagram in terms of components and substituting in the definition of $\mu$ we obtain
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+FGFGFGd \arrow[d, "FGF(\epsilon_{Gd})"'] \arrow[r, "F(\epsilon_{GFGd})"] & FGFGd \arrow[d, "F(\epsilon_{Gd})"] \\
+FGFGd \arrow[r, "F(\epsilon_{Gd})"] & FGd
+\end{tikzcd}
+\end{figure}
+written more suggestively we write: $a = GFGd$, $b = Gd$ $\tilde{F} = FGF$,
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+\tilde{F}a \arrow[d, "\tilde{F}(\epsilon_{b})"'] \arrow[r, "F(\epsilon_{a})"] & Fa \arrow[d, "F(\epsilon_{b})"] \\
+\tilde{F}b \arrow[r, "F(\epsilon_{b})"] & Fb
+\end{tikzcd}
+\end{figure}
+such that the diagram reveals itself to be a naturality square under the function $f \equiv \epsilon_b: a \to b$ for the natural transformation $F\epsilon$. For the (left) unit triangle we observe:
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+FGd \arrow[rd, "\text{id}_{FGd}"'] \arrow[r, "\eta_{FGd}"] & FGFGd \arrow[d, "F(\epsilon_{Gd})"] \\
+ & FGd
+\end{tikzcd}
+\end{figure}
+Which is just the first triangle identity of the adjunction at the point $G.
+
+IIRC you can show that every monad comes from an adjunction.
+
 ## Kleisli categories
 
 Every monad defines a new category, called the *Kleisli category*.
@@ -2361,17 +2173,7 @@ $$g \circ_T f = \mu_c \circ Tg \circ f.$$
 \end{itemize}
 \end{definition}
 
-Using Kleisli composition can be a convenient stepping stone to understanding how to work with Monads in Haskell.
-
-## Adjunctions give rise to Monads
-
-Let $(F, G, \eta, \epsilon)$ be a unit-counit adjunction. We have a functor:
-$$T \equiv FG: \mathcal{D} \to \mathcal{D}.$$
-We can define a functor:
-$$\mu: T^2 \to T, \mu_d = \equiv F(\epsilon_{Gd}).$$
-You can show that $(T, \eta, \mu)$ forms a monad.
-
-IIRC you can show that every monad comes from an adjunction.
+Understanding Kleisli composition can be a convenient stepping stone to understanding how to work with Monads in Haskell.
 
 ## Monads and functional programming
 
@@ -2603,6 +2405,14 @@ Note that in categorical terms:
 - `unit` can be seen as a natural transformation between the identity endofunctor `Identity`, and `F`.
 - `join` is a natural transformation between `F^2` and `F`.
 
+## From Adjunctions to Monads in Haskell
+
+See also:
+<http://www.stephendiehl.com/posts/adjunctions.html>
+
+See also:
+<https://www.reddit.com/r/haskell/comments/4zvyiv/what_are_some_example_adjunctions_from_monads_or/>
+
 ## Exercises
 
 \begin{exercise}
@@ -2703,7 +2513,7 @@ Curry-Howard isomorphism
 
 \part{Exercises}
 
-# Parser
+\chapter*{Parser}
 
 _This exercise is based on the parser exercises of (1) and the blog post series of evaluating DSLs (spoilers in the article!) (2)._
 
@@ -2835,6 +2645,23 @@ result :: Expression -> Either String Int
 ```
 That returns the result of an expression, or a string containing an error message along with the dependencies that are missing.
 
+**C) Monadic parser**
+
+1. Write the `Monad` instance of `Parser`.
+2. Observe that `do`-notation for the Parser reads very naturally:
+    ```haskell
+    threeInts :: Parser [Int]
+    threeInts = do
+      x <- parseOneInt
+      y <- parseOneInt
+      z <- parseOneInt
+      return [x, y, z]
+      where
+        parseOneInt = spaces *> intParser
+    ```
+
+**D) Catamorphisms**
+
 *We will revisit our parser when we talk about __catamorphisms__.*
 
 **References**
@@ -2842,7 +2669,7 @@ That returns the result of an expression, or a string containing an error messag
 - (1): <http://cis.upenn.edu/~cis194/spring13/lectures.html>
 - (2): <https://deque.blog/2017/01/17/catamorph-your-dsl-introduction/>
 
-# Monads
+\chapter*{Monads}
 
 
 **A) IO: Hangman**
@@ -2896,3 +2723,311 @@ Assume that we have the following definitions:
 
 - (1): <http://www.haskellbook.com>
 - (2): CIS194
+
+\appendix
+
+\chapter{Short introduction to Haskell}
+
+Here we will give an introduction to programming using Haskell. It will not be an extensive introduction, in fact it will be very brief. However, studying this section should be enough to allow you to follow along with the rest of the text even if you have no experience with Haskell. You are encouraged to look for additional material online, see also the references at the end of this section. You are assumed to have access to the Glasgow Haskell Compiler (GHC) and its interactive REPL GHCi.
+
+To follow along, open `ghci` and play around with the code snippets that we provide.
+
+We will dicuss te topics suggested by the NICTA Haskell course^[https://github.com/NICTA/course].
+
+**Values and assignment**
+
+A value can be assigned to a variable as follows:
+```haskell
+let x = 'a'
+let y = 3
+let xs = [1,2,3]
+let f x = x * x
+let g x y = x * y
+```
+We note that these variables are only valid inside an expression, using a:
+```haskell
+let [variable = value] in [expression]
+```
+syntax, but you can also use this style of variable definition inside `ghci`.
+
+**Type signatures**
+
+In GHCi, you can see the type of the variable using:
+```haskell
+:t x -- x :: Char
+:t y -- y :: Num a => a
+:t xs -- g :: Num t => [t]
+:t f -- f :: Num a => a -> a
+:t g -- g :: Num a => a -> a -> a
+```
+Here `::` means "has the type of".
+
+The `->` in a type is right associative, i.e.
+```haskell
+a -> a -> a == a -> (a -> a)
+```
+and so on. You can read this as 'for an `a`, we get a function from `a` to `a`'.
+
+**Functions are values**
+
+Functions can be used as arguments to other (higher order) functions. E.g.
+```haskell
+:t (2*) -- Num a => a -> a
+map :: (a -> b) -> [a] -> [b]
+map (2*) xs -- [2,4,6]
+```
+Here we *map* a function over a list.
+
+**Functions take arguments**
+
+On thing to notice about the `map` example, is that it although it is a function that technically takes a single argument (and produces a function from a list to a list), it can also be viewed as a function of two arguments. We will not explicitely distinguish between these two views.
+
+We can also make anonymous 'lambda' functions:
+```haskell
+map (\x -> x * x) xs -- [1,4,9]
+```
+The backslash is inteded to look like a $\lambda$.
+
+**Infix operators**
+
+An operator starts with a non-alphanumeric character, e.g. `+`, `++`, `>>=`, `:` are all operators, and they use *infix* notation by default. For example:
+```haskell
+1 + 2 -- 3
+[1,2] ++ [3,4] -- [1,2,3,4]
+1 : [2,3] -- [1,2,3]
+```
+To use them with *prefix* notation, we surround them with parenthesis:
+```haskell
+(+) 1 2 -- 3
+```
+Any function (which by default uses prefix notation) can be used infix as well using backticks:
+```haskell
+let f x y = x * x + y * y
+2 `f` 3 -- 13
+```
+this can make code significantly more clear when defining e.g. operations that act on multiple lists, sets, or maps.
+
+**Polymorphism**
+
+We already saw the type signature of `map`:
+```haskell
+map :: (a -> b) -> [a] -> [b]
+```
+This is an example of a polymorphic function, it is defined for any type `a` and `b`. We refer to these 'wildcard types' as *type variables*. These always start with a lowercase letter.
+
+**Data types**
+
+To work with custom data structures, we create new *data types*. These are declared as follows:
+```haskell
+data DataTypeName a b = Zero | One a | One' b | Both a b
+```
+A data type is declared using the `data` keyword, and the *type constructor* is given a name (here `DataTypeName`). A data type depends on a number of type variables, here `a` and `b`. After the `=` sign, there are zero or more *data constructors*, here `Zero`, `One`, `One'`, and `Both`, each depending on one or more of the type variables of the type constructor and separated by a pipe `|`.
+
+Data constructors can be used for *constructing* a value of the data type, or for pattern-matching on values of the data type (i.e. retrieve which constructor was used to construct the given value).
+
+**Type classes**
+
+Type classes are a way to have *ad-hoc polymorphism* in Haskell, while the ordinary polymorphic functions discussed before are *parametric*. This means that we can have different behaviour for different types. Type classes are introduced as follows:
+```haskell
+class Eq a where
+  (==) :: a -> a -> Bool
+```
+Here, we state that in order for a type `a` to be part of the *type class* `Eq`, we have to implement an equality function with the given signature. We can then restrict functions definitions to only work on types in this type class in the following manner:
+```haskell
+(!=) :: Eq a => a -> a -> Bool
+x != y = not (x == y)
+```
+
+**Monoids, Functors, Applicative and Alternative**
+
+Here we give a whirlwind tour of some interesting type classes used in Haskell, the majority of the category theory that we will discuss will explain the mathematical background and uses of these typeclasses in detail, here we summarize the resulting classes as a reference. Feel free to skip or skim them, and to come back after studying the material presented in later chapters.
+
+_Monoid_
+
+Many types have one (or even multiple) _monoidal_ structure, which means that it is possible to combine two elements to a single element, and that this way of combining has some special (but common) properties.
+```haskell
+class Monoid m where
+    mempty :: m
+    mappend :: m -> m -> m -- infix operator alias: <>
+```
+The implementations depend on the type `m`, but when implementing a Monoid instance, it is the task of the implementor to adher to the following laws:
+```haskell
+-- forall x, y, z :: m
+x <> mempty == x -- identity
+mempty <> x == x
+(x <> y) <> z == x <> (y <> z) -- associativity
+```
+
+For example, the following are all possible Monoid instances (given as `(m, mempty, mappend)`):
+
+- `(Int, 0, (+))`
+- `(Int, 1, (*))`
+- `(Int32, minBound, max)`
+- `(Int32, maxBound, min)`
+- `(String, "", (++))`
+- `(Maybe, Nothing, (<|))`, here `(<|)` denotes the binary function that yields the left-most non-`Nothing` value if anything (obviously there is also a right-most equivalent `(|>)`).
+
+and so on.
+
+_Functor_
+
+A functor can take an 'ordinary' function, and apply it to a `context`. This context can be a list, the result of a computation that may have failed, a value from input/output and so on. You can also view the functor itself as the context.
+```haskell
+class Functor f where
+  fmap :: (a -> b) -> f a -> f b -- infix operator alias: <$>
+```
+Again, each instance should satisfy certain laws. For `Functor`, these are:
+```haskell
+-- forall f, g :: a -> b
+fmap id == id
+fmap (f . g) == fmap f . fmap g
+```
+For example, the `List` functor is implemented as:
+```haskell
+instance Functor [] where
+    fmap = map
+```
+Or the 'composition' functor:
+```haskell
+instance Functor ((->) c) where
+    -- fmap :: (a -> b) -> (c -> a) -> (c -> b)
+    fmap = (.)
+```
+
+_Applicative_
+
+The most obvious use of applicative is to lift functions of multiple arguments into a context. If we have a function of multiple arguments like:
+```haskell
+g :: a -> b -> c
+```
+Then we can't just list it into a functor (context), since we would obtain:
+```haskell
+fmap g :: f a -> f (b -> c)
+```
+If we compose it with a function that has the signature
+```haskell
+apply :: f (b -> c) -> f b -> f c
+```
+then we obtain:
+```haskell
+apply . fmap g :: f a -> f b -> f c
+```
+If we implement `apply`, then we can lift functions with an arbitrary number of arguments (by iteratively calling `apply` after `fmap`). A functor with `apply` is called an _applicative functor_, and the corresponding type class is:
+```haskell
+class Functor f => Applicative f where
+    pure :: a -> f a
+    ap :: f (a -> b) -> f a -> f b -- infix operator alias: <*>
+```
+we see that additionally, `pure` is introduced as a way to put any value into an applicative context. Any applicative instance has to satisfy the following laws:
+```haskell
+-- forall v, w :: a; x, y, z :: f a; g :: a -> b
+pure id <*> x = x -- identity
+pure (.) <*> x <*> y <*> z = x <*> (y <*> z) -- composition
+pure g <*> pure v = pure (g v) -- homomorphism
+y <*> pure v = pure ($ y) <*> v -- interchange
+```
+
+_Alternative_
+
+Now that we have introduced some terminology, we can introduce Alternative functors as _giving an applicative context a monoidal structure_.
+```haskell
+class Applicative f => Alternative f where
+    empty :: f a
+    (<|>) :: f a -> f a -> f a
+```
+
+For example, for `Maybe` we can say:
+```haskell
+instance Alternative Maybe where
+    empty = Nothing
+    Nothing <|> right = right
+    left <|> _ = left
+```
+Or for `List` we have the standard concatenation monoid:
+```haskell
+instance Alternative [] where
+    empty = []
+    (<|>) = (++)
+```
+
+_Monads_
+
+A functor lets you lift functions to the functorial context. An applicative functor lets you untangle functions caught in a context (this can be e.g. an artifact of currying functions of multiple arguments) to functions in the functorial context. Another useful operation is to compose functions whose _result lives inside the context_, and this is done through bind `>>=` (with its flipped cousin `=<<`).
+
+To illustrate the similarities between the typeclasses `Functor => Applicative => Monad`:
+```haskell
+(<$>) :: (a -> b)   -> f a -> f b
+(<*>) :: f (a -> b) -> f a -> f b
+(=<<) :: a -> f b   -> f a -> f b
+```
+For us, the interesting part of the definition is:
+```haskell
+class Applicative m => Monad m where
+    return :: a -> m a
+    (>>=) :: m a -> (a -> m b) -> m b
+```
+The default implementation of `return` is to fall back on `pure` from applicative. The bind operation has to satisfy the following laws:
+```haskell
+-- forall v :: a; x :: m a; k :: a -> m b, h :: b -> m c
+return v >>= k = k v
+x >>= return = x
+m >>= (\y -> k y >>= h) = (m >>= k) >>= h
+```
+Thus bind takes a monadic value, and shoves it in a function expecting a non-monadic value (or it can bypass this function completely). A _very_ common usage of bind is the following.
+
+```haskell
+x :: m a
+x >>= (\a -> {- some expression involving a -})
+```
+which we can understand to mean that we _bind_ the name `a` to whatever is inside the monadic value `x`, and then we can reuse it in the expressions that follow. In fact, this is so common that Haskell has convenient syntactic sugar for this pattern called `do`-notation. This notation is recursively desugared according to the following rules (taken from Stephen Diehl's "What I wish I knew when learning Haskell"):
+```haskell
+do { a <- f; m }  ~>  f >>= \a -> do { m }
+do { f; m }  ~>  f >> do { m }
+do { m }  ~>  m
+```
+Curly braces and semicolons are usually omitted. For example, the following two snippets show the sugared and desugared version of `do`-notation:
+```haskell
+do
+  a <- f
+  b <- g
+  c <- h
+  return (a, b, c)
+
+f >>= \a ->
+  g >>= \b ->
+    h >>= \c ->
+      return (a, b, c)
+```
+
+Monads can be used to do all kinds of things that are otherwise relatively hard to do in a purely functional language such as Haskell:
+
+- Input/output
+- Data structures
+- State
+- Exceptions
+- Logging
+- Continuations (co-routines)
+- Concurrency
+- Random number generation
+- ...
+
+\section*{References}
+
+If you want to learn Haskell, the following resources are helpful as a first step:
+
+- 5 minute tutorial to get an idea:
+    * <https://tryhaskell.org/>
+- The wiki book on Haskell is quite good:
+    * <https://en.wikibooks.org/wiki/Haskell>
+- There is an excellent accessible Haskell book coming out soon, but it can be found already:
+    * <http://haskellbook.com/>
+- A book that is written in a light manner:
+    * <http://learnyouahaskell.com/chapters>
+- If you are looking to do exercises, there is a guide to different courses available here:
+    * <https://github.com/bitemyapp/learnhaskell>
+- A handy search engine for library functions is Hoogle:
+    * <https://www.haskell.org/hoogle/>
+- Advanced topics for Haskell:
+    * <http://dev.stephendiehl.com/hask/>
+
+
