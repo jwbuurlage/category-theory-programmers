@@ -2155,7 +2155,7 @@ FGd \arrow[rd, "\text{id}_{FGd}"'] \arrow[r, "\eta_{FGd}"] & FGFGd \arrow[d, "F(
 \end{figure}
 Which is just the first triangle identity of the adjunction at the point $G.
 
-IIRC you can show that every monad comes from an adjunction.
+You can show that every monad comes from an adjunction by looking at the algebras of a monad, which we may discuss in a future chapter.
 
 ## Kleisli categories
 
@@ -2441,7 +2441,8 @@ Some posts dealing specifically with Monads from a Haskell perspective:
 
 # Recursion and F-algebras
 
-Initial algebras, Lambek's theorem, `Fix f`, recursion.
+- Eilenberg-Moore category of algebras over a monad, can be used to show that every monad arises from an adjunction.
+- Initial algebras, Lambek's theorem, `Fix f`, recursion.
 
 ## Algebras of monads, traversals as special arrows
 
