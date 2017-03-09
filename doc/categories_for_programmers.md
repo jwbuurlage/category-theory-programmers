@@ -2114,7 +2114,7 @@ $$\mu_A: \mathcal{P}(\mathcal{P}(A)) \to \mathcal{P}(A),~\{ B_1, B_2, \ldots \} 
 where $B_i \subseteq A$.
 \end{example}
 
-## Adjunctions give rise to Monads
+## Adjunctions give rise to monads
 
 Let $(F, G, \eta, \epsilon)$ be a unit-counit adjunction. We have a functor:
 $$T \equiv GF: \mathcal{C} \to \mathcal{C}.$$
@@ -2195,42 +2195,36 @@ which holds because of the associativity square and the naturality of $\mu$:
 \end{align*}
 To show that it is e.g. left-unital we compute:
 \begin{align*}
-\text{id}_{a_T} \circ_T f =
+\text{id}_{b_T} \circ_T f_T = (\mu_a \circ T(\eta_a) \circ f)_T = f_T
 \end{align*}
+where we use the right unit triangle of the monad:
+$$\mu_b \circ T \eta_b = \text{id}_b$$
 Understanding Kleisli composition can be a convenient stepping stone to understanding how to work with Monads in Haskell.
+
+The composition operator $\circ_T$ is usually denoted `>=>` (the fish operator) in Haskell.
 
 ## Monads and functional programming
 
-Because valid functional programs can seem quite restrictive, we need non-standard tools to perform operations that you take for granted in imperative languages. We will explore what this statement means for some real world programs, and discover what problems and difficulties pop up. In this part and the following we will see how to circumvent these problems (and go beyond!) using the categorical language that we developed prior.
+Because the brutal purity of Haskell is restrictive, we need non-standard tools to perform operations that we take for granted in imperative languages. In this section, we will explore what this means for some real world programs, and discover what problems and difficulties pop up. In particular, we will see how we can use monads to overcome some of these problems.
 
-### Problem 1: Computations and IO in Haskell
+### Example 1: IO
 
-A typical Haskell program consists of the description of a number of functions, which are 'composed', and then run against some input^[In this section (and the following sections) we will write in 'pseudo-Haskell' to illustrate some points, not all examples will be valid Haskell programs.] Say we two functions:
-
-```haskell
-f :: Int -> Int
-f x = ..
-
-g :: Int -> Int
-g x = ..
-```
-
-We want to perform `g . f`, and output the result.
-
-### IO actions
-
-First, assume that the input is static. The 'function' executed by Haskell is called `main`, and there is a `print :: a -> IO ()` function that prints the value of any type to standard output. Our code will look like this:
+Consider the type of some functions in Haskell regarding input and output in Haskell:
 
 ```haskell
-main = print(g(f 123))
+print :: Show a => a -> IO ()
+putStr :: String -> IO ()
+getLine :: IO String
+getChar :: IO Char
 ```
 
-In Haskell there are two alternative ways of writing this composition (to prevent overuse of paranthesis):
+this allows us to do I/O as in the following snippet:
 ```haskell
-main = print $ g $ f 123
-main = (print . g . f) 123
+main = do
+  x <- getLine
+  y <- getLine
+  print (x ++ y)
 ```
-Here, `$` makes sure that all the fucntions on the right have been evaluated before statements on the left come in to play. There are a two things unclear about this code:
 
 - If `main` should *behave*, then it should return the same function every time. However, we would like to support user input (`cin, scanf, getLine, ..)` so what should be its type if it should 'behave mathematically'?
 - Similarly, for `print`, what would be its type? It should take a value, convert it to a string, and output this in a terminal somewhere. The first part seems doable, but what is the *type* of *printing to screen*?
@@ -2249,7 +2243,7 @@ An IO action is a *value* with a type of `IO a`. We can also have an 'empty IO a
 - The function `main` itself is an IO action! `main :: IO ()`.  - The `getLine` function is an IO action `getLine :: IO String`.
 
 
-### Handling input
+#### Handling input
 
 Let us use this `getLine` action to interact with the user of our program. We would like to do something like this:
 
@@ -2342,7 +2336,7 @@ The `>>` (pronounced: then) function can be implemented as:
 
 To summarize, `bind` and `return` allows us to **compose functions that may or may not require IO operations**.
 
-## Problem 2: Data structures in Haskell
+### Example 2: Data structures
 
 Trivial (finite) data structures are easily implemented in Haskell as product types, but we have also seen a different type of container namely a *functorial* one. The examples we have looked at so far are `[]` and `Maybe`. Let us explore these more deeply, and see how we can make their usage more flexible. First consider the `Maybe` functor. Say we have a number of functions, where some may or may not produce a result:
 
@@ -2377,11 +2371,11 @@ to consider a sequence $a_1, a_2, \ldots$ and map this over $f$ to obtain $f(a_1
 
 Here, the `bind` and `return` pair lets us **compose operations defined on data structures or their elements**.
 
-## Problem 3: Side effects in Haskell
+### Example 3: Logging
 
 Both `IO`, `Maybe` and `[]` may be seen as 'functional containers', but let us now look at a completely different example where again we see that `bind` and `return` pair.
 
-Consider a *function with side effects*, the canonical case is a function that logs that it has been used.
+Consider a *function with side effects*, the canonical case is a function that logs a message.
 When thinking about how to accomplish this in Haskell, a candidate solution to letting some function `f :: a -> b` log a message, is to let it return a *pair* of `(b, String)`, where the `String` part contains the message.
 
 As before, we want to **compose operations that involve logging or non-logging functions**. How would we do this in this case? First, we define the `Writer` functor. A `type` in Haskell corresponds to a `typedef` or `using` in C++.
@@ -2404,7 +2398,7 @@ x = Logger x
 
 Note, as suggested by the way `Writer m a` was introduced, that if we would use some other *monoid* instead of `String`^[Indeed, String gives rise to a monoid with binary operation `++` (concatenation)], we could accomplish different goals than logging.
 
-### Problem 4: Handling State
+### Example 4: State
 
 `State` monad, e.g.
 
@@ -2413,7 +2407,7 @@ Note, as suggested by the way `Writer m a` was introduced, that if we would use 
 - Parser
 - ...
 
-### Putting it together; the Monads type class
+### The `Monad` type class
 
 In this section we have talked about `return` and *bind* `>>=`.
 
@@ -2429,7 +2423,7 @@ Note that in categorical terms:
 - `unit` can be seen as a natural transformation between the identity endofunctor `Identity`, and `F`.
 - `join` is a natural transformation between `F^2` and `F`.
 
-## From Adjunctions to Monads in Haskell
+## From adjunctions to monads in Haskell
 
 See also:
 <http://www.stephendiehl.com/posts/adjunctions.html>
@@ -2482,10 +2476,19 @@ Catamorphisms, Anamorphisms, Hylomorphisms
 - <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
 - <https://github.com/ekmett/lens>
 
-## Purely functional datastructures
+# Purely functional datastructures
 
 - <http://apfelmus.nfshost.com/articles/monoid-fingertree.html>
 - <https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504>
+
+# Applicative functors
+
+Applicative ~= Monoidal
+
+Is strong lax functor
+
+- McBride, Paterson; Applicative Programming with Effects
+    - <http://www.staff.city.ac.uk/~ross/papers/Applicative.pdf>
 
 # Proof assistants
 
@@ -2812,6 +2815,16 @@ We can also make anonymous 'lambda' functions:
 map (\x -> x * x) xs -- [1,4,9]
 ```
 The backslash is inteded to look like a $\lambda$.
+
+**Functions can be composed**
+
+In Haskell there are three alternative ways of composing functions (to prevent overuse of parenthesis):
+```haskell
+g(f 123)
+g $ f 123
+(g . f) 123
+```
+Here, `$` makes sure that all the functions on the right have been evaluated before statements on the left come in to play.
 
 **Infix operators**
 
