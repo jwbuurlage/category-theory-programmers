@@ -2195,7 +2195,7 @@ which holds because of the associativity square and the naturality of $\mu$:
 \end{align*}
 To show that it is e.g. left-unital we compute:
 \begin{align*}
-\text{id}_{b_T} \circ_T f_T = (\mu_a \circ T(\eta_a) \circ f)_T = f_T
+\text{id}_{b_T} \circ_T f_T = (\mu_b \circ T(\eta_b) \circ f)_T = f_T
 \end{align*}
 where we use the right unit triangle of the monad:
 $$\mu_b \circ T \eta_b = \text{id}_b$$
