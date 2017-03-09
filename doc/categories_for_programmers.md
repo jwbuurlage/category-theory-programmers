@@ -2117,45 +2117,45 @@ where $B_i \subseteq A$.
 ## Adjunctions give rise to Monads
 
 Let $(F, G, \eta, \epsilon)$ be a unit-counit adjunction. We have a functor:
-$$T \equiv FG: \mathcal{D} \to \mathcal{D}.$$
-We can define a functor:
-$$\mu: T^2 \to T, \mu_d \equiv F(\epsilon_{Gd}).$$
-Let us show that $(T, \eta, \mu)$ indeed forms a monad, first the associtivity square at some $d \in \mathcal{D}$:
+$$T \equiv GF: \mathcal{C} \to \mathcal{C}.$$
+We can define a natural transformation:
+$$\mu: T^2 \to T, \mu_d \equiv G(\epsilon_{Fc}).$$
+Let us show that $(T, \eta, \mu)$ indeed forms a monad, first the associtivity square:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-FGFGFG \arrow[d, Rightarrow, "FG\mu"'] \arrow[r, Rightarrow, "\mu FG"] & FGFG \arrow[d, Rightarrow, "\mu"] \\
-FGFG \arrow[r, Rightarrow, "\mu"] & FG
+GFGFGF \arrow[d, Rightarrow, "GF\mu"'] \arrow[r, Rightarrow, "\mu GF"] & GFGF \arrow[d, Rightarrow, "\mu"] \\
+GFGF \arrow[r, Rightarrow, "\mu"] & GF
 \end{tikzcd}
 \end{figure}
 Looking at this diagram in terms of components and substituting in the definition of $\mu$ we obtain
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-FGFGFGd \arrow[d, "FGF(\epsilon_{Gd})"'] \arrow[r, "F(\epsilon_{GFGd})"] & FGFGd \arrow[d, "F(\epsilon_{Gd})"] \\
-FGFGd \arrow[r, "F(\epsilon_{Gd})"] & FGd
+GFGFGFc \arrow[d, "GFG(\epsilon_{Fc})"'] \arrow[r, "G(\epsilon_{FGFc})"] & GFGFc \arrow[d, "G(\epsilon_{Fc})"] \\
+GFGFc \arrow[r, "G(\epsilon_{Fc})"] & GFc
 \end{tikzcd}
 \end{figure}
-written more suggestively we write: $a = GFGd$, $b = Gd$ $\tilde{F} = FGF$,
+written more suggestively we write: $a = FGFc$, $b = Fc$ $\tilde{G} = GFG$,
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-\tilde{F}a \arrow[d, "\tilde{F}(\epsilon_{b})"'] \arrow[r, "F(\epsilon_{a})"] & Fa \arrow[d, "F(\epsilon_{b})"] \\
-\tilde{F}b \arrow[r, "F(\epsilon_{b})"] & Fb
+\tilde{G}a \arrow[d, "\tilde{G}(\epsilon_{b})"'] \arrow[r, "G(\epsilon_{a})"] & Ga \arrow[d, "G(\epsilon_{b})"] \\
+\tilde{G}b \arrow[r, "G(\epsilon_{b})"] & Gb
 \end{tikzcd}
 \end{figure}
-such that the diagram reveals itself to be a naturality square under the function $f \equiv \epsilon_b: a \to b$ for the natural transformation $F\epsilon$. For the (left) unit triangle we observe:
+such that the diagram reveals itself to be a naturality square under the function $f \equiv \epsilon_b: a \to b$ for the natural transformation $G\epsilon$. For e.g. the left unit triangle we observe:
 
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-FGd \arrow[rd, "\text{id}_{FGd}"'] \arrow[r, "\eta_{FGd}"] & FGFGd \arrow[d, "F(\epsilon_{Gd})"] \\
- & FGd
+GFc \arrow[rd, "\text{id}_{GFc}"'] \arrow[r, "\eta_{GFc}"] & GFGFc \arrow[d, "G(\epsilon_{Fc})"] \\
+ & GFc
 \end{tikzcd}
 \end{figure}
-Which is just the first triangle identity of the adjunction at the point $G.
+Which is just the second triangle identity of the adjunction at the object $Fc$.
 
-You can show that every monad comes from an adjunction by looking at the algebras of a monad, which we may discuss in a future chapter.
+You can show that every monad comes from an adjunction by considering the _algebra of a monad_, which we may discuss in a future chapter.
 
 ## Kleisli categories
 
@@ -2164,15 +2164,39 @@ Every monad defines a new category, called the *Kleisli category*.
 \begin{definition}
 Let $\mathcal{C}$ be a caegory, and let $(T, \mu, \eta)$ be a monad over this category. Then the Kleisli category $\mathcal{C}_T$ is the category where:
 \begin{itemize}
-\item The \emph{objects} of $\mathcal{C}_T$ are the objects of $\mathcal{C}$.
-\item The \emph{arrows} of $\mathcal{C}_T$ are the arrows of the form $a \to T b$ in $\mathcal{C}$. In other words,
-$$\text{Hom}_{\mathcal{C}_T}(a, b) = \text{Hom}_{\mathcal{C}}(a, Tb).$$
-\item Composition between two arrows $f: a \to b$ and $g: b \to c$ in $\mathcal{C}_T$ is given by:
-$$g \circ_T f = \mu_c \circ Tg \circ f.$$
-\item The \emph{identity arrows} $\text{id}_a$ are equal to $\eta_a$.
+\item The \emph{objects} of $\mathcal{C}_T$ $a_T$ correspond directly to the objects $a$ of $\mathcal{C}$.
+\item The \emph{arrows} of $\mathcal{C}_T$ are the arrows of the form $f: a \to T b$ in $\mathcal{C}$, and will be denoted $f_T$. In other words,
+$$\text{Hom}_{\mathcal{C}_T}(a, b) \simeq \text{Hom}_{\mathcal{C}}(a, Tb).$$
+\item Composition between two arrows $f_T: a_T \to b_T$ and $g_T: b_T \to c_T$ in $\mathcal{C}_T$ is given by:
+$$g_T \circ_T f_T \equiv (\mu_c \circ Tg \circ f)_T.$$
+\item The \emph{identity arrows} $\text{id}_{a_T}$ are equal to $(\eta_a)_T$.
 \end{itemize}
 \end{definition}
 
+Let us show that this indeed forms a category. In particular we have to show that the composition operator is associative and unital. For the former, we look at the following situation
+
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+a_T \arrow[r, "f_T"] & b_T \arrow[r, "g_T"] & c_T \arrow[r, "h_T"] & d_T
+\end{tikzcd}
+\end{figure}
+the left associative and right associative expressions are:
+\begin{align*}
+(h_T \circ_T g_T) \circ_T f_T &= (\mu_d \circ Th \circ g)_T \circ_T f_T \\&= (\mu_d \circ T(\mu_d \circ Th \circ g) \circ f)_T,\\
+h_T \circ_T (g_T \circ_T f_T) &= h_T \circ_T (\mu_c \circ Tg \circ f)_T \\&= (\mu_d \circ Th \circ \mu_c \circ Tg \circ f)_T,
+\end{align*}
+so it is enough to show that:
+$$\mu_d \circ T \mu_d \circ T^2 h = \mu_d \circ Th \circ \mu_c,$$
+which holds because of the associativity square and the naturality of $\mu$:
+\begin{align*}
+\mu_d \circ T \mu_d \circ T^2 h &= \mu_d \circ \mu_{Td} \circ T^2 h \\
+&= \mu_d \circ Th \circ \mu_c
+\end{align*}
+To show that it is e.g. left-unital we compute:
+\begin{align*}
+\text{id}_{a_T} \circ_T f =
+\end{align*}
 Understanding Kleisli composition can be a convenient stepping stone to understanding how to work with Monads in Haskell.
 
 ## Monads and functional programming
@@ -3022,7 +3046,7 @@ If you want to learn Haskell, the following resources are helpful as a first ste
     * <https://en.wikibooks.org/wiki/Haskell>
 - There is an excellent accessible Haskell book coming out soon, but it can be found already:
     * <http://haskellbook.com/>
-- A book that is written in a light manner:
+- A cult-classic Haskell book:
     * <http://learnyouahaskell.com/chapters>
 - If you are looking to do exercises, there is a guide to different courses available here:
     * <https://github.com/bitemyapp/learnhaskell>
