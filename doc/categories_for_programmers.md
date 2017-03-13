@@ -2375,6 +2375,7 @@ In this view, a value of type `State s a` is a function that takes some state, a
 - `a -> State s b`: a function that **uses and/or manipulates a state**.
 
 In this examples, the _contexts_ are
+
 - `Maybe`: failure that gets propagated
 - `[]`: arbitrary number of results that are gathered
 - `Logger s`: a log of type `s` that is maintained
