@@ -31,20 +31,6 @@ header-includes:
     - \pagestyle{empty}
 ---
 
-**Adjunction**
-
-$$(F, G, \eta)$$
-$$\eta: \text{Id}_\mathcal{C} \Rightarrow GF,$$
-$$\forall c \in \mathcal{C},~d \in \mathcal{D},~f: c \to Gd,~\exists!~g: Fc \to d,$$
-s.t.
-\begin{figure}[H]
-\centering
-\begin{tikzcd}
-c \arrow[r, "\eta_c"] \arrow[rd, "f"']  & GFc \arrow[d, "Gg"] \\
-& Gd
-\end{tikzcd}
-\end{figure}
-
 **Natural transformations between endofunctors**
 
 \begin{align*}
@@ -71,8 +57,6 @@ A \textbf{monad} $(T, \eta, \mu)$ over a category $\mathcal{C}$:
 \end{itemize}
 s.t.
 
-\newpage
-
 \underline{associativity square} 
 
 \begin{figure}[H]
@@ -95,6 +79,8 @@ T \arrow[r, Rightarrow, "\eta T"] \arrow[dr, Rightarrow, "\text{id}"'] & T^2 \ar
 \end{definition}
 
 $\eta$: unit, $\mu$: multiplication.
+
+\newpage
 
 \begin{example}[Power-set monad]
 $$\mathcal{P}: \mathbf{Set} \rightarrow \mathbf{Set}.$$
@@ -138,6 +124,8 @@ GFGFGFc \arrow[d, "GFG(\epsilon_{Fc})"'] \arrow[r, "G(\epsilon_{FGFc})"] & GFGFc
 GFGFc \arrow[r, "G(\epsilon_{Fc})"] & GFc
 \end{tikzcd}
 \end{figure}
+
+\newpage
 
 - $a = FGFc$
 - $b = Fc$
@@ -208,7 +196,7 @@ $$\mu_d \circ T \mu_d \circ T^2 h = \mu_d \circ Th \circ \mu_c,$$
 \mu_d \circ T \mu_d \circ T^2 h &= \mu_d \circ \mu_{Td} \circ T^2 h \\
 &= \mu_d \circ Th \circ \mu_c
 \end{align*}
-\underline{left-unital}: use the \underline{right unit triangle} of the monad:
+\emph{left-unital}: use the \underline{right unit triangle}:
 $$\mu_b \circ T \eta_b = \text{id}_b$$
 $\leadsto$
 \begin{align*}
@@ -240,17 +228,34 @@ G_T&: \mathcal{C}_T \to \mathcal{C}, \\
 & a_T \mapsto Ta,
 \\& (f: a \to Tb)_T \mapsto \mu_b \circ Tf
 \end{align*}
-Let us check that e.g. $F_T$ is actually a functor. Consider two arrows in $\mathcal{C}$, $f: a \to b$ and $g: b \to c$.
+$F_T$ a functor.
+$$f: a \to b, g: b \to c$$
 \begin{align*}
 F_T(\text{id}_a) &= (\eta_a)_T \equiv \text{id}_{a_T} \\
 F_T(g \circ f) &= (\eta_c \circ g \circ f)_T \\
-F_T(g) \circ_T F_T(f) &= (\eta_c \circ g)_T \circ_T (\eta_b \circ f)_T = (\mu_c \circ T(\eta_c \circ g) \circ \eta_b \circ f)_T
+F_T(g) \circ_T F_T(f) &= (\eta_c \circ g)_T \circ_T (\eta_b \circ f)_T \\
+&= (\mu_c \circ T(\eta_c \circ g) \circ \eta_b \circ f)_T
 \end{align*}
-So we have to show that:
+$\leadsto$
 $$\mu_c \circ T(\eta_c) \circ Tg \circ \eta_b \stackrel{?}{=} \eta_c \circ g,$$
-which is immediate from the right unit triangle, and the naturality of $\eta$.
+\underline{right unit triangle}, and \underline{naturality of $\eta$}
 
-Next we show that $F_T \dashv G_T$, in that $(F_T, G_T, \eta)$ (we take the unit of the adjunction to be equal to the unit of the monad) forms an adjunction in the universal arrow sense. We have to show that for each $f: a \to Tb$ there is a unique $g_T: a_T \to b_T \equiv (g: a \to Tb)_T$ so that the following diagram commutes:
+$F_T \dashv G_T$, in that $(F_T, G_T, \eta)$ adjunction in the \underline{universal arrow sense}.
+
+_Adjunction_
+
+$$(F, G, \eta)$$
+$$\eta: \text{Id}_\mathcal{C} \Rightarrow GF,$$
+$$\forall c \in \mathcal{C},~d \in \mathcal{D},~f: c \to Gd,~\exists!~g: Fc \to d,$$
+s.t.
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+c \arrow[r, "\eta_c"] \arrow[rd, "f"']  & GFc \arrow[d, "Gg"] \\
+& Gd
+\end{tikzcd}
+\end{figure}
+
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
@@ -258,11 +263,17 @@ a \arrow[r, "\eta_a"] \arrow[rd, "f"'] & Ta \arrow[d, "\mu_b \circ Tg"] \\
   & Tb
 \end{tikzcd}
 \end{figure}
-Using the left unit triangle, we obtain that it is sufficient and necessary to take simply $g_T \equiv f_T$!
+Using the \underline{left unit triangle}, _sufficient and necessary_:
+$$g_T \equiv f_T.$$
 
-The counit of the adjunction is given by $\epsilon_{b_T} \equiv (\text{id}_{Tb})_T: (Ta)_T \to a_T$. We have $T \equiv G_T F_T$, and we have that
-$$G_T(\epsilon_{F_T a}) = G_T(\epsilon_{a_T}) = G_T((\text{id}_{Ta})_T) = \mu_a \circ T (\text{id}_{Ta}) = \mu_a$$
-as required.
+\underline{counit}:
+$$\epsilon_{b_T} \equiv (\text{id}_{Tb})_T: (Ta)_T \to a_T$$
+$$T \equiv G_T F_T,$$
+\begin{align*}
+\mu_a' = G_T(\epsilon_{F_T a}) &= G_T(\epsilon_{a_T})\\
+&= G_T((\text{id}_{Ta})_T) \\
+&= \mu_a \circ T (\text{id}_{Ta}) = \mu_a
+\end{align*}
 
 **Monads and functional programming**
 
