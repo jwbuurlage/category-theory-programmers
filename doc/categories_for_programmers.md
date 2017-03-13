@@ -2066,9 +2066,9 @@ Monads are used all throughout functional programming. In this part, we will try
 
 Any endofunctor $T: \mathcal{C} \to \mathcal{C}$ can be composed with itself, to obtain e.g. $T^2$ and $T^3$ (which are both again endofunctors from $\mathcal{C}$ to $\mathcal{C}$. A monad concerns an endofunctor, together with natural transformation between this functor and its composites that give it a "monoid-like structure".
 
-## Definition
+## Monads over a category
 
- Say $\alpha$ is a natural transformation $T \Rightarrow T'$, where $T, T'$ are endofunctors of $\mathcal{C}$, then note that $\alpha_x$ is a morphism from $Tx \to T'x$ in the category $\mathcal{C}$. Since this is a morphism, we can use $T$ or $T'$ to lift it, i.e. we obtain arrows at components $(T \alpha)_a \equiv T (\alpha_a)$ and $(\alpha T)_a \equiv \alpha_{Ta}$.
+Say $\alpha$ is a natural transformation $T \Rightarrow T'$, where $T, T'$ are endofunctors of $\mathcal{C}$, then note that $\alpha_x$ is a morphism from $Tx \to T'x$ in the category $\mathcal{C}$. Since this is a morphism, we can use $T$ or $T'$ to lift it, i.e. we obtain arrows at components $(T \alpha)_a \equiv T (\alpha_a)$ and $(\alpha T)_a \equiv \alpha_{Ta}$.
 
 In particular, note that this defines natural transformations between the appropriate composite functors since the image of any commutative diagram under a functor is again commutative.
 
@@ -2099,7 +2099,7 @@ T \arrow[r, Rightarrow, "\eta T"] \arrow[dr, Rightarrow, "\text{id}"'] & T^2 \ar
   & T &
 \end{tikzcd}
 \end{figure}
-The first of these is called the \emph{associativity square} while the second is called the \emph{unit triangle}.
+The first of these is called the \emph{associativity square} while the two triangles in second diagram are called the \emph{unit triangles}.
 \end{definition}
 We call $\eta$ the _unit_, and $\mu$ the _multiplication_. Let us look at a familiar example:
 \begin{example}[Power-set monad]
@@ -2114,7 +2114,7 @@ $$\mu_A: \mathcal{P}(\mathcal{P}(A)) \to \mathcal{P}(A),~\{ B_1, B_2, \ldots \} 
 where $B_i \subseteq A$.
 \end{example}
 
-## Adjunctions give rise to monads
+### Adjunctions give rise to monads
 
 Let $(F, G, \eta, \epsilon)$ be a unit-counit adjunction. We have a functor:
 $$T \equiv GF: \mathcal{C} \to \mathcal{C}.$$
@@ -2136,7 +2136,7 @@ GFGFGFc \arrow[d, "GFG(\epsilon_{Fc})"'] \arrow[r, "G(\epsilon_{FGFc})"] & GFGFc
 GFGFc \arrow[r, "G(\epsilon_{Fc})"] & GFc
 \end{tikzcd}
 \end{figure}
-written more suggestively we write: $a = FGFc$, $b = Fc$ $\tilde{G} = GFG$,
+written more suggestively we write: $a = FGFc, b = Fc$ and $\tilde{G} = GFG$,
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
@@ -2155,14 +2155,12 @@ GFc \arrow[rd, "\text{id}_{GFc}"'] \arrow[r, "\eta_{GFc}"] & GFGFc \arrow[d, "G(
 \end{figure}
 Which is just the second triangle identity of the adjunction at the object $Fc$.
 
-You can show that every monad comes from an adjunction by considering the _algebra of a monad_, which we may discuss in a future chapter.
-
-## Kleisli categories
+### Kleisli categories
 
 Every monad defines a new category, called the *Kleisli category*.
 
 \begin{definition}
-Let $\mathcal{C}$ be a caegory, and let $(T, \mu, \eta)$ be a monad over this category. Then the Kleisli category $\mathcal{C}_T$ is the category where:
+Let $\mathcal{C}$ be a category, and let $(T, \mu, \eta)$ be a monad over this category. Then the Kleisli category $\mathcal{C}_T$ is the category where:
 \begin{itemize}
 \item The \emph{objects} of $\mathcal{C}_T$ $a_T$ correspond directly to the objects $a$ of $\mathcal{C}$.
 \item The \emph{arrows} of $\mathcal{C}_T$ are the arrows of the form $f: a \to T b$ in $\mathcal{C}$, and will be denoted $f_T$. In other words,
@@ -2200,14 +2198,46 @@ To show that it is e.g. left-unital we compute:
 where we use the right unit triangle of the monad:
 $$\mu_b \circ T \eta_b = \text{id}_b$$
 Understanding Kleisli composition can be a convenient stepping stone to understanding how to work with Monads in Haskell.
-
 The composition operator $\circ_T$ is usually denoted `>=>` (the fish operator) in Haskell.
+
+### Every monad is induced by an adjunction
+
+Let $\mathcal{C}$ be a category, $(T, \eta, \mu)$ a monad over $\mathcal{C}$, and $\mathcal{C}_T$ the associated Kleisli category. Here, we will show that there are functors $F: \mathcal{C} \to \mathcal{C}_T$ and $G: \mathcal{C}_T \to \mathcal{C}$ so that $F \dashv G$ and $T$ is equal to the monad induced by that adjunction.
+
+We define:
+$$\begin{array}{lll}
+F_T: \mathcal{C} \to \mathcal{C}_T, & a \mapsto a_T, & (f: a \to b) \mapsto (\eta_b \circ f)_T\\
+G_T: \mathcal{C}_T \to \mathcal{C}, & a_T \mapsto Ta, & (f: a \to Tb)_T \mapsto \mu_b \circ Tf
+\end{array}$$
+Let us check that e.g. $F_T$ is actually a functor. Consider two arrows in $\mathcal{C}$, $f: a \to b$ and $g: b \to c$.
+\begin{align*}
+F_T(\text{id}_a) &= (\eta_a)_T \equiv \text{id}_{a_T} \\
+F_T(g \circ f) &= (\eta_c \circ g \circ f)_T \\
+F_T(g) \circ_T F_T(f) &= (\eta_c \circ g)_T \circ_T (\eta_b \circ f)_T = (\mu_c \circ T(\eta_c \circ g) \circ \eta_b \circ f)_T
+\end{align*}
+So we have to show that:
+$$\mu_c \circ T(\eta_c) \circ Tg \circ \eta_b \stackrel{?}{=} \eta_c \circ g,$$
+which is immediate from the right unit triangle, and the naturality of $\eta$.
+
+Next we show that $F_T \dashv G_T$, in that $(F_T, G_T, \eta)$ (we take the unit of the adjunction to be equal to the unit of the monad) forms an adjunction in the universal arrow sense. We have to show that for each $f: a \to Tb$ there is a unique $g_T: a_T \to b_T \equiv (g: a \to Tb)_T$ so that the following diagram commutes:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+a \arrow[r, "\eta_a"] \arrow[rd, "f"'] & Ta \arrow[d, "\mu_b \circ Tg"] \\
+  & Tb
+\end{tikzcd}
+\end{figure}
+Using the left unit triangle, we obtain that it is sufficient and necessary to take simply $g_T \equiv f_T$!
+
+The counit of the adjunction is given by $\epsilon_{b_T} \equiv (\text{id}_{Tb})_T: (Ta)_T \to a_T$. We have $T \equiv G_T F_T$, and we have that
+$$G_T(\epsilon_{F_T a}) = G_T(\epsilon_{a_T}) = G_T((\text{id}_{Ta})_T) = \mu_a \circ T (\text{id}_{Ta}) = \mu_a$$
+as required.
 
 ## Monads and functional programming
 
-Because the brutal purity of Haskell is restrictive, we need non-standard tools to perform operations that we take for granted in imperative languages. In this section, we will explore what this means for some real world programs, and discover what problems and difficulties pop up. In particular, we will see how we can use monads to overcome some of these problems.
+Because the brutal purity of Haskell is restrictive, we need non-standard tools to perform operations that we take for granted in imperative languages. In this section, we will explore what this means for some real world programs, and discover what problems and difficulties pop up. In particular, we will see how we can use monads to overcome some of these problems, by showing that functions of the type `a -> T b` are common, and hence that we are in need of a nice way to compose them.
 
-### Example 1: IO
+### IO
 
 Consider the type of some functions in Haskell regarding input and output in Haskell:
 
@@ -2226,215 +2256,154 @@ main = do
   print (x ++ y)
 ```
 
-- If `main` should *behave*, then it should return the same function every time. However, we would like to support user input (`cin, scanf, getLine, ..)` so what should be its type if it should 'behave mathematically'?
-- Similarly, for `print`, what would be its type? It should take a value, convert it to a string, and output this in a terminal somewhere. The first part seems doable, but what is the *type* of *printing to screen*?
+Let us consider this snippet of code carefully. If `main` should *behave* purely, then it should return the same function every time. However, since we would like to support user input (`cin, scanf, getLine, ..)` so what should be its type if it should 'behave mathematically'? Similarly, for `print`, what would be its type? It should take a value, convert it to a string, and output this in a terminal somewhere. What is the *type* of *printing to screen*?
 
-Although this is quite a fundamental problem, Haskell 'fixes this' using *IO actions*. This is not limited to input/output for terminal, it can also be network related, file related, or mouse/keyboard input for a video game!
+In Haskell, this is done using *IO actions*. This monadic style of doing IO is not limited to input/output for terminal, it can also be network related, file related, or mouse/keyboard input for a video game!
 
-An IO action is a *value* with a type of `IO a`. We can also have an 'empty IO action', if the result is not used. Let us look at some examples:
+An IO action is a *value* with a type of `IO a`. We can also have an 'empty IO action', if the result is not used. The way to look at these actions is as a _recipe_ of producing an `a`. While the actual value produced by the action depends on the outside world, the _recipe_ itself is completely _pure_.
+
+Let us consider our examples:
 
 - The print function has the signature from a String to an IO action:
-
     ```haskell
     putStrLn :: String -> IO ()
     ```
     To print the value of any type, we precompose this function with `show :: a -> String`.
+- The function `main` itself is an IO action! So the type is  `main :: IO ()`.
+- The `getLine` function is an IO action `getLine :: IO String`.
 
-- The function `main` itself is an IO action! `main :: IO ()`.  - The `getLine` function is an IO action `getLine :: IO String`.
 
+**Case study: Handling input**
 
-#### Handling input
-
-Let us use this `getLine` action to interact with the user of our program. We would like to do something like this:
+Let us consider a very simple example using `getLine` and `print`.
 
 ```haskell
 f :: Int -> Int
 f x = 2 * x
 
-main = print $ f getLine
+-- attempt 1
+main = print $ f (read getLine :: Int)
 ```
 
-But this does not type check! The action `getLine` has type `IO String`, while `f` expects an `Int`. Assume we could convert the `String` to an `Int`:
-
+But this does not type check! First, the action `getLine` has type `IO String`, while `read` expects `String`. Then to work on the IO action, we want to *lift* `read` to take an `IO String` and produce an `IO Int`. This sounds like an `fmap`, and indeed `IO` provides fmap, it is a functor!
 ```haskell
-toInt :: String -> Int
+-- attempt 2
+main = print $ f (read <$> getLine :: IO Int)
 ```
-
-Then to work on the IO action, We want to *lift* `toInt` to take an `IO String` and produce an `IO Int`. This sounds like an `fmap`, and indeed `IO` provides fmap, it is a functor!
-
-The `print`^[`print` actually corresponds to `(putStrLn . show)` in Haskell] statement we used here has signature `a -> IO ()`. Applying the `fmap` of IO on this function would give something like:
-
+Next, we have that `f` expects an `Int`, not an `IO Int`, so we lift it again
+```haskell
+-- attempt 3
+main = print $ f <$> (read <$> getLine :: IO Int)
+```
+The `print`^[`print` actually corresponds to `(putStrLn . show)` in Haskell] statement we used here has signature `a -> IO ()`. Bringing this into the `IO` context using an `fmap` gives us:
 ```haskell
 fmap print :: IO a -> IO (IO ())
 ```
-
-Since `main` should corespond to `IO ()`, we need either a way to remove a 'nested IO tag', or we need a function for functors that only lifts the first argument. I.e. let `F` be a functor, then we require either:
+Since `main` should corespond to `IO ()`, we need either a way to remove a 'nested IO tag', or we need a function for functors that only lifts the first argument. In other words, let `F` be a functor, then we require either:
 
 ```haskell
 join :: F (F a) -> F a
-lift_one :: (a -> F b) -> (F a -> F b)
+(=<<) :: (a -> F b) -> (F a -> F b)
+-- the above function is more commonly used with swapped arguments
+-- and is then pronounced 'bind'
+(>>=) ::  F a -> (a -> F b) -> F b)
 ```
 
-Because of currying, which we will describe this in more detail in the section on Cartesian Closed Categories (CCCs), we can reorder parentheses, and because the order of arguments does not matter -- we can write `lift_one` equivalently as:
-```haskell
->>= :: F a -> (a -> F b) -> F b
-```
-Where the `>>=` (which is the Haskell notation, pronounced 'bind') is isomorphic to the arrow `lift_one`.
-
-Note, that we have:
+Note, that we can define:
 ```haskell
 join :: F (F a) -> F a
 join x = x >>= id
-
--- indeed, consider `(>>=) x id`, where `x :: F (F a)`
-id :: (F a -> F a) ==> b = a ==> join x :: F a
 ```
-So we can define a `join` function only using our *bind*, so that implementing `>>=` is enough. Conversely, we can also retrieve bind from `join` and `fmap`:
-
+so that implementing `>>=` is enough. Conversely, we can also retrieve bind from `join` and `fmap`:
 ```haskell
-x >>= f = join (fmap f x)
-
--- e.g.
-getLine >>= putStrLn
-=> join fmap putStrLn(getLine)
-=> join y -- y :: IO IO ()
-=> z :: IO ()
+x >>= f = join (f <$> x)
 ```
-
 Note also that we can pack an object inside an IO 'container':
 ```haskell
-unit :: a -> IO a
+return :: a -> IO a
 ```
-So what does this give us. The bind notation can be used *infix*: so what would this code do:
 
+Let us return to IO, and see what this notation gives us:
 ```haskell
 main = getLine >>= putStrLn
 ```
-
-This is equivalent to `(>>=) getLine putStrLn`, whose type deduces to:
+This code results in an empty action `IO ()`, so the 'bind' function can be used to chain `IO` operations together! For our little toy program we can `fmap` print into the `IO` context, and `join` the result afterwards to obtain:
 ```haskell
-F a = IO String ==> F = IO, a = String
-a -> Fb ==> String -> IO () ==> b = ()
+main = join $ print <$> f <$> (read <$> getLine :: IO Int)
 ```
-which gives us a type of `F b = IO ()`, as required. So the 'bind' function can be used to chain `IO` operations together!
-
-What if we want to discard the inbetween values (because e.g. they are `IO ()`, when we output more than one line). This is kind of the role of `;` in imperative languages. For this there exists the `>>` notation:
-
+Using a more idiomatic style of writing this programming we get:
 ```haskell
-main = putStrLn "a" >> putStrLn "b"
+main = read <$> getLine >>= (\x -> print (f x))
 ```
-
-The `>>` (pronounced: then) function can be implemented as:
+which in `do`-notation becomes:
 ```haskell
->> :: IO a -> IO b -> IO b
-
-(>>) (putStrLn "a") (putStrLn "b")
-==> a == b == ()
-==> putStrLn "a" >> putStrLn "b" :: IO () -- as required
-
+main = do
+    x <- read <$> getLine
+    print (f x)
 ```
+To summarize, `>>=`, `join` and `return` allow us to **compose functions that may or may not require IO operations**.
 
-To summarize, `bind` and `return` allows us to **compose functions that may or may not require IO operations**.
+### Other examples
 
-### Example 2: Data structures
+Now that we have seen how to compose functions of the form `a -> T b`, let us look at some other examples of contexts where this structure can be found.
 
-Trivial (finite) data structures are easily implemented in Haskell as product types, but we have also seen a different type of container namely a *functorial* one. The examples we have looked at so far are `[]` and `Maybe`. Let us explore these more deeply, and see how we can make their usage more flexible. First consider the `Maybe` functor. Say we have a number of functions, where some may or may not produce a result:
+**Data structures**
 
-```haskell
-f :: a -> Maybe a
-g :: a -> a
-h :: a -> Maybe a
-```
+- `a -> Maybe b`: a function that **may fail**.
+- `a -> [b]`: a function that **may produce zero or more results**.
 
-And we want to do something like `h . g . f` using these definitions. What would happen:
+**Logging**
 
-1. Let `x :: a`.
-2. Apply `f`, and obtain `f x :: Maybe a`
-3. To apply `g`, we need to `fmap` it, so that `fmap g $ f x :: Maybe b`.
-4. Now notice the pattern `h :: a -> F a`, which we have seen in the previous section, and we already saw the solution 'bind':
-```haskell
-(fmap g $ f x) >>= h
-```
-Although this is still somewhat ugly, we see that the *bind* function gives us the tools to do any computations with the Maybe monad regardless of the specific signature of the functions, and the order of composition. We can see that `bind` (and `return`) allow us to **compose arbitrary functions that may or may not fail**.
-
-Next we look at `[]`. A common pattern, which is easy to do in mathematics, is when you have a function:
+All of `IO`, `Maybe` and `[]` may be seen as 'functional containers', let consider a different kind of example.
 
 ```haskell
-f :: A -> B
+data Logger m a = Logger (a, m)
 ```
 
-to consider a sequence $a_1, a_2, \ldots$ and map this over $f$ to obtain $f(a_1), f(a_2), \ldots$. This corresponds of course to the `fmap` of the `[]`, and we already made this easy to do by considering `[]` as a functor. What does the `bind` operator do for us here? It lets us take a list of *inputs*, apply a function to each of them returning a variable number of *outputs*, and then gather all the results in a single list:
+The data type `Logger` consists of a _composable log_ (in the form of a monoid, e.g. `(String, (++))`) `m`, and an embedded value `a`.
+
+- `a -> Logger String b`: a function that **may log a string**.
+
+**State**
 
 ```haskell
-[1, 2, 3] >>= \x -> [2 * x, 3 * x] -- [2, 3, 4, 6, 6, 9]
+data State s a = State (s -> (a, s))
 ```
 
-Here, the `bind` and `return` pair lets us **compose operations defined on data structures or their elements**.
+In this view, a value of type `State s a` is a function that takes some state, and produces an `a` in addition to a (possibly modified) state. For example, `s` could be some _environment_ (say a `Map`) containing information that can be used to produce an `a`, and the state function can manipulate this `Map` when producing the `a`.
 
-### Example 3: Logging
+- `a -> State s b`: a function that **uses and/or manipulates a state**.
 
-Both `IO`, `Maybe` and `[]` may be seen as 'functional containers', but let us now look at a completely different example where again we see that `bind` and `return` pair.
+In this examples, the _contexts_ are
+- `Maybe`: failure that gets propagated
+- `[]`: arbitrary number of results that are gathered
+- `Logger s`: a log of type `s` that is maintained
+- `State s`: a state of type `s` that is passed around
 
-Consider a *function with side effects*, the canonical case is a function that logs a message.
-When thinking about how to accomplish this in Haskell, a candidate solution to letting some function `f :: a -> b` log a message, is to let it return a *pair* of `(b, String)`, where the `String` part contains the message.
-
-As before, we want to **compose operations that involve logging or non-logging functions**. How would we do this in this case? First, we define the `Writer` functor. A `type` in Haskell corresponds to a `typedef` or `using` in C++.
-```haskell
-data Writer m a = Writer (a, m)
-
-instance Functor (Writer m) where
-    fmap f (Writer (a, m)) = Writer (f a, m)
-```
-
-This `Functor` instance allows us to lift functions that don't log to work with functions that log, however, what we really want to do do is to not worry about this decomposition, and any function that logs should just have the signature:
-```haskell
-logging_function :: a -> Writer String b
-```
-For this, we use the same schema we have seen before, and define two functions:
-```
-return :: a -> Logger a
-x = Logger x
-```
-
-Note, as suggested by the way `Writer m a` was introduced, that if we would use some other *monoid* instead of `String`^[Indeed, String gives rise to a monoid with binary operation `++` (concatenation)], we could accomplish different goals than logging.
-
-### Example 4: State
-
-`State` monad, e.g.
-
-- RNG
-- `getUniques` using `Set` as State
-- Parser
-- ...
+The bind `>>=` implementation for these _monads_ pass around this context, and can change the control depending on the result after a step. For example, it can short-circuit a computation inside the `Maybe` monad in case some function fails.
 
 ### The `Monad` type class
 
-In this section we have talked about `return` and *bind* `>>=`.
-
-So, in various forms, we have seen the following pattern over and over: `F` is a functor (`IO, [], Maybe, Writer, ...`), along with two operations:
-
+The triplets `(F, return, join)` that we have seen in this section, correspond to monads $(T, \eta, \mu)$ over the category of types. The type class in Haskell is defined as^[We simplify the definition slightly here, the actual class also defines a `fail` method which is seen as an historical flaw]:
 ```haskell
-join :: F F a -> F a
-unit :: a -> F a
+class Applicative m => Monad m where
+    return :: a -> m a
+    (>>=) :: m a -> (a -> m b) -> m b
 ```
-
-Note that in categorical terms:
-
-- `unit` can be seen as a natural transformation between the identity endofunctor `Identity`, and `F`.
-- `join` is a natural transformation between `F^2` and `F`.
-
-## From adjunctions to monads in Haskell
-
-See also:
-<http://www.stephendiehl.com/posts/adjunctions.html>
-
-See also:
-<https://www.reddit.com/r/haskell/comments/4zvyiv/what_are_some_example_adjunctions_from_monads_or/>
+We have seen that `>>=` can be defined in terms of `join`, which has the familiar type:
+```haskell
+join :: m (m a) -> m a
+```
+Indeed, `return` corresponds to a natural transformation `Identity -> m`, while `join` corresponds to a natural transformation between `m m -> m`.
 
 ## Exercises
 
 \begin{exercise}
 Show that the image of any commutative diagram under a functor $F$ is again commutative.
+\end{exercise}
+
+\begin{exercise}
+Show that $G_T$ is a functor.
 \end{exercise}
 
 ## References
@@ -2456,6 +2425,8 @@ Some posts dealing specifically with Monads from a Haskell perspective:
 
 - <http://blog.sigfpe.com/2006/08/you-could-have-invented-monads-and.html>
 - <https://bartoszmilewski.com/2013/03/07/the-tao-of-monad/>
+- <http://www.stephendiehl.com/posts/adjunctions.html>
+- <https://www.reddit.com/r/haskell/comments/4zvyiv/what_are_some_example_adjunctions_from_monads_or/>
 
 # Recursion and F-algebras
 
