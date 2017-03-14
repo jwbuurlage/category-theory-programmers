@@ -307,7 +307,7 @@ data State s a = State (s -> (a, s))
 ```
 - `a -> State s b`: a function that **uses and/or manipulates a state**.
 
-In this examples, the _contexts_ are
+In these examples, the _contexts_ are
 
 - `Maybe`: failure that gets propagated
 - `[]`: arbitrary number of results that are gathered
