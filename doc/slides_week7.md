@@ -98,18 +98,18 @@ where $B_i \subseteq A$.
 
 $(F, G, \eta, \epsilon)$ adjunction.
 $$\begin{array}{ll}
-F: \mathcal{C} \to \mathcal{D}, & \eta: \text{Id}_\mathcal{C} \to GF \\
-G: \mathcal{D} \to \mathcal{C}, & \epsilon: FG \to \text{Id}_\mathcal{D}
+F: \mathcal{C} \to \mathcal{D}, & \eta: \text{Id}_\mathcal{C} \Rightarrow GF \\
+G: \mathcal{D} \to \mathcal{C}, & \epsilon: FG \Rightarrow \text{Id}_\mathcal{D}
 \end{array}$$
 
 \begin{align*}
 T &\equiv GF: \mathcal{C} \to \mathcal{C}, \\
-\eta&: \text{Id}_\mathcal{C} \to T \\
-\mu&: T^2 \to T \\
-   &: GFGF \to GF \\
+\eta&: \text{Id}_\mathcal{C} \Rightarrow T \\
+\mu&: T^2 \Rightarrow T \\
+   &: GFGF \Rightarrow GF \\
 \mu&\equiv G \epsilon F
 \end{align*}
-$$\mu_d \equiv G(\epsilon_{Fc}).$$
+$$\mu_c \equiv G(\epsilon_{Fc}).$$
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
@@ -127,9 +127,9 @@ GFGFc \arrow[r, "G(\epsilon_{Fc})"] & GFc
 
 \newpage
 
-- $a = FGFc$
-- $b = Fc$
-- $\tilde{G} = GFG$
+- $a \equiv FGFc$
+- $b \equiv Fc$
+- $\tilde{G} \equiv GFG$
 
 \begin{figure}[H]
 \centering
@@ -162,7 +162,7 @@ G \arrow[r, Rightarrow, "\eta G"] \arrow[dr, Rightarrow, "\text{id}_G"'] & GFG \
 
 **Kleisli categories**
 
-$(T, \mu, \eta)$ over $\mathcal{C}$ $\leadsto$  *Kleisli category* $\mathcal{C}_T$.
+$(T, \eta, \mu)$ over $\mathcal{C}$ $\leadsto$  *Kleisli category* $\mathcal{C}_T$.
 
 \begin{definition}
 $\mathcal{C}_T$ for $(T, \mu, \eta)$:
@@ -171,7 +171,7 @@ $\mathcal{C}_T$ for $(T, \mu, \eta)$:
 \item \underline{Arrows}:
 $$f: a \to T b \text{ in } \mathcal{C} \leadsto f_T: a_T \to b_T.$$
 i.e.:
-$$\text{Hom}_{\mathcal{C}_T}(a, b) \simeq \text{Hom}_{\mathcal{C}}(a, Tb).$$
+$$\text{Hom}_{\mathcal{C}_T}(a_T, b_T) \simeq \text{Hom}_{\mathcal{C}}(a, Tb).$$
 \item \underline{Composition}:
 $$g_T \circ_T f_T \equiv (\mu_c \circ Tg \circ f)_T.$$
 \item \underline{Identity arrows}:

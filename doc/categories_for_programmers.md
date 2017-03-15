@@ -2119,7 +2119,7 @@ where $B_i \subseteq A$.
 Let $(F, G, \eta, \epsilon)$ be a unit-counit adjunction. We have a functor:
 $$T \equiv GF: \mathcal{C} \to \mathcal{C}.$$
 We can define a natural transformation:
-$$\mu: T^2 \to T, \mu_d \equiv G(\epsilon_{Fc}).$$
+$$\mu: T^2 \Rightarrow T, \mu_c \equiv G(\epsilon_{Fc}).$$
 Let us show that $(T, \eta, \mu)$ indeed forms a monad, first the associtivity square:
 \begin{figure}[H]
 \centering
@@ -2136,7 +2136,7 @@ GFGFGFc \arrow[d, "GFG(\epsilon_{Fc})"'] \arrow[r, "G(\epsilon_{FGFc})"] & GFGFc
 GFGFc \arrow[r, "G(\epsilon_{Fc})"] & GFc
 \end{tikzcd}
 \end{figure}
-written more suggestively we write: $a = FGFc, b = Fc$ and $\tilde{G} = GFG$,
+written more suggestively we write: $a \equiv FGFc, b \equiv Fc$ and $\tilde{G} \equiv GFG$,
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
@@ -2144,7 +2144,9 @@ written more suggestively we write: $a = FGFc, b = Fc$ and $\tilde{G} = GFG$,
 \tilde{G}b \arrow[r, "G(\epsilon_{b})"] & Gb
 \end{tikzcd}
 \end{figure}
-such that the diagram reveals itself to be a naturality square under the function $f \equiv \epsilon_b: a \to b$ for the natural transformation $G\epsilon$. For e.g. the left unit triangle we observe:
+such that the diagram reveals itself to be a naturality square under the function $f \equiv \epsilon_b: a \to b$ for the natural transformation $G\epsilon$.
+
+For e.g. the left unit triangle we observe:
 
 \begin{figure}[H]
 \centering
@@ -2160,11 +2162,11 @@ Which is just the second triangle identity of the adjunction at the object $Fc$.
 Every monad defines a new category, called the *Kleisli category*.
 
 \begin{definition}
-Let $\mathcal{C}$ be a category, and let $(T, \mu, \eta)$ be a monad over this category. Then the Kleisli category $\mathcal{C}_T$ is the category where:
+Let $\mathcal{C}$ be a category, and let $(T, \eta, \mu)$ be a monad over this category. Then the Kleisli category $\mathcal{C}_T$ is the category where:
 \begin{itemize}
 \item The \emph{objects} of $\mathcal{C}_T$ $a_T$ correspond directly to the objects $a$ of $\mathcal{C}$.
 \item The \emph{arrows} of $\mathcal{C}_T$ are the arrows of the form $f: a \to T b$ in $\mathcal{C}$, and will be denoted $f_T$. In other words,
-$$\text{Hom}_{\mathcal{C}_T}(a, b) \simeq \text{Hom}_{\mathcal{C}}(a, Tb).$$
+$$\text{Hom}_{\mathcal{C}_T}(a_T, b_T) \simeq \text{Hom}_{\mathcal{C}}(a, Tb).$$
 \item Composition between two arrows $f_T: a_T \to b_T$ and $g_T: b_T \to c_T$ in $\mathcal{C}_T$ is given by:
 $$g_T \circ_T f_T \equiv (\mu_c \circ Tg \circ f)_T.$$
 \item The \emph{identity arrows} $\text{id}_{a_T}$ are equal to $(\eta_a)_T$.
