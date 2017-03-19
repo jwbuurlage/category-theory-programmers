@@ -2464,6 +2464,12 @@ Is strong lax functor
 - McBride, Paterson; Applicative Programming with Effects
     - <http://www.staff.city.ac.uk/~ross/papers/Applicative.pdf>
 
+# Monad transformers
+
+'Translation of am onad along an adjunction'
+
+- <https://oleksandrmanzyuk.files.wordpress.com/2012/02/calc-mts-with-cat-th1.pdf>
+
 # Proof assistants
 
 Curry-Howard isomorphism
