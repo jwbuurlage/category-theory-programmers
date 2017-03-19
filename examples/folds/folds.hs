@@ -1,51 +1,61 @@
-sum :: Num a => [a] -> a
-sum = undefined
+import Data.Monoid
+import qualified Data.Set as S
+import Control.Monad.State
 
-product :: Num a => [a] -> a
-product = undefined
+sumf :: Num a => [a] -> a
+sumf = foldr (+) 0
 
-length :: Num b => [a] -> b
-length = undefined
+productf :: Num a => [a] -> a
+productf = foldr (*) 1
 
-and :: [Bool] -> Bool
-and = undefined
+lengthf :: Num b => [a] -> b
+lengthf = foldr (\_ c -> c + 1) 0
 
-or :: [Bool] -> Bool
-or = undefined
+andf :: [Bool] -> Bool
+andf = foldr (&&) True
 
-elem :: a -> [a] -> Bool
-elem = undefined
+orf :: [Bool] -> Bool
+orf = foldr (||) True
 
-min :: Ord a => [a] -> a
-min = undefined
+elemf :: Eq a => a -> [a] -> Bool
+elemf x = foldr (\a b -> (a == x) || b) False
 
-max :: Ord a => [a] -> a
-max = undefined
+minf :: (Bounded a, Ord a) => [a] -> a
+minf = foldr min maxBound
 
-all :: (a -> Bool) -> [a] -> Bool
-all = undefined
+maxf :: (Bounded a, Ord a) => [a] -> a
+maxf = foldr max minBound
 
-any :: (a -> Bool) -> [a] -> Bool
-any = undefined
+allf :: (a -> Bool) -> [a] -> Bool
+allf p xs = andf (p <$> xs)
 
-concat :: [[a]] -> [a]
-concat = undefined
+anyf :: (a -> Bool) -> [a] -> Bool
+anyf p xs = orf (p <$> xs)
 
-reverse :: [a] -> [a]
-reverse = undefined
+concatf :: [[a]] -> [a]
+concatf = foldr (++) []
 
-filter :: (a -> Bool) -> [a] -> [a]
-filter p = undefined
+reversef :: [a] -> [a]
+reversef = foldl (flip (:)) []
 
-map :: (a -> b) -> [a] -> [b]
-map = undefined
+filterf :: (a -> Bool) -> [a] -> [a]
+filterf p = foldr (\x xs -> if p x then x : xs else xs) []
+
+mapf :: (a -> b) -> [a] -> [b]
+mapf f = foldr (\x xs -> f x : xs) []
 
 -- use foldMap to implement the following functions
-sum' = undefined
-product' = undefined
-concat' = undefined
+sumfm :: Num a => [a] -> a
+sumfm = getSum . foldMap Sum
 
-toString :: Show a => [a] -> String
+productfm :: Num a => [a] -> a
+productfm = getProduct . foldMap Product
+
+concatfm :: [[a]] -> [a]
+concatfm = foldMap id
+
+asString :: Show a => [a] -> String
+asString = foldMap show
 
 -- database?
 
@@ -57,5 +67,12 @@ toString :: Show a => [a] -> String
 population :: Int -> Float -> [Int]
 population = undefined
 
-fibonacci :: [Int]
+fibonnaci :: [Int]
 fibonnaci = undefined
+
+filtering :: Applicative f => (a -> f Bool) -> [a] -> f [a]
+filtering p = foldr (\x -> (<*>) ((\p' -> if p' then (x :) else id) <$> p x)) (pure [])
+
+-- use State monad for this:
+distinct :: Ord a => [a] -> [a]
+distinct xs = evalState (filtering (\x -> state (\s -> (S.notMember x s, S.insert x s))) xs) S.empty
