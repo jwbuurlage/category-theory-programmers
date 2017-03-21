@@ -77,6 +77,8 @@ header-includes:
     - \renewcommand{\theexercise}{\thechapter.\arabic{exercise}}
     - \newcommand{\alongtop}{\raisebox{-0.5em}{\tikz{\draw[->] (0,0) -- (0.9em,0); \draw[->] (1em,0) -- (1em,-0.9em);}}}
     - \newcommand{\alongbottom}{\raisebox{-0.5em}{\tikz{\draw[->] (0,0) -- (0,-0.9em); \draw[->] (0, -1em) -- (0.9em,-1.0em);}}}
+    - \newcommand{\lbanana}{(\!|}
+    - \newcommand{\rbanana}{|\!)}
     - \setlength{\parskip}{0.3cm}
     - \setlength{\parindent}{0.0cm}
     - \usepackage{geometry}
@@ -95,6 +97,7 @@ I would like to thank:
 - Peter Kristel for valuable comments on the Yoneda embedding
 - Willem Jan Palenstijn for corrections and comments regarding cartesian closed categories.
 - Tom de Jong for examples and suggestions for the section on adjunctions
+- Edward Kmett for examples of Monads arising from adjunctions in Haskell.
 
 -- Jan-Willem Buurlage (<janwillembuurlage@gmail.com>)
 
@@ -2436,14 +2439,152 @@ Some posts dealing specifically with Monads from a Haskell perspective:
 - Eilenberg-Moore category of algebras over a monad, can be used to show that every monad arises from an adjunction.
 - Initial algebras, Lambek's theorem, `Fix f`, recursion.
 
+\begin{definition}
+Let $F: \mathcal{C} \to \mathcal{C}$ be an endofunctor. An \textbf{$F$-algebra} is a pair $(a, \alpha)$ where $a \in \mathcal{C}$ and $\alpha: F a \to a$ is an arrow in $\mathcal{C}$. The object $a$ is called the \emph{carrier} of the algebra.
+
+A homomorphism between $F$-algebras $(a, \alpha)$ and $(b, \beta)$ is an arrow $h: a \to b$ such that the following diagram commutes:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+Fa \arrow[r, "\alpha"]  \arrow[d, "Fh"'] & a \arrow[d, "h"]\\
+Fb \arrow[r, "\beta"'] & b
+\end{tikzcd}
+\end{figure}
+\end{definition}
+
+For every endofunctor $F$, the collection of $F$-algebras together with homomorphisms of these $F$-algebras form a category which we will denote $\mathbf{Alg}_F$.
+
+A fixed point for a function $f$ is an $x$ such that $f(x) = x$. Considering this, a sensible definition for a fixed point of an endofunctor is an object $a$ such that $F(a) = a$, but we are a bit more lenient, and only require that $F(a) \simeq a$.
+
+\begin{definition}
+A \textbf{fixed point} of $F$ is an algebra $(a, \alpha)$ for which $\alpha$ is an isomorphism.
+\end{definition}
+
+Considering a _least fixed point_, we take inspiration from partially ordered sets, where the least point is an initial object, and define it as follows.
+
+\begin{definition}
+A \textbf{least fixed point} of $F$ is an initial algebra $(a, \alpha)$, i.e. an algebra that is an initial object in the category $\mathbf{Alg}_F$.
+\end{definition}
+
+An immediate issue that we have to resolve is to show that any _least_ fixed point is indeed a fixed point.
+
+\begin{lemma}[Lambek]
+Let $F: \mathcal{C} \to \mathcal{C}$ be an endofunctor. If $(t, \tau)$ is initial in $\mathbf{Alg}_F$, then $\tau$ is an isomorphism.
+\end{lemma}
+
+\begin{proof}
+Let $(t, \tau)$ be an initial object in $\mathbf{Alg}_F$, and consider the algebra $(Ft, F\tau)$. Since $(t, \tau)$ is initial there is a unique homomorphism $h: t \to Ft$ such that the following diagram commutes:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+Ft \arrow[r, "\tau"]  \arrow[d, "Fh"'] & t \arrow[d, "h"]\\
+F^2 t \arrow[d, "F\tau"'] \arrow[r, "F \tau"] & Ft \arrow[d, "\tau"] \\
+Ft \arrow[r, "\tau"'] & t
+\end{tikzcd}
+\end{figure}
+Here, the top square commutes because $h$ is a homomorphism, and the bottom square commutes trivially.
+First, we note that by commutativity of this diagram, $h \circ \tau$ is a homomorhism between $(t, \tau) \to (t, \tau)$, and since $(t, \tau)$ is initial it is the unique homomorphism, i.e. the identity, and hence:
+$$\tau \circ h = \text{id}_{t},$$
+i.e. $h$ is a right inverse to $\tau$. To show that it is also a left inverse (and hence that $\tau$ is an isomorphism) we compute using the commutativity of the top square:
+$$h \circ \tau = F\tau \circ Fh = F(\tau \circ h) = F(\text{id}_{t}) = \text{id}_{Ft}.$$
+which shows that $\tau$ is an isomorphism, and hence that $(t, \tau)$ is a fixed point.
+\end{proof}
+
+Let $(a, \alpha)$ be an $F$-algebra. In the functional programming literature, the unique homomorphism from the initial algebra $(t, \tau)$ to $(a, \alpha)$ is called a _catamorphism_ and is denoted $\lbanana \alpha \rbanana$.
+
+\begin{proposition}[Fusion law]
+$$h \circ f \simeq g \circ Fh \implies h \circ \lbanana f \rbanana = \lbanana g \rbanana.$$
+\end{proposition}
+
+## Determining the least fixed point
+
+When does a least fixed point exist? Lambek's theorem implies that e.g. the $\mathcal{P}$ power-set endofunctor does not have an initial algebra (because $\mathcal{P}(\mathcal{P}(X))$ is never isomorphic to $\mathcal{P}$(X), a result due to Cantor).
+
+\begin{definition}[Polynomial functor]
+Let $\mathcal{C}$ be a category with finite (co-)products. A \textbf{polynomial functor} from $\mathcal{C} \to \mathcal{C}$ is defined inductively as:
+\begin{itemize}
+\item The identity functor $\text{Id}_\mathcal{C}$ is a polynomial functor.
+\item All constant functors $\Delta_c: \mathcal{C} \to \mathcal{C}$ is a polynomial functor.
+\item If $F$ and $F'$ are polynomial functors, then so are $F \circ F'$, $F + F$ and $F \times F$.
+\end{itemize}
+\end{definition}
+
+### Least fixed points in Haskell
+
+```haskell
+data Mu f = InF { outF :: f (Mu f) }
+```
+
+Note: In the Haskell world, `InF` and `Mu` are often called `Fix`, while `outF` is called `unFix`.
+
+Obtaining the catamorphism for an algebra can be done recursively using:
+
+```haskell
+type Algebra f a = f a -> a
+
+newtype Mu f = InF { outF :: f (Mu f) }
+
+cata :: Functor f => Algebra f a -> Mu f -> a
+cata f = f . fmap (cata f) . outF
+```
+
+## Catamorphisms and folds in Haskell
+
+The more 'natural' fold in Haskell is `foldr`, to understand why we should look at `cons`-lists versus `snoc`-lists:
+```haskell
+List a  = Empty  | Cons a (List a) -- 'cons'
+List' a = Empty' | Snoc (List a) a -- 'snoc'
+```
+The standard Haskell lists `[a]` are `cons`-lists, they are built _from the back of the list_. The reason `foldr` is more natural for this type of list is that the recursion structure follows the structure of the list it self:
+```haskell
+h = foldr (~) e
+-- h [x, y, z] is equal to:
+h (x : (y : (z : [])))
+--   |    |    | |
+--   v    v    v v
+--(x ~ (y ~ (z ~ e)))
+```
+This can be summarized by saying that a `foldr` _deconstructs_ the list, it uses the shape of the construction of the list to obtain a value. The `(:)` operation gets replaced by the binary operation `(~)`, while the empty list (base case) is replaced by the _accumulator_ `e`.
+
+As a special case, since the value constructors for a list are just functions, we can obtain the identity operation on lists as a fold:
+```haskell
+id :: [a] -> [a]
+id == foldr (:) []
+```
+
+
 ## Algebras of monads, traversals as special arrows
+
+## References
 
 Catamorphisms, Anamorphisms, Hylomorphisms
 
 - <http://files.meetup.com/3866232/foldListProduct.pdf>
 - <https://deque.blog/2017/01/17/catamorph-your-dsl-introduction/>
 
+- <https://www.schoolofhaskell.com/user/edwardk/recursion-schemes/catamorphisms>
+- <https://www.schoolofhaskell.com/user/bartosz/understanding-algebras>
+- <http://homepages.inf.ed.ac.uk/wadler/papers/free-rectypes/free-rectypes.txt>
+- <http://web.cecs.pdx.edu/~sheard/course/AdvancedFP/notes/CoAlgebras/Code.html>
+
 \part{Advanced theory and applications}
+
+# Adjunctions in Haskell
+
+The only monad over $\mathbf{Hask}$ arising from an adjunction that goes through $\mathbf{Hask}$ itself is the `State` monad:
+```haskell
+(, f) -| (->) e
+```
+You can show this using: <https://en.wikipedia.org/wiki/Representable_functor#Left_adjoint>. Witnessed by `curry` and `uncurry`.
+
+We have:
+```haskell
+(-> e) -| (-> e)
+```
+as an adjunction through $\mathbf{Hask}^{\text{op}}$. Witnessed by `flip`.
+This leads to the continuation monad, which we should talk about.
+
+- <http://www.stephendiehl.com/posts/adjunctions.html>
 
 # Lenses; Yoneda, adjunctions and profunctors
 
@@ -2466,7 +2607,7 @@ Is strong lax functor
 
 # Monad transformers
 
-'Translation of am onad along an adjunction'
+'Translation of a monad along an adjunction'
 
 - <https://oleksandrmanzyuk.files.wordpress.com/2012/02/calc-mts-with-cat-th1.pdf>
 
@@ -3028,6 +3169,47 @@ Monads can be used to do all kinds of things that are otherwise relatively hard 
 - Concurrency
 - Random number generation
 - ...
+
+_Folds_
+
+Folds^[A _fold_ is also known as _reduce_ or _accumulate_ in other languages] are an example of a _recursion scheme_. You could say that (generalized) folds in functional languages play a similar role to `for`, `while`, ... statements in imperative languages.  There are two main higher-order functions for _folds_ in Haskell:
+```haskell
+foldl :: (b -> a -> b) -> b -> [a] -> b
+foldr :: (a -> b -> b) -> b -> [a] -> b
+```
+Here, `foldl` associates to the left, and `foldr` associates to the right. This means:
+```haskell
+foldl (+) 0 [1, 2, 3]
+-- ~> ((1 + 2) + 3)
+foldr (+) 0 [1, 2, 3]
+-- ~> (1 + (2 + 3))
+```
+E.g. `foldr` can be implemented as:
+```haskell
+foldr f x xs = case xs of
+    [] -> x
+    (y:ys) -> y `f` (foldr f x ys)
+```
+
+_Foldable_
+
+Lists are not the only data structure that can be folded. A more general signature of `foldr` would be:
+```haskell
+foldr :: (a -> b -> b) -> b -> t a -> b
+```
+where `t` is some _foldable data structure_. There is a type class, with the following core functions:
+```haskell
+class Foldable t where
+  foldr :: (a -> b -> b) -> b -> t a -> b
+  foldMap :: Monoid m => (a -> m) -> t a -> m
+```
+Only one of these two functions has to be implemented, the one can be retrieved from the other. Here, `foldMap` maps each element of a foldable data structure into a monoid, and then uses the operation and identity of the monoid to fold. There is also a general `fold` method for each `Foldable`:
+```haskell
+fold :: Monoid m => t m -> m
+-- e.g. for list, if `x, y, z :: m`:
+fold [x, y, z]
+-- ~> x <> y <> z <> mempty
+```
 
 \section*{References}
 

@@ -1,6 +1,21 @@
-import Data.Monoid
-import qualified Data.Set as S
+import Prelude hiding (foldr, foldl)
+import Control.Monad
 import Control.Monad.State
+import Control.Applicative
+import Data.Monoid
+import Data.Functor
+import Data.Foldable hiding (foldr, foldl)
+import qualified Data.Set as S
+
+foldl :: (b -> a -> b) -> b -> [a] -> b
+foldl f x xs = case xs of
+    [] -> x
+    (y:ys) -> (foldl f x ys) `f` y
+
+foldr :: (a -> b -> b) -> b -> [a] -> b
+foldr f x xs = case xs of
+    [] -> x
+    (y:ys) -> y `f` (foldr f x ys)
 
 sumf :: Num a => [a] -> a
 sumf = foldr (+) 0
@@ -76,3 +91,5 @@ filtering p = foldr (\x -> (<*>) ((\p' -> if p' then (x :) else id) <$> p x)) (p
 -- use State monad for this:
 distinct :: Ord a => [a] -> [a]
 distinct xs = evalState (filtering (\x -> state (\s -> (S.notMember x s, S.insert x s))) xs) S.empty
+
+main = undefined
