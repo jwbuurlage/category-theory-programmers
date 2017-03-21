@@ -7,6 +7,8 @@ import Data.Functor
 import Data.Foldable hiding (foldr, foldl)
 import qualified Data.Set as S
 
+-- ---------------------------------------------------
+-- Folds over lists
 foldl :: (b -> a -> b) -> b -> [a] -> b
 foldl f x xs = case xs of
     [] -> x
@@ -74,21 +76,51 @@ asString = foldMap show
 
 -- database?
 
--- maybe
--- either
+-- ---------------------------------------------------
+-- Folds over other data types
+
+foldMaybe :: (a -> b) -> b -> Maybe a -> b
+foldMaybe f c ma = case ma of
+    Nothing -> c
+    (Just x) -> f x
+
+foldEither :: (a -> c) -> (b -> d) -> Either a b -> Either c d
+foldEither f g eab = case eab of
+    Left x -> Left (f x)
+    Right y -> Right (g y)
+
 -- binary tree
 
--- use scan to implement
-population :: Int -> Float -> [Int]
-population = undefined
+-- ---------------------------------------------------
+-- Funky natural number examples from Bird and De Moor
+data Nat = Zero | Succ Nat
 
-fibonnaci :: [Int]
-fibonnaci = undefined
+instance Show Nat where
+    show x = show' 0 x
+      where
+        show' n Zero = show n
+        show' n (Succ y) = show' (n + 1) y
 
+zero = Zero
+one = Succ Zero
+two = Succ one
+three = Succ two
+
+foldn :: b -> (b -> b) -> Nat -> b
+foldn c _ Zero = c
+foldn c f (Succ x) = f (foldn c f x)
+
+plus m = foldn m Succ
+mult m = foldn zero (plus m)
+expn m = foldn one (mult m)
+fact = snd . foldn (zero, one) (\(m, n) -> (plus one m, mult (plus one m) n))
+fib = snd . foldn (zero, one) (\(m, n) -> (n, plus m n))
+
+-- ---------------------------------------------------
+-- Using State in a fold
 filtering :: Applicative f => (a -> f Bool) -> [a] -> f [a]
 filtering p = foldr (\x -> (<*>) ((\p' -> if p' then (x :) else id) <$> p x)) (pure [])
 
--- use State monad for this:
 distinct :: Ord a => [a] -> [a]
 distinct xs = evalState (filtering (\x -> state (\s -> (S.notMember x s, S.insert x s))) xs) S.empty
 
