@@ -2504,7 +2504,7 @@ When does a least fixed point exist? Lambek's theorem implies that e.g. the $\ma
 Let $\mathcal{C}$ be a category with finite (co-)products. A \textbf{polynomial functor} from $\mathcal{C} \to \mathcal{C}$ is defined inductively as:
 \begin{itemize}
 \item The identity functor $\text{Id}_\mathcal{C}$ is a polynomial functor.
-\item All constant functors $\Delta_c: \mathcal{C} \to \mathcal{C}$ is a polynomial functor.
+\item All constant functors $\Delta_c: \mathcal{C} \to \mathcal{C}$ are polynomial functors.
 \item If $F$ and $F'$ are polynomial functors, then so are $F \circ F'$, $F + F$ and $F \times F$.
 \end{itemize}
 \end{definition}
