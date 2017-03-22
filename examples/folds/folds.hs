@@ -90,6 +90,14 @@ foldEither f g eab = case eab of
     Right y -> Right (g y)
 
 -- binary tree
+data Tree a = Node (Tree a) a (Tree a) | Leaf deriving (Show)
+
+foldt :: (a -> b -> b) -> b -> Tree a -> b
+foldt f c Leaf = c
+foldt f c (Node t x t') = foldt f (x `f` (foldt f c t)) t'
+
+sumTree :: Num a => Tree a -> a
+sumTree = foldt (+) 0
 
 -- ---------------------------------------------------
 -- Funky natural number examples from Bird and De Moor
