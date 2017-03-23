@@ -251,6 +251,7 @@ $abstract$
 $endif$
 
 \newpage
+\pagestyle{plain} % Reintroduces page numbers
 
 $for(include-before)$
 $include-before$

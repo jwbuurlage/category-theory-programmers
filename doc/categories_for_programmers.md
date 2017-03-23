@@ -2006,7 +2006,7 @@ so that the universal property for the counit is identical to the universal prop
 
 You can show that adjunctions preserve (among other constructions involving universal properties) initial objects, terminal objects and products, which can be used to prove many useful and familiar equalities in a CCC. For example, we have $R_a(b \times c) \simeq R_a(b) \times R_a(c)$ which in the notation $a \to b \equiv b^a$ says:
 $$(b \times c)^a \simeq b^a \times c^a.$$
-Conversely, the product functor preservese coproducts, in that $(- \times c)(a + b) \simeq (- \times c)a + (- \times c)b$, or:
+Conversely, the product functor preserves coproducts, in that $(- \times c)(a + b) \simeq (- \times c)a + (- \times c)b$, or:
 $$(a + b) \times c \simeq (a \times c) + (b \times c),$$
 which shows that CCC's are distributative.
 \end{example}
@@ -2498,7 +2498,7 @@ $$h \circ f \simeq g \circ Fh \implies h \circ \lbanana f \rbanana = \lbanana g 
 
 ## Determining the least fixed point
 
-When does a least fixed point exist? Lambek's theorem implies that e.g. the $\mathcal{P}$ power-set endofunctor does not have an initial algebra (because $\mathcal{P}(\mathcal{P}(X))$ is never isomorphic to $\mathcal{P}$(X), a result due to Cantor).
+When does a least fixed point exist? Lambek's theorem implies that e.g. the $\mathcal{P}$ power-set endofunctor does not have an initial algebra (because $\mathcal{P}(\mathcal{P}(X))$ is never isomorphic to $\mathcal{P}(X)$ (Cantor's theorem).
 
 \begin{definition}[Polynomial functor]
 Let $\mathcal{C}$ be a category with finite (co-)products. A \textbf{polynomial functor} from $\mathcal{C} \to \mathcal{C}$ is defined inductively as:
@@ -2912,7 +2912,36 @@ concat :: [[a]] -> [a]
 asString :: Show a => [a] -> String
 ```
 
-**B) Peano numbers**
+**B) Folds over either, maybe and binary trees**
+
+1. Implement:
+```haskell
+foldm :: (a -> b -> b) -> b -> Maybe a -> b
+folde :: (a -> b -> b) -> b -> Either c a -> b
+```
+Other useful 'fold-like' functions of `Maybe` and `Either` are
+```haskell
+maybe :: (a -> b) -> b -> Maybe a -> b
+either :: (a -> c) -> (b -> d) -> Either a b -> Either c d
+```
+Implement them. They are also in the prelude.
+2. Define a binary tree as:
+```haskell
+data Tree a = Node (Tree a) a (Tree a) | Leaf
+```
+and implement the function
+```haskell
+foldt :: (a -> b -> b) -> b -> Tree a -> b
+```
+using this implement e.g.
+```haskell
+sumTree :: Num a => Tree a -> a
+productTree :: Num a => Tree a -> a
+```
+
+**C) Peano numbers**
+
+_Modelled after section 1.2 of 'Algebra of programming' from Bird and de Moor._
 
 Natural numbers can be represented a la Peano as:
 ```haskell
@@ -2972,36 +3001,11 @@ A(m-1, A(m, n-1)) & \mbox{if } m > 0 \mbox{ and } n > 0.
 \end{cases}$$
     Implement `curry ack` using `foldn`, where `ack :: (Nat, Nat) -> Nat`.
 
-**C) Folds over either, maybe and binary trees**
-
-1. Implement:
-```haskell
-foldm :: (a -> b -> b) -> b -> Maybe a -> b
-folde :: (a -> b -> b) -> b -> Either c a -> b
-```
-Other useful 'fold-like' functions of `Maybe` and `Either` are
-```haskell
-maybe :: (a -> b) -> b -> Maybe a -> b
-either :: (a -> c) -> (b -> d) -> Either a b -> Either c d
-```
-Implement them. They are also in the prelude.
-2. Define a binary tree as:
-```haskell
-data Tree a = Node (Tree a) a (Tree a) | Leaf
-```
-and implement the function
-```haskell
-foldt :: (a -> b -> b) -> b -> Tree a -> b
-```
-using this implement e.g.
-```haskell
-sumTree :: Num a => Tree a -> a
-productTree :: Num a => Tree a -> a
-```
-
 **D) Finding distinct elements of a list**
 
-Recall the `State` monad, defined as `data State s a = s -> (a, s)`.
+_From the Data61 Haskell course_
+
+Recall the `State` monad, defined as `data State s a = State { runState :: s -> (a, s) }`.
 ```haskell
 import qualified Data.Set as S
 ```
