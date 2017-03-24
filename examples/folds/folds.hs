@@ -74,8 +74,6 @@ concatfm = foldMap id
 asString :: Show a => [a] -> String
 asString = foldMap show
 
--- database?
-
 -- ---------------------------------------------------
 -- Folds over other data types
 
