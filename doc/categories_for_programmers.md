@@ -2498,7 +2498,7 @@ $$h \circ f \simeq g \circ Fh \implies h \circ \lbanana f \rbanana = \lbanana g 
 
 ## Determining the least fixed point
 
-When does a least fixed point exist? Lambek's theorem implies that e.g. the $\mathcal{P}$ power-set endofunctor does not have an initial algebra (because $\mathcal{P}(\mathcal{P}(X))$ is never isomorphic to $\mathcal{P}(X)$ (Cantor's theorem).
+When does a least fixed point exist? Lambek's theorem implies that e.g. the $\mathcal{P}$ power-set endofunctor does not have an initial algebra (because $\mathcal{P}(X)$ is never isomorphic to $X$ (Cantor's theorem).
 
 \begin{definition}[Polynomial functor]
 Let $\mathcal{C}$ be a category with finite (co-)products. A \textbf{polynomial functor} from $\mathcal{C} \to \mathcal{C}$ is defined inductively as:
@@ -2509,7 +2509,21 @@ Let $\mathcal{C}$ be a category with finite (co-)products. A \textbf{polynomial 
 \end{itemize}
 \end{definition}
 
-### Least fixed points in Haskell
+### Limits
+
+- Cones
+- Limits
+- '$\omega$-limits
+
+### Limits in $\mathbf{Set}$
+
+- Initial algebra if $F$ $\omega$-cocontinuous...
+
+## Least fixed points in Haskell
+
+The universal property corresponding to a least fixed point in Haskell is:
+
+...
 
 ```haskell
 data Mu f = InF { outF :: f (Mu f) }
@@ -2528,7 +2542,7 @@ cata :: Functor f => Algebra f a -> Mu f -> a
 cata f = f . fmap (cata f) . outF
 ```
 
-## Catamorphisms and folds in Haskell
+### Catamorphisms and folds in Haskell
 
 The more 'natural' fold in Haskell is `foldr`, to understand why we should look at `cons`-lists versus `snoc`-lists:
 ```haskell
