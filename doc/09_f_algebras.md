@@ -68,7 +68,21 @@ TODO
 The following examples are from 'Bart Jacobs, Jan Rutten; A tutorial on (co)algebras and (co)induction'.
 
 \begin{example}[Peano numbers]
-The initial algebra for $F(X) = 1 + X$. TODO
+Consider the endofunctor on $\mathbf{Set}$ given by:
+\begin{align*}
+F(X) = 1 + X.
+\end{align*}
+We can construct an algebra of this functor with carrier $\mathbb{N}_{\geq 0}$, the set of natural numbers, as follows:
+\begin{align*}
+\nu &: F(\mathbb{N}) \to \mathbb{N} \equiv 1 + \mathbb{N} \to \mathbb{N}, \\
+\nu &\equiv 0 \sqcup s
+\end{align*}
+here $s(n) \equiv n + 1$ denotes a successor function, and $0$ denotes the constant function to $0 \in \mathbb{N}$.
+
+If $f: a \to c$, $g: b \to c$, then the notation $f \sqcup g: a + b \to c$ denotes the unique arrow that factors the arrows $f, g$.
+
+We will show that $(\mathbb{N}, \nu)$ is in fact the initial algebra for $F$. To this end, let $(A, \alpha)$ be any other $F$-algebra, where $\alpha = a \sqcup h$ for some $a \in A$, and $h: \mathbb{N} \to \mathbb{N}$.
+
 \end{example}
 
 \begin{example}[Lists]
@@ -77,7 +91,7 @@ The initial algebra for $F(X) = 1 + A \times X$. TODO
 
 When does a least fixed point exist? Lambek's theorem implies that e.g. the $\mathcal{P}$ power-set endofunctor does not have an initial algebra because $\mathcal{P}(X)$ is never isomorphic to $X$ (Cantor's theorem).
 
-Before we can state a sufficient condition for the existence of initial algebras, we first have to introduce the caterogical notion of limits.
+Before we can state a sufficient condition for the existence of initial algebras, we first have to introduce the categorical notion of limits.
 
 ## Limits
 
@@ -275,7 +289,7 @@ Let $\mathcal{C}$ be a category with finite (co-)products. A \textbf{polynomial 
 \end{itemize}
 \end{definition}
 
-For example, the functors $1 + X$ (natural numbers) and $1 + A \times X$ (lists) that we treated before are polynomial.
+For example, the functors $F(X) = 1 + X$ (natural numbers) and $F'(X) = 1 + A \times X$ (lists) that we treated before are polynomial.
 
 \begin{lemma}
 Show that polynomial functors $\omega$-cocontinuous.
@@ -337,7 +351,7 @@ So that if such a homomorphism $\lbanana \alpha \rbanana$ exists, it is unique b
 $$\lbanana \alpha \rbanana \circ \phi, \text{ and } \alpha \circ F \lbanana \alpha \rbanana.$$
 are mediating between the cones of $F\ell$ and $a$, and must therefore correspond to the unique mediating arrow (showing that the mediating arrow is an homomorphism). The cases for $i = 0$ are again trivial. The inductive step for the first arrow:
 $$\lbanana \alpha \rbanana \circ \phi \circ Fc_n = \lbanana \alpha \rbanana \circ c_{n + 1} = \alpha_{n + 1}$$
-In the first step, we use the $\phi$ is mediataing between the cones at $F\ell$ and $\ell$, and at the second step we use that we defined $\lbanana \alpha \rbanana$ to be mediating between $\ell$ and $a$.
+In the first step, we use the $\phi$ is mediating between the cones at $F\ell$ and $\ell$, and at the second step we use that we defined $\lbanana \alpha \rbanana$ to be mediating between $\ell$ and $a$.
 For the second arrow::
 $$\alpha \circ F \lbanana \alpha \rbanana \circ Fc_n = \alpha \circ F(\lbanana \alpha \rbanana \circ c_n) = \alpha \circ F(\alpha_n) = \alpha_{n+1}$$
 as required.
@@ -418,7 +432,7 @@ type Expr = Fix' ExprR
 -- we make wrappers to construct values of type Expr
 cst = Fix' . Cst
 add = Fix' . Add
--- we turn ExprR into a fucntor
+-- we turn ExprR into a functor
 instance Functor ExprR where
   fmap _ (Cst c) = Cst c
   fmap f (Add (x, y)) = Add (f x, f y)

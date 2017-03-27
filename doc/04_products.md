@@ -1,4 +1,4 @@
-# Products, co-products and algebraic data types
+# Products, coproducts and algebraic data types
 
 ## Duality and products of objects
 
@@ -82,7 +82,7 @@ This means that $z$ is the "largest element that is smaller or equal to $x$ and 
 
 \subsection*{Coproducts}
 
-Let us revisit the idea of *duality*. What would be the dual-notion of the product? Let us take the product diagram, and reverse the arrows:
+Let us revisit the idea of *duality*. What would be the dual notion of the product? Let us take the product diagram, and reverse the arrows:
 
 \begin{figure}[H]
 \centering
@@ -127,7 +127,7 @@ A \arrow[uur, "f"] \arrow[ur, "i_1"'] & & B \arrow[uul, "g"']\arrow[ul, "i_2"]
 \end{tikzcd}
 \end{figure}
 
-Consider any element $a \in A$. It gets mapped to $f(a) \in V$, and to $i_1(a) = (a, 0)$ in $A + B$. Then we should set $q(a, 0) \equiv f(a)$, and similarly we should set $q(b, 1) \equiv g(b)$. This already defines $q$ uniquely and completely, so we conclude that the disjunt union is indeed the coproduct in the category \textbf{Set}.
+Consider any element $a \in A$. It gets mapped to $f(a) \in V$, and to $i_1(a) = (a, 0)$ in $A + B$. Then we should set $q(a, 0) \equiv f(a)$, and similarly we should set $q(b, 1) \equiv g(b)$. This already defines $q$ uniquely and completely, so we conclude that the disjoint union is indeed the coproduct in the category \textbf{Set}.
 \end{example}
 
 We note there that the coproduct (and product) of two objects, generalizes also to products of more than 2 objects (by simply adding more maps $i_1, i_2, i_3 \ldots$).
