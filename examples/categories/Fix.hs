@@ -34,11 +34,7 @@ optimizeRightUnit :: ExprR Expr -> Expr
 optimizeRightUnit (Add (_, Fix' (Cst 0))) = cst 0
 optimizeRightUnit e = Fix' e
 
--- optimizeRightUnit (Add (Cst _, 0)) = cst 0
--- optimizeRightUnit e = e
-
 comp f g = f . unFix' . g
-
 optimize = cata (optimizeLeftUnit `comp` optimizeRightUnit)
 
 printExpr = cata algebra where
@@ -47,6 +43,8 @@ printExpr = cata algebra where
 
 -- For list, we need 'higher order fixed points'
 -- see: <http://comonad.com/reader/2013/algebras-of-applicatives/>
+-- see also the 'complete list example':
+-- <https://bartoszmilewski.com/2013/06/10/understanding-f-algebras/>
 -- data List a b = Empty | Cons (a, b)
 -- data FixF f a = ...
 -- show' = cata algebra where
