@@ -183,7 +183,7 @@ Some examples of familiar categories:
 | **Vect** | vector spaces      | linear transformations |
 | **Grp**  | groups             | group homomorphisms    |
 
-In all these cases, arrows correspond to functions, although this is by no means required. All these categories correspond to objects from mathematics, along with *structure preserving maps*. **Set** will also play a role when we discuss the category **Type** when we start talking about concrete applications to Haskell.
+In all these cases, arrows correspond to functions, although this is by no means required. All these categories correspond to objects from mathematics, along with *structure preserving maps*. **Set** will also play a role when we discuss the category **Hask** when we start talking about concrete applications to Haskell.
 
 There are also a number of simple examples of categories:
 
@@ -452,7 +452,7 @@ To establish a link between functional programming and category theory, we need 
 
 Why do we want to look at types? Programming safety and correctness. In this part we will hopefully give an idea of how category theory applies to programming, but we will not go into to much detail yet, this is saved for later parts.
 
-We will take as our model for the category of types (**Type**) the category **Set**. Recall that the elements of **Set** are sets, and the arrows correspond to maps. There is a major issue to address here: Mathematical maps and functions in a computer program are not identical (bottom value $\perp$). We may come back to this, but for now we consider **Set** and **Type** as the same category.
+We will take as our model for the category of Haskell types (**Hask**) the category **Set**. Recall that the elements of **Set** are sets, and the arrows correspond to maps. There is a major issue to address here: Mathematical maps and functions in a computer program are not identical (bottom value $\perp$). We may come back to this, but for now we consider **Set** and **Hask** as the same category.
 
 In Haskell, we can express that an object has a certain type:
 
@@ -538,9 +538,9 @@ To summarize this introduction, in the category of 'computer programs', types ar
 
 ## Containers as functors
 
-When we consider functors in the category of types, the first question is 'to what category?'. Here, we will almost exclusively talk about functors from **Type** to itself, i.e. _endofunctors_.
+When we consider functors in the category of types, the first question is 'to what category?'. Here, we will almost exclusively talk about functors from **Hask** to itself, i.e. _endofunctors_.
 
-Endofunctors in **Type** map types to types, and functions to functions. There are many examples of functors in programming. Let us first consider the concept of _lists of objects_, i.e. arrays or vectors. In C++ a list would be written as:
+Endofunctors in **Hask** map types to types, and functions to functions. There are many examples of functors in programming. Let us first consider the concept of _lists of objects_, i.e. arrays or vectors. In C++ a list would be written as:
 ```cpp
 std::vector<T> xs;
 ```
@@ -2643,7 +2643,7 @@ Curry-Howard isomorphism
 
 ### References
 
-- About **Type** (or more speficially **Hask**): <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
+- About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
 - <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
 - <https://wiki.haskell.org/Newtype>
 
