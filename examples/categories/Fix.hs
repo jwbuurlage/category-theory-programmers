@@ -26,10 +26,36 @@ eval = cata algebra where
     algebra (Cst c) = c
     algebra (Add (x, y)) = x + y
 
+optimizeLeftUnit :: ExprR Expr -> Expr
+optimizeLeftUnit (Add (Fix' (Cst 0), _)) = cst 0
+optimizeLeftUnit e = Fix' e
+
+optimizeRightUnit :: ExprR Expr -> Expr
+optimizeRightUnit (Add (_, Fix' (Cst 0))) = cst 0
+optimizeRightUnit e = Fix' e
+
+-- optimizeRightUnit (Add (Cst _, 0)) = cst 0
+-- optimizeRightUnit e = e
+
+comp f g = f . unFix' . g
+
+optimize = cata (optimizeLeftUnit `comp` optimizeRightUnit)
+
 printExpr = cata algebra where
     algebra (Cst c) = show c
     algebra (Add (x, y)) = "(" ++ x ++ " + " ++ y ++ ")"
 
+-- For list, we need 'higher order fixed points'
+-- see: <http://comonad.com/reader/2013/algebras-of-applicatives/>
+-- data List a b = Empty | Cons (a, b)
+-- data FixF f a = ...
+-- show' = cata algebra where
+--         algebra Empty = "]"
+--         algebra (Cons (x, y)) = (show x) ++ y
+
 main = do
+    print $ printExpr $ optimize $ add (cst 3, add (cst 0, cst 2))
     print $ eval $ add (cst 3, cst 4)
     print $ printExpr $ add (cst 3, add (cst 3, cst 4))
+
+

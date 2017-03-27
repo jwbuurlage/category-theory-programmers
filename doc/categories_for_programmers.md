@@ -2521,57 +2521,102 @@ Let $\mathcal{C}$ be a category with finite (co-)products. A \textbf{polynomial 
 
 ## Least fixed points in Haskell
 
-The universal property corresponding to a least fixed point in Haskell is:
-
-...
-
+In Haskell, the point of using $F$-algebras is to convert functions with signature:
 ```haskell
-data Mu f = InF { outF :: f (Mu f) }
+alpha :: f a -> a
 ```
+for a given functor `f`, to functions that look like:
+```haskell
+alpha' :: Fix f -> a
+```
+where `Fix f` is the fixed point of `f`. Compared to our category theory notatation we have:
+\begin{align*}
+\texttt{alpha} &\equiv \alpha \\
+\texttt{alpha}' &\equiv \lbanana \alpha \rbanana
+\end{align*}
+So the universal property corresponding to a least fixed point in Haskell, expressed in Haskell, is the existence of a function that does this conversion of $\alpha$ to $\lbanana \alpha \rbanana$. Let us call it `cata`:
+```haskell
+cata :: (f a -> a) -> Fix f -> a
+```
+Whenever you see a universal property like this in Haskell, and you want to find out what the type of `Fix f` should be, there is an easy trick, we simply define the type to have this universal property.
+```haskell
+-- we look at
+flip cata :: Fix f -> (f a -> a) -> a
+-- which leads us to define
+data Fix f = Fix { unFix :: (f a -> a) -> a }
+-- now we have
+unFix :: Fix f -> (f a -> a) -> a
+-- so we can define
+cata = flip unFix
+```
+Now we have our `cata` function, but it is of no use if `Fix f` is not inhabited. We want to be able to convert any value of type `f a` into a `Fix f` value. We first introduce the following equivalent description of `Fix f`:
+```haskell
+-- for a fixed point, we have `x ~= f x`
+-- the conversion between x and f x, where x == Fix' f
+-- can be done using Fix' and unFix'
+data Fix' f = Fix' { unFix' :: f (Fix' f) }
+-- for Fix, we can define cata as:
+cata' :: Functor f => (a -> f a) -> Fix' f -> a
+cata' alpha = alpha . fmap (cata' alpha) . unFix'
+-- to show that we can convert between the Fix and Fix':
+iso :: Functor f => Fix' f -> Fix f
+iso x = Fix (flip cata' x)
+invIso :: Functor f => Fix f -> Fix' f
+invIso y = (unFix y) Fix'
+```
+`Fix' f` is sometimes written as $\mu F$ (or `Mu f` in Haskell).
 
-Note: In the Haskell world, `InF` and `Mu` are often called `Fix`, while `outF` is called `unFix`.
-
-Obtaining the catamorphism for an algebra can be done recursively using:
-
+So, in summary, catamorphing an algebra can be done recursively using:
 ```haskell
 type Algebra f a = f a -> a
-
-newtype Mu f = InF { outF :: f (Mu f) }
+data Fix f = Fix { unFix :: f (Fix f) }
 
 cata :: Functor f => Algebra f a -> Mu f -> a
-cata f = f . fmap (cata f) . outF
+cata a = f . fmap (cata a) . unFix
 ```
 
-### Catamorphisms and folds in Haskell
+## Using catamorphisms in Haskell
 
-The more 'natural' fold in Haskell is `foldr`, to understand why we should look at `cons`-lists versus `snoc`-lists:
+To give an interpretation of `cata`, we first show how we usually construct values of `Fix f`. Say we have a very simple expression language, with constants and addition:
 ```haskell
-List a  = Empty  | Cons a (List a) -- 'cons'
-List' a = Empty' | Snoc (List a) a -- 'snoc'
+data Expr' = Cst' Int | Add' (Expr', Expr')
+-- we introduce 'holes' in the add, instead of recurring
+data ExprR b = Cst Int | Add (b, b)
+-- we reobtain the original expression by finding the 'fixed point'
+type Expr = Fix' ExprR
+-- we make wrappers to construct values of type Expr
+cst = Fix' . Cst
+add = Fix' . Add
+-- we turn ExprR into a fucntor
+instance Functor ExprR where
+  fmap _ (Cst c) = Cst c
+  fmap f (Add (x, y)) = Add (f x, f y)
 ```
-The standard Haskell lists `[a]` are `cons`-lists, they are built _from the back of the list_. The reason `foldr` is more natural for this type of list is that the recursion structure follows the structure of the list it self:
+We can use this in the following way:
 ```haskell
-h = foldr (~) e
--- h [x, y, z] is equal to:
-h (x : (y : (z : [])))
---   |    |    | |
---   v    v    v v
---(x ~ (y ~ (z ~ e)))
-```
-This can be summarized by saying that a `foldr` _deconstructs_ the list, it uses the shape of the construction of the list to obtain a value. The `(:)` operation gets replaced by the binary operation `(~)`, while the empty list (base case) is replaced by the _accumulator_ `e`.
+eval = cata algebra where
+    algebra (Cst c) = c
+    algebra (Add (x, y)) = x + y
 
-As a special case, since the value constructors for a list are just functions, we can obtain the identity operation on lists as a fold:
+printExpr = cata algebra where
+    algebra (Cst c) = show c
+    algebra (Add (x, y)) = "(" ++ x ++ " + " ++ y ++ ")"
+```
+And it allows us to perform our optimizations independently, during the same traversal, e.g.:
 ```haskell
-id :: [a] -> [a]
-id == foldr (:) []
+optimizeLeftUnit :: ExprR Expr -> Expr
+optimizeLeftUnit (Add (Fix' (Cst 0), _)) = cst 0
+optimizeLeftUnit e = Fix' e
+
+optimizeRightUnit :: ExprR Expr -> Expr
+optimizeRightUnit (Add (_, Fix' (Cst 0))) = cst 0
+optimizeRightUnit e = Fix' e
+
+comp f g = f . unFix' . g
+optimize = cata (optimizeLeftUnit `comp` optimizeRightUnit)
 ```
-
-
-## Algebras of monads, traversals as special arrows
 
 ## References
-
-Catamorphisms, Anamorphisms, Hylomorphisms
 
 - <http://files.meetup.com/3866232/foldListProduct.pdf>
 - <https://deque.blog/2017/01/17/catamorph-your-dsl-introduction/>
@@ -3370,6 +3415,27 @@ fold :: Monoid m => t m -> m
 fold [x, y, z]
 -- ~> x <> y <> z <> mempty
 ```
+The more 'natural' fold in Haskell is `foldr`, to understand why we should look at the difference between `cons`-lists and `snoc`-lists:
+```haskell
+List a  = Empty  | Cons a (List a) -- 'cons'
+List' a = Empty' | Snoc (List a) a -- 'snoc'
+```
+The standard Haskell lists `[a]` are `cons`-lists, they are built _from the back of the list_. The reason `foldr` is more natural for this type of list is that the recursion structure follows the structure of the list it self:
+```haskell
+h = foldr (~) e
+-- h [x, y, z] is equal to:
+h (x : (y : (z : [])))
+--   |    |    | |
+--   v    v    v v
+--(x ~ (y ~ (z ~ e)))
+```
+This can be summarized by saying that a `foldr` _deconstructs_ the list, it uses the shape of the construction of the list to obtain a value. The `(:)` operation gets replaced by the binary operation `(~)`, while the empty list (base case) is replaced by the _accumulator_ `e`.
+
+As a special case, since the value constructors for a list are just functions, we can obtain the identity operation on lists as a fold:
+```haskell
+id :: [a] -> [a]
+id == foldr (:) []
+`````
 
 \section*{References}
 
