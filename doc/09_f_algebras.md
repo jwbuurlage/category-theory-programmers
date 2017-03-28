@@ -57,12 +57,24 @@ which shows that $\tau$ is an isomorphism, and hence that $(t, \tau)$ is a fixed
 
 Let $(a, \alpha)$ be an $F$-algebra. In the functional programming literature, the unique homomorphism from the initial algebra $(t, \tau)$ to $(a, \alpha)$ is called a _catamorphism_ and is denoted $\lbanana \alpha \rbanana$.
 
+The following result is a useful tool when working with catamorphisms.
+
 \begin{proposition}[Fusion law]
-$$h \circ f \simeq g \circ Fh \implies h \circ \lbanana f \rbanana = \lbanana g \rbanana.$$
+Let $F: \mathcal{C} \to \mathcal{C}$ be such that it has an initial algebra. Let $(a, \alpha)$ and $(b, \beta)$ be $F$-algebras and let $h$ be an algebra homomorphism between them. Then:
+$$h \circ \lbanana \alpha \rbanana = \lbanana \beta \rbanana.$$
 \end{proposition}
 
 \begin{proof}
-TODO
+This is immediate from the following commutative diagram:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+Ft \arrow[r, "\tau"] \arrow[d, "F \lbanana \alpha \rbanana"'] & t \arrow[d, "\lbanana \alpha \rbanana"] \\
+Fa \arrow[r, "\alpha"] \arrow[d, "F h"'] & a \arrow[d, "h"] \\
+Fb \arrow[r, "\beta"'] & b \\
+\end{tikzcd}
+\end{figure}
+Note that $h \circ \lbanana \alpha \rbanana$ is a homomorphism, and since $(t, \tau)$ is initial it should correspond to the unique homomorphism $\lbanana \beta \rbanana$.
 \end{proof}
 
 The following examples are from 'Bart Jacobs, Jan Rutten; A tutorial on (co)algebras and (co)induction'.
@@ -231,7 +243,7 @@ You can think of the vertex of a cone as 'hovering above the diagram $D$ in $\ma
 
 There are ofcourse also the dual notions of colimits, cocones and so on. In fact, in the following we are mostly interested in colimits.
 
-Let us show that $\mathbf{Set}$ has all limits, we say $\mathbf{Set}$ is complete (as always, there is also the dual notion of being cocomplete).
+Let us sketch why $\mathbf{Set}$ has all limits, we say $\mathbf{Set}$ is complete (as always, there is also the dual notion of being cocomplete).
 
 Let $D: \mathbf{A} \to \mathbf{Set}$.
 
@@ -247,7 +259,7 @@ L &=  \varprojlim D \simeq \text{Hom}_{\mathbf{Set}}(1, X)\\
 \end{align*}
 In other words, the limit corresponds to all possible tuples with elements in $Da$, indexed by elements of $\mathbf{A}$ that are compatible with the structure of the diagram.
 
-This shows that $\mathbf{Set}$ has all limits. $\mathbf{Set}$ is in fact bicomplete (both complete and cocomplete).
+This can be used to show that $\mathbf{Set}$ has all limits. $\mathbf{Set}$ is in fact bicomplete (both complete and cocomplete).
 
 ### $\omega$-chains
 
@@ -352,7 +364,7 @@ $$\lbanana \alpha \rbanana \circ \phi, \text{ and } \alpha \circ F \lbanana \alp
 are mediating between the cones of $F\ell$ and $a$, and must therefore correspond to the unique mediating arrow (showing that the mediating arrow is an homomorphism). The cases for $i = 0$ are again trivial. The inductive step for the first arrow:
 $$\lbanana \alpha \rbanana \circ \phi \circ Fc_n = \lbanana \alpha \rbanana \circ c_{n + 1} = \alpha_{n + 1}$$
 In the first step, we use the $\phi$ is mediating between the cones at $F\ell$ and $\ell$, and at the second step we use that we defined $\lbanana \alpha \rbanana$ to be mediating between $\ell$ and $a$.
-For the second arrow::
+For the second arrow:
 $$\alpha \circ F \lbanana \alpha \rbanana \circ Fc_n = \alpha \circ F(\lbanana \alpha \rbanana \circ c_n) = \alpha \circ F(\alpha_n) = \alpha_{n+1}$$
 as required.
 
