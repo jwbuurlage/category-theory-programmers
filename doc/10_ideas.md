@@ -21,6 +21,13 @@ This leads to the continuation monad, which we should talk about.
 
 - <http://www.stephendiehl.com/posts/adjunctions.html>
 
+In the category 'Kmett Says':
+
+    There is a full adjoint triple for succinct dictionaries:
+    select -| rank -| coselect
+    coselect n = select (n+1) - 1
+    https://en.wikipedia.org/wiki/Succinct_data_structure …
+
 # Lenses; Yoneda, adjunctions and profunctors
 
 - <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
@@ -58,13 +65,18 @@ Curry-Howard isomorphism
 
 ## 'Fast and loose reasoning is morally correct'
 
+- $\omega$-CPOs
+- Domain theory
 - Note that `newtype` and bottom cause issues.
+- Note that `seq` messes everything op
 
 ### References
 
 - About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
 - <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
+- <https://ro-che.info/articles/2016-08-07-hask-category>
 - <https://wiki.haskell.org/Newtype>
+- <http://blog.sigfpe.com/2009/10/what-category-do-haskell-types-and.html>
 
 ## Homotopy type theory
 

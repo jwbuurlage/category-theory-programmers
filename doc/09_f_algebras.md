@@ -121,8 +121,7 @@ such that $\lbanana \alpha \rbanana$ is indeed a homomorphism. Letting $g$ be an
 \end{example}
 
 \begin{example}[Lists]
-Next, we consider the endofunctor on $\mathbb{
-    Set}$ given by:
+Next, we consider the endofunctor on $\mathbf{Set}$ given by:
 $$F(X) = 1 + (A \times X).$$
 We consider the \emph{list algebra} $(A^*, () \sqcup (\frown))$. Here, $A^*$ is the Kleene closure introduced in Example \ref{exa:kleene-closure}, () denotes the (constant function to) the empty list, and $(\frown): A \times A^* \to A$  the prepend function (written infix) is defined as:
 $$a \frown (a_1, a_2, a_3, \ldots) = (a, a_1, a_2, a_3, \ldots).$$
@@ -138,7 +137,7 @@ To show that this indeed a homomorphism, we look at the diagram:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-1 + A \times A^* \arrow[d, "\text{id}_* + (\text{id}_A \times \lbanana \beta \rbanana)"'] \arrow[r, "() \sqcup (\frown)"] & A^* \arrow[d, "\lbanana \beta \rbanana"] \\
+1 + A \times A^* \arrow[d, "\text{id}_* \sqcup (\text{id}_A \times \lbanana \beta \rbanana)"'] \arrow[r, "() \sqcup (\frown)"] & A^* \arrow[d, "\lbanana \beta \rbanana"] \\
 1 + A \times B \arrow[r, "b \sqcup h"'] & B
 \end{tikzcd}
 \end{figure}
