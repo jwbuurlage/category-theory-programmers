@@ -93,13 +93,69 @@ here $s(n) \equiv n + 1$ denotes a successor function, and $0$ denotes the const
 
 If $f: a \to c$, $g: b \to c$, then the notation $f \sqcup g: a + b \to c$ denotes the unique arrow that factors the arrows $f, g$.
 
-We will show that $(\mathbb{N}, \nu)$ is in fact the initial algebra for $F$. To this end, let $(A, \alpha)$ be any other $F$-algebra, where $\alpha = a \sqcup h$ for some $a \in A$, and $h: \mathbb{N} \to \mathbb{N}$.
+We will show that $(\mathbb{N}, \nu)$ is in fact the initial algebra for $F$. To this end, let $(A, \alpha)$ be any other $F$-algebra, where $\alpha = a \sqcup h$ for some $a \in A$, and $h: A \to A$. We define the candidate homomorphism $\lbanana \alpha \rbanana$ between $(\mathbb{N}, \nu)$ and $(A, \alpha)$ to be:
+$$\lbanana \alpha \rbanana(n) \equiv h^{n} (a).$$
+i.e. $\lbanana \alpha \rbanana(0) = a, \lbanana \alpha \rbanana(1) = h(a)$ and so on.
 
+We have to show that 1) it is indeed a homomorphism of $F$-algebras, and 2) that it is the unique such homomorphism.
+
+We have to show that the following diagram commutes:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+1 + \mathbb{N} \arrow[d, "\text{id}_* \sqcup \lbanana \alpha \rbanana"'] \arrow[r, "\nu"] & \mathbb{N} \arrow[d, "\lbanana \alpha \rbanana"] \\
+1 + A \arrow[r, "\alpha"'] & A
+\end{tikzcd}
+\end{figure}
+We can show this directly, we consider an $x \in 1 + \mathbb{N}$. There are two cases, either $x$ is in $1$, for which we will write $x = *$, or in $\mathbb{N}$, for which we will write $x = n$. If $x = *$ then:
+\begin{align*}
+\alongtop &= \lbanana \alpha \rbanana ( \nu(*) ) = \lbanana \alpha \rbanana(0) = a,\\
+\alongbottom &= \alpha (\text{id}_*(*)) = \alpha(*) = a
+\end{align*}
+as required. If $x = n$ then:
+\begin{align*}
+\alongtop &= \lbanana \alpha \rbanana ( \nu(n) ) = \lbanana \alpha \rbanana(n + 1) = h^{n + 1}(a),\\
+\alongbottom &= \alpha (\lbanana \alpha \rbanana(n)) = \alpha (h^n(a)) = h^{n + 1}(a)
+\end{align*}
+such that $\lbanana \alpha \rbanana$ is indeed a homomorphism. Letting $g$ be an arbitrary homomorphism, then following the previous argument in reverse shows that $g \equiv \lbanana \alpha \rbanana$ such that it is unique, and $(\mathbb{N}, \nu)$ is indeed initial.
 \end{example}
 
 \begin{example}[Lists]
-The initial algebra for $F(X) = 1 + A \times X$. TODO
+Next, we consider the endofunctor on $\mathbb{
+    Set}$ given by:
+$$F(X) = 1 + (A \times X).$$
+We consider the \emph{list algebra} $(A^*, () \sqcup (\frown))$. Here, $A^*$ is the Kleene closure introduced in Example \ref{exa:kleene-closure}, () denotes the (constant function to) the empty list, and $(\frown): A \times A^* \to A$  the prepend function (written infix) is defined as:
+$$a \frown (a_1, a_2, a_3, \ldots) = (a, a_1, a_2, a_3, \ldots).$$
+
+Let $(B, \beta)$, with $\beta = b \sqcup h$ where $b \in B$ and $h: A \times B \to B$, be any other $F$-algebra, and define the candidate homomorphism:
+$$\lbanana \beta \rbanana : A^* \to B,$$
+between the list algebra and this algebra as:
+$$\lbanana \beta \rbanana(\tilde{x}) = \begin{cases}
+b & \text{ if } \tilde{x} = () \\
+h(x, \lbanana \beta \rbanana(\tilde{y})) & \text{ if } \tilde{x} = x \frown \tilde{y} \\
+\end{cases}$$
+To show that this indeed a homomorphism, we look at the diagram:
+\begin{figure}[H]
+\centering
+\begin{tikzcd}
+1 + A \times A^* \arrow[d, "\text{id}_* + (\text{id}_A \times \lbanana \beta \rbanana)"'] \arrow[r, "() \sqcup (\frown)"] & A^* \arrow[d, "\lbanana \beta \rbanana"] \\
+1 + A \times B \arrow[r, "b \sqcup h"'] & B
+\end{tikzcd}
+\end{figure}
+Like in the previous example, we split in two cases. First, let $x = *$, then:
+\begin{align*}
+\alongtop &= \lbanana \beta \rbanana(()(*)) = \lbanana \beta \rbanana(()) = b \\
+\alongbottom &= b (\text{id}_*(*)) = b
+\end{align*}
+let $x = a \times \tilde{a}$:
+\begin{align*}
+\alongtop &= \lbanana \beta \rbanana((\frown) (a \times \tilde{a})) = \lbanana \beta \rbanana(a \frown \tilde{a}) = h(a \times \lbanana \beta \rbanana(\tilde{a})) \\
+\alongbottom &= h ((\text{id}_A \times \lbanana \beta \rbanana)(a \times \tilde{a})) = h(a \times \lbanana \beta \rbanana(\tilde{a}))
+\end{align*}
+To show that it is the unique such arrow, we again follow the previous argument in reverse.
 \end{example}
+
+Note in both of these examples, the catamorphisms correspond to the usual notions of folds (see the Haskell exercises). It is in this sense, that catamorphisms are a generalization of folds (and thus lead to a specific recursion scheme).
 
 When does a least fixed point exist? Lambek's theorem implies that e.g. the $\mathcal{P}$ power-set endofunctor does not have an initial algebra because $\mathcal{P}(X)$ is never isomorphic to $X$ (Cantor's theorem).
 
