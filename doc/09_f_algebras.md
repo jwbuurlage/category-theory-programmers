@@ -137,8 +137,8 @@ To show that this indeed a homomorphism, we look at the diagram:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-1 + A \times A^* \arrow[d, "\text{id}_* \sqcup (\text{id}_A \times \lbanana \beta \rbanana)"'] \arrow[r, "() \sqcup (\frown)"] & A^* \arrow[d, "\lbanana \beta \rbanana"] \\
-1 + A \times B \arrow[r, "b \sqcup h"'] & B
+1 + (A \times A^*) \arrow[d, "\text{id}_* \sqcup (\text{id}_A \times \lbanana \beta \rbanana)"'] \arrow[r, "() \sqcup (\frown)"] & A^* \arrow[d, "\lbanana \beta \rbanana"] \\
+1 + (A \times B) \arrow[r, "b \sqcup h"'] & B
 \end{tikzcd}
 \end{figure}
 Like in the previous example, we split in two cases. First, let $x = *$, then:
@@ -165,14 +165,14 @@ Before we can state a sufficient condition for the existence of initial algebras
 We have already come across an example of limits, namely the categorical (binary) product. Recall that a product $a \times b$ has a universal property of the form _for any other object $c$ with morphisms to $a$ and $b$, we can factor the morphisms through $a \times b$_. This is a general pattern, and we will give two more examples of limits before stating the formal definition. We will follow roughly the discussion in Chapter 5 of Leister.
 
 \begin{definition}[Fork and equalizer]
-A \textbf{fork} from $a$ at $x$ to $y$ in a category $\mathcal{C}$ is defined by the commutative diagram:
+A \textbf{fork} from $a$ at $x$ to $y$ in a category $\mathcal{C}$ is defined by the data:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
 a \arrow[r, "f"] & x \arrow[r, shift left, "s"] \arrow[r, shift right, "t"'] & y
 \end{tikzcd}
 \end{figure}
-i.e. the arrows given are such that $s \circ f = t \circ f$.
+such that $s \circ f = t \circ f$.
 
 Given a diagram in $\mathcal{C}$ of the form:
 \begin{figure}[H]
@@ -342,7 +342,7 @@ As a final notion, note that if $F$ is an endofunctor, then for each $\omega$-ch
 \ldots & Fa_3 \arrow[l, "Ff_3"'] & Fa_2 \arrow[l, "Ff_2"'] & Fa_1 \arrow[l, "Ff_1"'] & Fa_0 \arrow[l, "Ff_0"']
 \end{tikzcd}
 \end{figure}
-We say that a functor $F$ preserves colimits (or is $\omega$-cocontinuous) if:
+We say that a functor $F$ preserves $\omega$-colimits (or is $\omega$-cocontinuous) if:
 $$\varinjlim Fa_i = F \varinjlim a_i.$$
 
 ## Polynomial functors have initial algebras
