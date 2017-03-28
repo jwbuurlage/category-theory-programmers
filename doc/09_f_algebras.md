@@ -325,7 +325,7 @@ $\omega =$ \begin{tikzcd}[framed]
 \ldots & \bullet \arrow[l] & \bullet \arrow[l] & \bullet \arrow[l] & \bullet \arrow[l]
 \end{tikzcd}
 \end{figure}
-of course along with the composites of these arrows. A diagram of shape $\omega$ in a category $\mathcal{C}$ takes the form:
+of course along with the composites of these arrows. Because the diagram is induced by a functor, we can ignore these composite arrows since we can define them to get taken to the composites of the images of the arrows that are pictured. A diagram of shape $\omega$ in a category $\mathcal{C}$ takes the form:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
@@ -359,11 +359,11 @@ Let $\mathcal{C}$ be a category with finite (co-)products. A \textbf{polynomial 
 For example, the functors $F(X) = 1 + X$ (natural numbers) and $F'(X) = 1 + A \times X$ (lists) that we treated before are polynomial.
 
 \begin{lemma}
-Show that polynomial functors $\omega$-cocontinuous.
+Polynomial functors on $\mathbf{Set}$ are $\omega$-cocontinuous.
 \end{lemma}
 
 \begin{proof}
-Constant and identity functors clearly preserve colimits. Compositions, products and coproducts of preserving functors are also preserving.
+Constant and identity functors clearly preserve colimits. It is a general result that compositions, products and coproducts of preserving functors are also preserving.
 \end{proof}
 
 Now we arive at the main result of this chapter, which I have seen attributed to either Adamek, or to Smyth and Plotkin:
