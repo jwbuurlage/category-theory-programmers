@@ -312,7 +312,7 @@ L &=  \varprojlim D \simeq \text{Hom}_{\mathbf{Set}}(1, X)\\
   &\simeq \{ \text{cones on } D \text{ with vertex } 1 \} \\
   &\simeq \{ (x_a)_{a \in \mathbf{A}}~|~ x_a \in Da \text{ such that } \forall u: a \to b \text{ in } D~ \text{ we have } Du(x_a) = x_b \}
 \end{align*}
-In other words, the limit corresponds to all possible tuples with elements in $Da$, indexed by elements of $\mathbf{A}$ that are compatible with the structure of the diagram.
+In other words, the limit corresponds to all possible tuples with elements in $Da$, indexed by elements of $\mathbf{A}$, that are compatible with the structure of the diagram.
 
 This can be used to show that $\mathbf{Set}$ has all limits. $\mathbf{Set}$ is in fact bicomplete (both complete and cocomplete).
 
@@ -385,7 +385,7 @@ Let $\ell$ be the object of the limit of this sequence Since $F$ preserves colim
 $$F\ell \equiv F \varinjlim F^i \simeq \varinjlim F(F^i 0) \simeq F^i 0 \equiv \ell.$$
 here, the last isomorphism says that the limit of the $\omega$-chain disregarding $0$ is the same as the one of the original $\omega$-chain. Intuitively, $0$ has a unique arrow to the limit anyway, so removing it does not change anything.
 
-So we have an isomorphism $\phi: F\ell \simeq \ell$. To show that $(\ell, \phi0$ is initial we consider any $F$-algebra $(a, \alpha)$, and look at the data:
+So we have an isomorphism $\phi: F\ell \simeq \ell$. To show that $(\ell, \phi)$ is initial we consider any $F$-algebra $(a, \alpha)$, and look at the data:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
