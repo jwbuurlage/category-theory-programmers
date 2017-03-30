@@ -1,6 +1,6 @@
 # Recursion and F-algebras
 
-In this part we introduce $F$-algebras, which are not only an important theoretical tool in studying recursion (for functions and data types), but as we will see can also be applied in functional programming to obtain modular descriptions for recursive functions, allowing us to perform multiple transformations over data structures in a single pass, as well as decoupling the _recursion scheme_ from the actual recursive transformation or computation.
+In this part we introduce $F$-algebras, which are not only an important _theoretical_ tool for studying recursion (for functions and data types), but as we will see can also be applied in functional programming to obtain modular descriptions of recursive functions, allowing us to perform multiple transformations over data structures in a single pass, as well as decoupling the _recursion scheme_ from the actual transformation or computation performed at every level.
 
 ## Algebras for endofunctors
 
@@ -19,13 +19,13 @@ Fb \arrow[r, "\beta"'] & b
 
 For every endofunctor $F$, the collection of $F$-algebras together with homomorphisms of these $F$-algebras form a category which we will denote $\mathbf{Alg}_F$.
 
-A fixed point for a function $f$ is an $x$ such that $f(x) = x$. Considering this, a sensible definition for a fixed point of an endofunctor is an object $a$ such that $F(a) = a$, but we are a bit more lenient, and only require that $F(a) \simeq a$.
+Recall that a fixed point of a function $f$ is an $x$ in the domain of $f$, such that $f(x) = x$. Considering this, a sensible definition for a fixed point of an endofunctor would be an object $a$ such that $F(a) = a$, but we will be a bit more lenient, and only require that $F(a) \simeq a$.
 
 \begin{definition}
 A \textbf{fixed point} of $F$ is an algebra $(a, \alpha)$ for which $\alpha$ is an isomorphism.
 \end{definition}
 
-Considering a _least fixed point_, we take inspiration from partially ordered sets, where the least point is an initial object, and define it as follows.
+A special fixed point is the  _least fixed point_. We take inspiration from partially ordered sets, where the least point is an initial object, and define it as follows.
 
 \begin{definition}
 A \textbf{least fixed point} of $F$ is an initial algebra $(a, \alpha)$, i.e. an algebra that is an initial object in the category $\mathbf{Alg}_F$.
@@ -94,12 +94,12 @@ here $s(n) \equiv n + 1$ denotes a successor function, and $0$ denotes the const
 If $f: a \to c$, $g: b \to c$, then the notation $f \sqcup g: a + b \to c$ denotes the unique arrow that factors the arrows $f, g$.
 
 We will show that $(\mathbb{N}, \nu)$ is in fact the initial algebra for $F$. To this end, let $(A, \alpha)$ be any other $F$-algebra, where $\alpha = a \sqcup h$ for some $a \in A$, and $h: A \to A$. We define the candidate homomorphism $\lbanana \alpha \rbanana$ between $(\mathbb{N}, \nu)$ and $(A, \alpha)$ to be:
-$$\lbanana \alpha \rbanana(n) \equiv h^{n} (a).$$
+$$\lbanana \alpha \rbanana(n) \equiv h^{n} (a),$$
 i.e. $\lbanana \alpha \rbanana(0) = a, \lbanana \alpha \rbanana(1) = h(a)$ and so on.
 
 We have to show that 1) it is indeed a homomorphism of $F$-algebras, and 2) that it is the unique such homomorphism.
 
-We have to show that the following diagram commutes:
+For the former, we show that the following diagram commutes:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
@@ -107,15 +107,15 @@ We have to show that the following diagram commutes:
 1 + A \arrow[r, "\alpha"'] & A
 \end{tikzcd}
 \end{figure}
-We can show this directly, we consider an $x \in 1 + \mathbb{N}$. There are two cases, either $x$ is in $1$, for which we will write $x = *$, or in $\mathbb{N}$, for which we will write $x = n$. If $x = *$ then:
+We do this directly, by chasing an element from the top left. We consider an $x \in 1 + \mathbb{N}$. There are two cases, either $x$ is in $1$, for which we will write $x = *$, or in $\mathbb{N}$, for which we will write $x = n$. If $x = *$ then:
 \begin{align*}
 \alongtop &= \lbanana \alpha \rbanana ( \nu(*) ) = \lbanana \alpha \rbanana(0) = a,\\
-\alongbottom &= \alpha (\text{id}_*(*)) = \alpha(*) = a
+\alongbottom &= \alpha (\text{id}_*(*)) = \alpha(*) = a,
 \end{align*}
 as required. If $x = n$ then:
 \begin{align*}
 \alongtop &= \lbanana \alpha \rbanana ( \nu(n) ) = \lbanana \alpha \rbanana(n + 1) = h^{n + 1}(a),\\
-\alongbottom &= \alpha (\lbanana \alpha \rbanana(n)) = \alpha (h^n(a)) = h^{n + 1}(a)
+\alongbottom &= \alpha (\lbanana \alpha \rbanana(n)) = \alpha (h^n(a)) = h^{n + 1}(a),
 \end{align*}
 such that $\lbanana \alpha \rbanana$ is indeed a homomorphism. Letting $g$ be an arbitrary homomorphism, then following the previous argument in reverse shows that $g \equiv \lbanana \alpha \rbanana$ such that it is unique, and $(\mathbb{N}, \nu)$ is indeed initial.
 \end{example}
@@ -123,9 +123,8 @@ such that $\lbanana \alpha \rbanana$ is indeed a homomorphism. Letting $g$ be an
 \begin{example}[Lists]
 Next, we consider the endofunctor on $\mathbf{Set}$ given by:
 $$F(X) = 1 + (A \times X).$$
-We consider the \emph{list algebra} $(A^*, () \sqcup (\frown))$. Here, $A^*$ is the Kleene closure introduced in Example \ref{exa:kleene-closure}, () denotes the (constant function to) the empty list, and $(\frown): A \times A^* \to A$  the prepend function (written infix) is defined as:
+We consider the \emph{list algebra} $(A^*, () \sqcup (\frown))$. Here, $A^*$ is the Kleene closure introduced in Example \ref{exa:kleene-closure}, () denotes the (constant function to) the empty list, and $(\frown): A \times A^* \to A$, the \emph{prepend} function, (which we will write using infix notation) is defined as:
 $$a \frown (a_1, a_2, a_3, \ldots) = (a, a_1, a_2, a_3, \ldots).$$
-
 Let $(B, \beta)$, with $\beta = b \sqcup h$ where $b \in B$ and $h: A \times B \to B$, be any other $F$-algebra, and define the candidate homomorphism:
 $$\lbanana \beta \rbanana : A^* \to B,$$
 between the list algebra and this algebra as:
@@ -143,15 +142,15 @@ To show that this indeed a homomorphism, we look at the diagram:
 \end{figure}
 Like in the previous example, we split in two cases. First, let $x = *$, then:
 \begin{align*}
-\alongtop &= \lbanana \beta \rbanana(()(*)) = \lbanana \beta \rbanana(()) = b \\
-\alongbottom &= b (\text{id}_*(*)) = b
+\alongtop &= \lbanana \beta \rbanana(()(*)) = \lbanana \beta \rbanana(()) = b, \\
+\alongbottom &= b (\text{id}_*(*)) = b.
 \end{align*}
-let $x = a \times \tilde{a}$:
+Next, we let $x = a \times \tilde{a}$, and compute:
 \begin{align*}
-\alongtop &= \lbanana \beta \rbanana((\frown) (a \times \tilde{a})) = \lbanana \beta \rbanana(a \frown \tilde{a}) = h(a \times \lbanana \beta \rbanana(\tilde{a})) \\
-\alongbottom &= h ((\text{id}_A \times \lbanana \beta \rbanana)(a \times \tilde{a})) = h(a \times \lbanana \beta \rbanana(\tilde{a}))
+\alongtop &= \lbanana \beta \rbanana((\frown) (a \times \tilde{a})) = \lbanana \beta \rbanana(a \frown \tilde{a}) = h(a \times \lbanana \beta \rbanana(\tilde{a})), \\
+\alongbottom &= h ((\text{id}_A \times \lbanana \beta \rbanana)(a \times \tilde{a})) = h(a \times \lbanana \beta \rbanana(\tilde{a})),
 \end{align*}
-To show that it is the unique such arrow, we again follow the previous argument in reverse.
+as required. To show that it is the unique such arrow, we again follow the previous argument in reverse.
 \end{example}
 
 Note in both of these examples, the catamorphisms correspond to the usual notions of folds (see the Haskell exercises). It is in this sense, that catamorphisms are a generalization of folds (and thus lead to a specific recursion scheme).
@@ -162,7 +161,7 @@ Before we can state a sufficient condition for the existence of initial algebras
 
 ## Limits
 
-We have already come across an example of limits, namely the categorical (binary) product. Recall that a product $a \times b$ has a universal property of the form _for any other object $c$ with morphisms to $a$ and $b$, we can factor the morphisms through $a \times b$_. This is a general pattern, and we will give two more examples of limits before stating the formal definition. We will follow roughly the discussion in Chapter 5 of Leister.
+We have already come across an example of a limit, namely the categorical (binary) product. Recall that a product $a \times b$ has a universal property of the form _for any other object $c$ with morphisms to $a$ and $b$, we can factor the morphisms through $a \times b$_. This turns out to be a very general pattern that will define a limit. First, we will give two more examples of limits before stating the formal definition. We will follow roughly the discussion in Chapter 5 of Leister.
 
 \begin{definition}[Fork and equalizer]
 A \textbf{fork} from $a$ at $x$ to $y$ in a category $\mathcal{C}$ is defined by the data:
@@ -242,9 +241,9 @@ The pullback of a diagram $X \stackrel{s}{\rightarrow} Z \stackrel{t}{\leftarrow
 $$P = \{ (x, y) \in X \times Y~|~s(x) = t(y) \}$$
 together with the usual projection maps. Many common constructions are instances of pullbacks, for example taking _inverse images_ or _subset intersection_.
 
-Now that we have seen three examples of limits, we can see and appreciate the general pattern. We begin with some diagram in $\mathcal{C}$, and construct a new object with maps to the object in this diagram that is _universal_ in a specific sense.
+Now that we have seen three examples of limits, we can hopefully see and appreciate the general pattern: we begin with some diagram in $\mathcal{C}$, and construct a new object with maps to the object in this diagram that is _universal_ in a specific sense.
 
-Before we give the definition, we first formalize the notion of a diagram.
+Before we finally give the definition of a limit, we first formalize the notion of a diagram.
 
 \begin{definition}
 Let $\mathcal{C}$ be a category. Let $\mathbf{A}$ be some (typically small) category. A \textbf{diagram} in $\mathcal{C}$ of \emph{shape} $\mathbf{A}$ is a functor $\mathbf{A} \to \mathcal{C}$.
@@ -275,11 +274,11 @@ such that for all maps $u: x \to y$ in $\mathbf{A}$, the following diagram commu
 \centering
 \begin{tikzcd}
 & Dx \arrow[dd, "Du"] \\
-n \arrow[ru, "f_x"] \arrow[rd, "f_y"]& \\
+n \arrow[ru, "f_x"] \arrow[rd, "f_y"']& \\
 & Dy
 \end{tikzcd}
 \end{figure}
-The object $n$ is called the \emph{vertex} or \emph{apex} of the cone.
+The object $n$ is called the \emph{vertex} or \emph{apex} of the cone. The diagram $D$ is called the \emph{base} of the cone.
 
 A \textbf{limit} of a diagram $D$ is a cone with vertex $\ell$ and a family of arrows
 $$(p_x: \ell \to Dx)_{x \in \mathbf{A}},$$
@@ -296,15 +295,15 @@ the maps $p_x$ are called the \emph{projections}. The map $\bar{f}$ is often cal
 
 You can think of the vertex of a cone as 'hovering above the diagram $D$ in $\mathcal{C}$', with maps extending to each vertex in $Dx$, which indeed forms the shape of a cone.
 
-There are ofcourse also the dual notions of colimits, cocones and so on. In fact, in the following we are mostly interested in colimits.
+There are of course also the dual notions of colimits, cocones and so on. In fact, in the following we are mostly interested in colimits.
 
-Let us sketch why $\mathbf{Set}$ has all limits, we say $\mathbf{Set}$ is complete (as always, there is also the dual notion of being cocomplete).
+Let us sketch why $\mathbf{Set}$ has all limits, i.e. that $\mathbf{Set}$ is _complete_. Note that, as always, there is also the dual notion of being cocomplete.
 
-Let $D: \mathbf{A} \to \mathbf{Set}$.
+We let $D: \mathbf{A} \to \mathbf{Set}$ be a diagram.
 
-- We write $L = \varprojlim D$ for the (candidate) limit of a diagram $D$.
-- $L$ is a set, and each set $X \simeq \text{Hom}_{\mathbf{Set}}(1, X)$, where $1$ is the singleton set (for every element of $X$ there is a map from $1$).
-- Note that in general, for any limit $\ell \in \mathcal{C}$ of some diagram $D$, and any $a \in \mathcal{C}$, cones with vertex $a$ are in bijection with maps $a \to \ell$. Indeed, any such map leads to a cone by composition with the projections from $\ell$, and conversely for each cone a unique arrow is given by $\bar{f}$ in the definition of a limit.
+- We write $L = \varprojlim D$ for the (candidate) limit of $D$.
+- $L$ is a set, and each set $X \simeq \text{Hom}_{\mathbf{Set}}(1, X)$, where $1$ is the singleton set (for every element of $X$ there is a unique map from $1$).
+- Note that in general, for any limit $\ell \in \mathcal{C}$ of some diagram $D$, and any $a \in \mathcal{C}$, cones with vertex $a$ are in bijection with maps $a \to \ell$. Indeed, any such map leads to a cone by composition with the projections from $\ell$. Conversely, for each cone a unique such arrow is given by $\bar{f}$, by definition of the limit.
 
 This means in particular that:
 \begin{align*}
@@ -391,7 +390,7 @@ So we have an isomorphism $\phi: F\ell \simeq \ell$. To show that $(\ell, \phi)$
 \begin{tikzcd}
 F\ell \arrow[d, "Fg"'] \arrow[r, "\sim"] & \ell \arrow[d, "g"] \\
 Fa \arrow[r, "\alpha"'] & a \\
-F0 & \arrow[l, "f_!"'] \arrow[u, "a_!"] 0
+F0 & \arrow[l, "f_!"'] \arrow[u, "a_!"'] 0
 \end{tikzcd}
 \end{figure}
 Note that any $F$-algebra $(a, \alpha)$ defines a cocone with vertex $a$, and family of morphisms:
@@ -406,7 +405,7 @@ $$(c_i: F^i 0 \to \ell)_{i \in \omega}.$$
 
 To show that there is a unique algebra homomorphism which we suggestively denote $\lbanana \alpha \rbanana$ from $\ell$ to $a$, we will first show that if it exists, then it should be the unique mediating arrow $\bar{f}$ between the cocones with vertices $\ell$ and $a$ respectively, i.e. we should have for all $i \in \omega$:
 $$\lbanana \alpha \rbanana \circ c_i = \alpha_i.$$
-The first case is trivially true, because both arrows have domain $0$ which is initial. We proceedd using induction, and we use thata $F\ell$ is the vertex of a cocone $(F c_n)$, and the mediating arrow has to be given by the isomorphism $\phi$: 
+The first case is trivially true, because both arrows have domain $0$ which is initial. We proceed using induction, and we use thata $F\ell$ is the vertex of a cocone $(F c_n)$, and the mediating arrow has to be given by the isomorphism $\phi$: 
 \begin{align*}
 \lbanana \alpha \rbanana \circ c_{n + 1} &= \lbanana \alpha \rbanana \circ \phi \circ F(c_n)\\
 &= \alpha \circ F \lbanana \alpha \rbanana \circ Fc_n \\
