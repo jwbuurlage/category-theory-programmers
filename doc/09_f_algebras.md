@@ -48,7 +48,7 @@ Ft \arrow[r, "\tau"'] & t
 \end{tikzcd}
 \end{figure}
 Here, the top square commutes because $h$ is a homomorphism, and the bottom square commutes trivially.
-First, we note that by commutativity of this diagram, $h \circ \tau$ is a homomorhism between $(t, \tau) \to (t, \tau)$, and since $(t, \tau)$ is initial it is the unique homomorphism, i.e. the identity, and hence:
+First, we note that by commutativity of this diagram, $\tau \circ h$ is a homomorhism between $(t, \tau) \to (t, \tau)$, and since $(t, \tau)$ is initial it is the unique homomorphism, i.e. the identity, and hence:
 $$\tau \circ h = \text{id}_{t},$$
 i.e. $h$ is a right inverse to $\tau$. To show that it is also a left inverse (and hence that $\tau$ is an isomorphism) we compute using the commutativity of the top square:
 $$h \circ \tau = F\tau \circ Fh = F(\tau \circ h) = F(\text{id}_{t}) = \text{id}_{Ft}.$$
@@ -302,12 +302,12 @@ Let us sketch why $\mathbf{Set}$ has all limits, i.e. that $\mathbf{Set}$ is _co
 We let $D: \mathbf{A} \to \mathbf{Set}$ be a diagram.
 
 - We write $L = \varprojlim D$ for the (candidate) limit of $D$.
-- $L$ is a set, and each set $X \simeq \text{Hom}_{\mathbf{Set}}(1, X)$, where $1$ is the singleton set (for every element of $X$ there is a unique map from $1$).
+- For each set $X$ we have $X \simeq \text{Hom}_{\mathbf{Set}}(1, X)$, where $1$ is the singleton set (for every element of $X$ there is a unique map from $1$). Note that $L$ is some set.
 - Note that in general, for any limit $\ell \in \mathcal{C}$ of some diagram $D$, and any $a \in \mathcal{C}$, cones with vertex $a$ are in bijection with maps $a \to \ell$. Indeed, any such map leads to a cone by composition with the projections from $\ell$. Conversely, for each cone a unique such arrow is given by $\bar{f}$, by definition of the limit.
 
 This means in particular that:
 \begin{align*}
-L &=  \varprojlim D \simeq \text{Hom}_{\mathbf{Set}}(1, X)\\
+L &=  \varprojlim D \simeq \text{Hom}_{\mathbf{Set}}(1, L)\\
   &\simeq \{ \text{cones on } D \text{ with vertex } 1 \} \\
   &\simeq \{ (x_a)_{a \in \mathbf{A}}~|~ x_a \in Da \text{ such that } \forall u: a \to b \text{ in } D~ \text{ we have } Du(x_a) = x_b \}
 \end{align*}
