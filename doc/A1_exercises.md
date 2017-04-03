@@ -147,7 +147,7 @@ That returns the result of an expression, or a string containing an error messag
         parseOneInt = spaces *> intParser
     ```
 
-**D) Catamorphisms**
+---
 
 *We will revisit our parser when we talk about __catamorphisms__.*
 
@@ -357,4 +357,301 @@ that takes a list, and an _effectful predicate_, and produces an effectful list 
 distinct :: Ord a => [a] -> [a]
 ```
 
+\chapter*{Catamorphisms}
 
+In this exercise we are going to play with catamorphisms and fixed points.
+
+In this exercise, for each part make a new Haskell file with on the top (e.g. for part A):
+```haskell
+module Fix where
+```
+and use `import` statements to resolve dependencies. This will prevent name collisions.
+
+**A) The Fix type class**
+
+As mentioned in the chapter on $F$-algebras, there are two (equivalent) ways to define least fixed points in Haskell, these are:
+```haskell
+data Fix f = Fix { unFix :: f (Fix f) }
+data Fix' f = Fix' { unFix' :: forall a. (f a -> a) -> a }
+```
+1. Write a function `cata` that converts an $F$-algebra to a catamorphism:
+```haskell
+cata :: Functor f => (f a -> a) -> (Fix f) -> a
+```
+
+2. Write the isomorphisms between `Fix` and `Fix'`, i.e.:
+```haskell
+iso :: Functor f => Fix f -> Fix' f
+invIso :: Functor f => Fix' f -> Fix f
+```
+_Hint_: `Fix'` is also called `flipCata`.
+
+Note that the answers are described in the text, if you need help.
+
+**B) Catamorph your lists**
+
+_References:_
+
+- <http://comonad.com/reader/2013/algebras-of-applicatives/>
+- <https://bartoszmilewski.com/2013/06/10/understanding-f-algebras/>
+
+To define a list in the way described as in Example \ref{exa:list_initial_algebra}, we write
+```haskell
+data ListF a b = Nil | Cons a b
+```
+here $a$ is the fixed set $A$, and $b$ represents $X$. To retrieve the fixed point for $X$, we make an alias:
+```haskell
+type List a = Fix (ListF a)
+```
+read as: the fixed point of the endofunctor `ListF a` (which we have seen is just the usual description of a list).
+
+1. Write functions that can make constructing a list in this fixed point description easier:
+```haskell
+nil :: List a
+(<:>) :: a -> List a -> List a
+-- We want the cons function to be right associative
+infixr 5 <:>
+```
+2. Make a functor instance for `ListF a`:
+```haskell
+instance Functor (ListF a) where
+    ...
+```
+3. Given:
+    ```haskell
+    type Algebra f a = f a -> a
+    -- an example list to work with
+    lst :: Fix (ListF Int)
+    lst = 2 <:> 3 <:> 4 <:> nil
+    ```
+    define functions:
+    ```haskell
+    sum' :: Algebra (ListF Int) Int
+    sqr' :: Algebra (ListF Int) (List Int)
+    ```
+    And observe that you only have to define local transformations, and let `cata` take care of the recursive structure:
+    ```haskell
+    main = do
+        print $ (cata sum') lst
+        print $ (cata sum') $ (cata sqr') lst
+    ```
+
+**C) Catamorph your expressions**
+
+_Reference:_
+
+- <https://deque.blog/2017/01/20/catamorph-your-dsl-deep-dive/>
+
+Similar to lists, we can define our expression functor as:
+```haskell
+data ExprF b = Cst Int | Add (b, b)
+type Expr = Fix ExprF
+```
+Corresponding to the endofunctor:
+$$F(X) = \tilde{\mathbb{Z}} + X \times X.$$
+Here, $\tilde{\mathbb{Z}}$ represents finite 32-bit integers, and `Expr` is the fixed point of this function
+
+1. Write convenience functions:
+```haskell
+cst :: Int -> Expr
+add = (Expr, Expr) -> Expr
+```
+2. Give the functor instance for `ExprF`:
+    ```haskell
+    instance Functor ExprF where
+        ...
+    ```
+3. Implement:
+    ```haskell
+    eval = cata algebra where
+        algebra ...
+    render = cata algebra where
+        algebra ...
+    ```
+4. Implement:
+     ```haskell
+    leftUnit = ExprF Expr -> Expr
+    rightUnit = ExprF Expr -> Expr
+    ```
+    that optimize away additions with zero.
+5. Implement:
+    ```haskell
+    comp = (ExprF Expr -> Expr) ->
+        (ExprF Expr -> Expr) ->
+        (ExprF Expr -> Expr)
+    ```
+    thae composes two initial algebras, like `leftUnit` and `rightUnit`.
+6. Implement
+    ```haskell
+    optimize :: Expr -> Expr
+    ```
+    using `comp` of `leftUnit` and `rightUnit`
+
+To test your functions, use for example:
+```haskell
+main = do
+    print $ render $ optimize $ add (cst 3, add (cst 0, cst 2))
+    print $ eval $ add (cst 3, cst 4)
+    print $ render $ add (cst 3, add (cst 3, cst 4))
+```
+
+**D) Modularize your catamorphed expressions**
+
+_Reference:_
+
+- "W. Swierstra; Data types a la carte" <http://www.cs.ru.nl/~W.Swierstra/Publications/DataTypesALaCarte.pdf>
+
+If we want to add e.g. multiplication to our little expression system defined above, we have to not only change the definition of `ExprF`, but also of all algebras that we defined after that. This problem has been summarized as follows:
+
+> _The goal is to define a data type by cases, where one can add new cases to the data type_
+> _and new functions over the data type, without recompiling existing code, and while retaining static type safety_
+-- Dubbed the 'expression problem' by Phil Wadler in 1998
+
+and is the subject of the functional pearl referenced above.
+
+In this exercise we will implement the ideas given in that paper. The following GHC extensions are needed:
+```haskell
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE IncoherentInstances #-}
+```
+
+First, instead of
+```haskell
+data Expr' b = Val' Int | Add' b b
+```
+like above, we will express the different components of the coproduct in our functor independently, as in:
+```haskell
+data Val e = Val Int
+data Add e = Add e e
+```
+Note that `Val` does not depend on `e`, but is seen as a functor of `e` so that it is on the same level as the other parts of the coproduct (it is seen as a constant functor).
+
+From the paper:
+
+> The big challenge, of course, is to combine the ValExpr and AddExpr
+> types somehow. The key idea is to combine expressions by taking the
+> coproduct of their signatures
+
+Here, ValExpr and AddExpr are defined as the fixed point of the respective functors.
+
+We do that using:
+```haskell
+data (f :+: g) e = Inl (f e) | Inr (g e)
+infixr 5 :+:
+```
+1. Expressions now have the following signature:
+    ```haskell
+    addExample :: Fix (Val :+: Add)
+    ```
+    here, `Val :+: Add` represents the functor that we called `Expr'` before. Try to define a simple expression, like `2 + 3` using this system, and observe how incredibly clumsy this is. Later we will define some _smart constructors_.
+2. Implement the following instances:
+    ```haskell
+    instance Functor Val where
+    ...
+    instance Functor Add where
+    ...
+    instance (Functor f, Functor g) => Functor (f :+: g) where
+    ...
+    ```
+3. Now we are going to define a way to evaluate expressions, we do this by defining a new typeclass, effectively saying how to evaluate an algebra for each part of the coproduct that defines our final endofunctor.
+    ```haskell
+    class Functor f => Eval f where
+        evalAlg :: f Int -> Int
+    ```
+    Implement:
+    ```haskell
+    instance Eval Val where
+        ...
+    instance Eval Add where
+        ...
+    instance (Eval f, Eval g) => Eval (f :+: g) where
+        ...
+    ```
+    Finally, implement:
+    ```haskell
+    eval :: Eval f => Fix f -> Int
+    ```
+    that evaluates an expression (catamorph the algebra!)
+4. From the paper:
+
+    > The definition of addExample illustrates how messy expressions can easily
+    > become. In this section, we remedy the situation by introducing smart
+    > constructors for addition and values.
+
+    to this end, we first define the following type class (which can look quite magical at first):
+    ```haskell
+    class (Functor sub, Functor sup) => sub :<: sup where
+        inj :: sub a -> sup a
+    ```
+    you should read this as: `sub` can be used to construct a value for `sup`. In a way, the fixed point for `sub` is a subset of the fixed point for `sup`. For example, `sub` can be a term in the coproduct of `sup` if it is defined by a coproduct.
+    Implement:
+    ```haskell
+    instance Functor f => f :<: f where
+        ...
+    instance (Functor f, Functor g) => f :<: (f :+: g) where
+        ...
+    instance (Functor f, Functor g, Functor h, f :<: g) =>
+        f :<: (h :+: g) where
+        ...
+    ```
+    The astute Haskeller will note that there is some overlap in the second and third definitions. There is however no ambiguity as long as expressions involving `:+:` use no explicit parentheses.
+    Implement also:
+    ```haskell
+    inject :: (g :<: f) => g (Fix f) -> Fix f
+    ```
+    to perform the injection in a fixed point representation
+5. Implement smart constructors:
+    ```haskell
+    val :: (Val :<: f) => Int -> Fix f
+    (<+>) :: (Add :<: f) => Fix f -> Fix f -> Fix f
+    -- make + left associative
+    infixl 6 <+>
+    ```
+    Now we can construct expressions as:
+    ```haskell
+    expression :: Fix (Add :+: Val)
+    expression = (val 30000) <+> (val 200)
+    ```
+6. We went through all this pain to end up with what the previous exercise already allowed us to do! Let us show the advantage of this system by adding support for multiplication. Implement the gaps in:
+    ```haskell
+    data Mul x = Mul x x
+
+    instance Functor Mul where
+        ...
+
+    instance Eval Mul where
+        ...
+
+    (<#>) :: (Mul :<: f) => Fix f -> Fix f -> Fix f
+    ...
+
+    -- multiplication should bind tighter than addition
+    infixl 7 <#>
+
+    expression2 :: Fix (Val :+: Add :+: Mul)
+    expression2 = (val 30000) <+> (val 200) <#> (val 300)
+    ```
+    Note that we did not have to touch any previous code!
+7. We can also extend functionality beyond evaluating, again without retouching (and even without recompiling) previous code. Fill in the gaps of this pretty printer:
+    ```haskell
+    class Functor f => Render f where
+        render :: Render g => f (Fix g) -> String
+
+    pretty :: Render f => Fix f -> String
+    ...
+
+    instance Render Val where
+        ...
+
+    instance Render Add where
+        ...
+
+    instance Render Mul where
+        ...
+
+    instance (Render f, Render g) => Render (f :+: g) where
+        ...
+    ```

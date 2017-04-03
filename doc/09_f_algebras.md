@@ -151,6 +151,7 @@ Next, we let $x = a \times \tilde{a}$, and compute:
 \alongbottom &= h ((\text{id}_A \times \lbanana \beta \rbanana)(a \times \tilde{a})) = h(a \times \lbanana \beta \rbanana(\tilde{a})),
 \end{align*}
 as required. To show that it is the unique such arrow, we again follow the previous argument in reverse.
+\label{exa:list_initial_algebra}
 \end{example}
 
 Note in both of these examples, the catamorphisms correspond to the usual notions of folds (see the Haskell exercises). It is in this sense, that catamorphisms are a generalization of folds (and thus lead to a specific recursion scheme).

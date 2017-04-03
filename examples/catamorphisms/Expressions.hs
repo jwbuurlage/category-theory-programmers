@@ -5,13 +5,13 @@ import Fix
 -- References:
 -- <https://deque.blog/2017/01/20/catamorph-your-dsl-deep-dive/>
 
-data ExprR b = Cst Int | Add (b, b)
-type Expr = Fix ExprR
+data ExprF b = Cst Int | Add (b, b)
+type Expr = Fix ExprF
 
 cst = Fix . Cst
 add = Fix . Add
 
-instance Functor ExprR where
+instance Functor ExprF where
   fmap _ (Cst c) = Cst c
   fmap f (Add (x, y)) = Add (f x, f y)
 
@@ -19,11 +19,11 @@ eval = cata algebra where
     algebra (Cst c) = c
     algebra (Add (x, y)) = x + y
 
-leftUnit :: ExprR Expr -> Expr
+leftUnit :: ExprF Expr -> Expr
 leftUnit (Add (Fix (Cst 0), e)) = e
 leftUnit e = Fix e
 
-rightUnit :: ExprR Expr -> Expr
+rightUnit :: ExprF Expr -> Expr
 rightUnit (Add (e, Fix (Cst 0))) = e
 rightUnit e = Fix e
 
