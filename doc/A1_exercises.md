@@ -480,7 +480,7 @@ add = (Expr, Expr) -> Expr
         (ExprF Expr -> Expr) ->
         (ExprF Expr -> Expr)
     ```
-    thae composes two initial algebras, like `leftUnit` and `rightUnit`.
+    that composes two initial algebras, like `leftUnit` and `rightUnit`.
 6. Implement
     ```haskell
     optimize :: Expr -> Expr
