@@ -515,16 +515,16 @@ printExpr = cata algebra where
 ```
 And it allows us to perform our optimizations independently, during the same traversal, e.g.:
 ```haskell
-optimizeLeftUnit :: ExprR Expr -> Expr
-optimizeLeftUnit (Add (Fix' (Cst 0), _)) = cst 0
-optimizeLeftUnit e = Fix' e
+leftUnit :: ExprR Expr -> Expr
+leftUnit (Add (Fix (Cst 0), e)) = e
+leftUnit e = Fix e
 
-optimizeRightUnit :: ExprR Expr -> Expr
-optimizeRightUnit (Add (_, Fix' (Cst 0))) = cst 0
-optimizeRightUnit e = Fix' e
+rightUnit :: ExprR Expr -> Expr
+rightUnit (Add (e, Fix (Cst 0))) = e
+rightUnit e = Fix e
 
-comp f g = f . unFix' . g
-optimize = cata (optimizeLeftUnit `comp` optimizeRightUnit)
+comp f g = f . unFix . g
+optimize = cata (leftUnit `comp` rightUnit)
 ```
 
 ## References
