@@ -359,15 +359,20 @@ distinct :: Ord a => [a] -> [a]
 
 \chapter*{Catamorphisms}
 
-In this exercise we are going to play with catamorphisms and fixed points.
+In this exercise we are going to play with catamorphisms and least fixed points.
 
-In this exercise, for each part make a new Haskell file with on the top (e.g. for part A):
+I suggest that for each part you make a new Haskell file with on the top (e.g. for part A):
 ```haskell
 module Fix where
 ```
 and use `import` statements to resolve dependencies. This will prevent name collisions.
 
 **A) The Fix type class**
+
+Use the following GHC extension:
+```haskell
+{-# LANGUAGE RankNTypes #-}
+```
 
 As mentioned in the chapter on $F$-algebras, there are two (equivalent) ways to define least fixed points in Haskell, these are:
 ```haskell
@@ -395,46 +400,47 @@ _References:_
 - <http://comonad.com/reader/2013/algebras-of-applicatives/>
 - <https://bartoszmilewski.com/2013/06/10/understanding-f-algebras/>
 
-To define a list in the way described as in Example \ref{exa:list_initial_algebra}, we write
+To define a list in the way described in Example \ref{exa:list_initial_algebra}, we write:
 ```haskell
 data ListF a b = Nil | Cons a b
 ```
-here $a$ is the fixed set $A$, and $b$ represents $X$. To retrieve the fixed point for $X$, we make an alias:
+here $a$ is the fixed set $A$, and $b$ represents $X$. We want to find the least fixed point, we make an alias:
 ```haskell
 type List a = Fix (ListF a)
 ```
-read as: the fixed point of the endofunctor `ListF a` (which we have seen is just the usual description of a list).
+read as: the least fixed point of the endofunctor `ListF a` (which, as we have seen, is just the usual description of a list).
 
-1. Write functions that can make constructing a list in this fixed point description easier:
-```haskell
-nil :: List a
-(<:>) :: a -> List a -> List a
--- We want the cons function to be right associative
-infixr 5 <:>
-```
+1. Write functions that make constructing a list in this least fixed point description easier:
+    ```haskell
+    nil :: List a
+    (<:>) :: a -> List a -> List a
+    -- We want the cons function to be right associative
+    infixr 5 <:>
+    ```
 2. Make a functor instance for `ListF a`:
-```haskell
-instance Functor (ListF a) where
-    ...
-```
+    ```haskell
+    instance Functor (ListF a) where
+        ...
+    ```
 3. Given:
     ```haskell
     type Algebra f a = f a -> a
     -- an example list to work with
-    lst :: Fix (ListF Int)
-    lst = 2 <:> 3 <:> 4 <:> nil
+    testCase :: Fix (ListF Int)
+    testCase = 2 <:> 3 <:> 4 <:> nil
     ```
     define functions:
     ```haskell
     sum' :: Algebra (ListF Int) Int
-    sqr' :: Algebra (ListF Int) (List Int)
+    square' :: Algebra (ListF Int) (List Int)
     ```
-    And observe that you only have to define local transformations, and let `cata` take care of the recursive structure:
+    And observe that you only have to define local transformations, and can let `cata` take care of the recursive structure:
     ```haskell
     main = do
         print $ (cata sum') lst
-        print $ (cata sum') $ (cata sqr') lst
+        print $ (cata sum') $ (cata square') lst
     ```
+    In essence, you are writing the ingredients of a fold, but there is no specific reference to any fold or even to any list in `cata`. We abuse the fact that the recursive structure is encoded in the definition of the functor.
 
 **C) Catamorph your expressions**
 
@@ -448,13 +454,13 @@ data ExprF b = Cst Int | Add (b, b)
 type Expr = Fix ExprF
 ```
 Corresponding to the endofunctor:
-$$F(X) = \tilde{\mathbb{Z}} + X \times X.$$
-Here, $\tilde{\mathbb{Z}}$ represents finite 32-bit integers, and `Expr` is the fixed point of this function
+$$F(X) = \mathrm{Int}_{32} + X \times X.$$
+Here, $\mathrm{Int}_{32}$ represents finite 32-bit integers, and `Expr` is the least fixed point of this functor.
 
 1. Write convenience functions:
 ```haskell
 cst :: Int -> Expr
-add = (Expr, Expr) -> Expr
+add :: (Expr, Expr) -> Expr
 ```
 2. Give the functor instance for `ExprF`:
     ```haskell
@@ -463,20 +469,24 @@ add = (Expr, Expr) -> Expr
     ```
 3. Implement:
     ```haskell
-    eval = cata algebra where
-        algebra ...
-    render = cata algebra where
+    eval :: Expr -> Int
+    render = Expr -> String
+    ```
+    Use `cata` and an algebra, i.e.:
+    ```haskell
+    function = cata algebra where
         algebra ...
     ```
+
 4. Implement:
-     ```haskell
-    leftUnit = ExprF Expr -> Expr
-    rightUnit = ExprF Expr -> Expr
+    ```haskell
+    leftUnit :: ExprF Expr -> Expr
+    rightUnit :: ExprF Expr -> Expr
     ```
     that optimize away additions with zero.
 5. Implement:
     ```haskell
-    comp = (ExprF Expr -> Expr) ->
+    comp :: (ExprF Expr -> Expr) ->
         (ExprF Expr -> Expr) ->
         (ExprF Expr -> Expr)
     ```
@@ -486,14 +496,6 @@ add = (Expr, Expr) -> Expr
     optimize :: Expr -> Expr
     ```
     using `comp` of `leftUnit` and `rightUnit`
-
-To test your functions, use for example:
-```haskell
-main = do
-    print $ render $ optimize $ add (cst 3, add (cst 0, cst 2))
-    print $ eval $ add (cst 3, cst 4)
-    print $ render $ add (cst 3, add (cst 3, cst 4))
-```
 
 **D) Modularize your catamorphed expressions**
 
@@ -535,7 +537,7 @@ From the paper:
 > types somehow. The key idea is to combine expressions by taking the
 > coproduct of their signatures
 
-Here, ValExpr and AddExpr are defined as the fixed point of the respective functors.
+Here, ValExpr and AddExpr are defined as the least fixed points of the respective functors.
 
 We do that using:
 ```haskell
@@ -550,11 +552,11 @@ infixr 5 :+:
 2. Implement the following instances:
     ```haskell
     instance Functor Val where
-    ...
+        ...
     instance Functor Add where
-    ...
+        ...
     instance (Functor f, Functor g) => Functor (f :+: g) where
-    ...
+        ...
     ```
 3. Now we are going to define a way to evaluate expressions, we do this by defining a new typeclass, effectively saying how to evaluate an algebra for each part of the coproduct that defines our final endofunctor.
     ```haskell
@@ -586,7 +588,7 @@ infixr 5 :+:
     class (Functor sub, Functor sup) => sub :<: sup where
         inj :: sub a -> sup a
     ```
-    you should read this as: `sub` can be used to construct a value for `sup`. In a way, the fixed point for `sub` is a subset of the fixed point for `sup`. For example, `sub` can be a term in the coproduct of `sup` if it is defined by a coproduct.
+    you should read this as: `sub` can be used to construct a value for `sup`. In a way, the least fixed point for `sub` is a subset of the least fixed point for `sup`. For example, `sub` can be a term in `sup` if the latter is a coproduct.
     Implement:
     ```haskell
     instance Functor f => f :<: f where
@@ -602,7 +604,7 @@ infixr 5 :+:
     ```haskell
     inject :: (g :<: f) => g (Fix f) -> Fix f
     ```
-    to perform the injection in a fixed point representation
+    to perform the injection in a least fixed point representation
 5. Implement smart constructors:
     ```haskell
     val :: (Val :<: f) => Int -> Fix f
