@@ -2,7 +2,7 @@
 
 We have established some interesting notions such as monads and $F$-algebras, but we have not yet looked at their dual statements. In this chapter we will remedy this. Now that we have grown to appreciate the usefulness of monads, we will first us explore the notion of a _comonad_.
 
-## Monads over a category
+## Definition
 
 As with all dual notions, we can simply say that a comonad is a monad on $\mathcal{C}^{\text{op}}$. But let us give the definition here explicitely:
 
@@ -34,6 +34,16 @@ T \arrow[r, Leftarrow, "\epsilon T"] \arrow[dr, Leftarrow, "\text{id}"'] & T^2 \
 \end{definition}
 
 We call $\epsilon$ the _counit_, and $\delta$ the _comultiplication_. These are called `extract` and `duplicate` in Haskell.
+
+## Comonads in Haskell
+
+- Stream
+
+- Store
+
+## Comonads resemble objects
+
+Gabriel Gonzalez' blog post
 
 ## References
 
