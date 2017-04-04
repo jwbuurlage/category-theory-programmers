@@ -361,11 +361,17 @@ distinct :: Ord a => [a] -> [a]
 
 In this exercise we are going to play with catamorphisms and least fixed points.
 
-I suggest that for each part you make a new Haskell file with on the top (e.g. for part A):
+I suggest that for each part you make a new Haskell file with on the top e.g.:
 ```haskell
-module Fix where
+{-# LANGUAGE ..., ... #-}
+
+module CataList where
+
+import Fix
+
+...
 ```
-and use `import` statements to resolve dependencies. This will prevent name collisions.
+Use `import` statements to resolve dependencies. This will prevent name collisions.
 
 **A) The Fix type class**
 
@@ -437,8 +443,8 @@ read as: the least fixed point of the endofunctor `ListF a` (which, as we have s
     And observe that you only have to define local transformations, and can let `cata` take care of the recursive structure:
     ```haskell
     main = do
-        print $ (cata sum') lst
-        print $ (cata sum') $ (cata square') lst
+        print $ (cata sum') testCase
+        print $ (cata sum') $ (cata square') testCase
     ```
     In essence, you are writing the ingredients of a fold, but there is no specific reference to any fold or even to any list in `cata`. We abuse the fact that the recursive structure is encoded in the definition of the functor.
 
@@ -470,7 +476,7 @@ add :: (Expr, Expr) -> Expr
 3. Implement:
     ```haskell
     eval :: Expr -> Int
-    render = Expr -> String
+    render :: Expr -> String
     ```
     Use `cata` and an algebra, i.e.:
     ```haskell
@@ -490,7 +496,7 @@ add :: (Expr, Expr) -> Expr
         (ExprF Expr -> Expr) ->
         (ExprF Expr -> Expr)
     ```
-    that composes two initial algebras, like `leftUnit` and `rightUnit`.
+    that composes two algebras with the same carrier as the initial algebra, like `leftUnit` and `rightUnit`.
 6. Implement
     ```haskell
     optimize :: Expr -> Expr
