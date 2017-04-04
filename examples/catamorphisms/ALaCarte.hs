@@ -122,20 +122,23 @@ expression2 = (val 30000) <+> (val 200) <#> (val 300)
 
 -- Lets add more functionality!
 -- for example pretty printing
+--
+-- NOTE: this differs from the implementation in the paper, but I think
+-- expressing it as an algebra is nicer
 class Functor f => Render f where
-    render :: Render g => f (Fix g) -> String
+    render :: f String -> String
 
 pretty :: Render f => Fix f -> String
-pretty = render . unFix
+pretty = cata render
 
 instance Render Val where
     render (Val x) = show x
 
 instance Render Add where
-    render (Add e e') = "(" ++ (pretty e) ++ " + " ++ (pretty e') ++ ")"
+    render (Add e e') = "(" ++ e ++ " + " ++ e' ++ ")"
 
 instance Render Mul where
-    render (Mul e e') = "(" ++ (pretty e) ++ " * " ++ (pretty e') ++ ")"
+    render (Mul e e') = "(" ++ e ++ " * " ++ e' ++ ")"
 
 instance (Render f, Render g) => Render (f :+: g) where
     render (Inl x) = render x
