@@ -74,6 +74,8 @@ Curry-Howard isomorphism
 
 # Further Ideas
 
+- <http://www.haskellforall.com/2014/03/introductions-to-advanced-haskell-topics.html>
+
 ## Ends and co-ends
 
 ## 'Theorems for free!'
