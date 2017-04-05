@@ -82,7 +82,7 @@ The `duplicate` method is more interesting, it creates and infinite number of st
 
 Note that the expressive power gained by working with infinite lists of infinite lists is brought to us by the laziness of Haskell.
 
-This example immediately suggests a way of looking at (this specific class of) comonads, namely as a container of values with one _distinguished_ value (the one reurned by extract), and a duplicate function that can be used to _shift the focus_ (that is to say, change the distinguished value).
+This example immediately suggests a way of looking at (this specific class of) comonads, namely as a container of values with one _distinguished_ value (the one reurned by extract), and a duplicate function that can be used to _shift the focus_ (that is to say, change which value is distinguished).
 
 **Store**
 
