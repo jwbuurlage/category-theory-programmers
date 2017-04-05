@@ -2,6 +2,10 @@
 
 - Eilenberg-Moore category of algebras over a monad, can also be used to show that every monad arises from an adjunction.
 
+Also have coalgebras for a comonad
+
+Lens example here: <https://bartoszmilewski.com/2017/03/14/algebras-for-monads/>
+
 \part{Advanced theory and applications}
 
 # Adjunctions in Haskell
@@ -21,12 +25,23 @@ This leads to the continuation monad, which we should talk about.
 
 - <http://www.stephendiehl.com/posts/adjunctions.html>
 
-In the category 'Kmett Says':
+## Additional adjunctions
 
-    There is a full adjoint triple for succinct dictionaries:
-    select -| rank -| coselect
-    coselect n = select (n+1) - 1
-    https://en.wikipedia.org/wiki/Succinct_data_structure …
+Additionally, we can try to find interesting adjunctions through:
+
+- Kleisli categories
+- Endofunctors on **Hask**
+
+since we can represent these categories in Haskell
+
+## Kmett Says
+
+There is a full adjoint triple for succinct dictionaries:
+```haskell
+select -| rank -| coselect
+coselect n = select (n + 1) - 1
+```
+<https://en.wikipedia.org/wiki/Succinct_data_structure>
 
 # Lenses; Yoneda, adjunctions and profunctors
 

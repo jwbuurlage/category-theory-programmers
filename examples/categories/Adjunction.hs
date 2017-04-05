@@ -27,9 +27,10 @@ class (Functor f, Functor g) => Adjunction f g | f -> g, g -> f where
     psi :: (f a -> b) -> (a -> g b)
     psi h = fmap h . unCompose . unit . Id
 
+-- For reference, these are the functor instance for 'pair' and 'based arrows':
 -- instance Functor ((,) c) where
 --   fmap f (x, y) = (x, f y)
--- 
+--
 -- instance Functor ((->) c) where
 --   fmap f g = g . f
 
@@ -48,7 +49,7 @@ instance (Adjunction f g) => Monad' (ComposedFunctor f g) where
   eta = unit . Id
   mu = ComposedFunctor . fmap (unId . counit . ComposedFunctor) .  unCompose . fmap unCompose
 
-type State s a = ComposedFunctor ((,) s) ((->) s) a 
+type State s a = ComposedFunctor ((,) s) ((->) s) a
 state :: (s -> (s, a)) -> State s a
 state = ComposedFunctor
 unstate = unCompose
@@ -58,5 +59,7 @@ f x = state $ \y -> (y + 1, x + y)
 
 g :: Int -> State Int Int
 g x = state $ \y -> (y + 1, x * y)
+
+-- TODO: add also comonad, obtain Store
 
 main = print $ unstate (eta 0 >>= f >>= g) 1
