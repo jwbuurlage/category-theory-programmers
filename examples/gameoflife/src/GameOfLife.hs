@@ -31,6 +31,9 @@ instance Grab Tape where
 iterate' :: (a -> a) -> a -> Stream a
 iterate' f x = Cons x (iterate' f (f x))
 
+repeat' :: a -> Stream a
+repeat' x = Cons x (repeat' x)
+
 left :: Tape a -> Tape a
 left (Tape (Cons x xs) y zs) = Tape xs x (Cons y zs)
 
@@ -59,7 +62,8 @@ instance Comonad Universe where
 slice :: Int -> Int -> Universe a -> [[a]]
 slice x y = fmap (grab y) . grab x . getUniverse
 
-data Cell = Dead | Alive
+data Cell = Dead | Alive deriving (Eq)
 
-glider :: Universe Cell
-glider = undefined
+fromList :: [a] -> Stream a
+fromList xs = helper xs xs
+  where helper xs ys = foldr Cons (fromList ys) xs
