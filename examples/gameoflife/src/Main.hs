@@ -2,8 +2,11 @@ module Main where
 
 import Control.Monad
 import Control.Comonad
-
+import Diagrams.Prelude
+import Diagrams.Backend.Cairo.CmdLine
 import GameOfLife
+
+type Picture = QDiagram Cairo V2 Double Any
 
 initial = fromList [Dead, Dead, Alive, Dead, Dead, Alive]
 
@@ -28,12 +31,13 @@ rule u
 
 evolve u = u =>> rule
 
-play :: Int -> Universe Cell -> IO ()
-play 0 _ = print "Done"
-play n u = do
-  putStrLn $ pretty u
-  let u' = evolve u
-  putStrLn ""
-  play (n - 1) u'
+photo :: Universe Cell -> Picture
+photo u = vcat $ hcat . map
+  (\x -> square 0.1 # fc (if x == Alive then cyan else white)) <$> slice 5 5 u
 
-main = play 20 glider
+play :: Int -> Universe Cell -> [(Picture, Int)]
+play 0 _ = []
+play n u = (photo u, 25) : play (n - 1) (evolve u)
+
+-- usage: ./gameoflife -w 500 -o anim.gif
+main = gifMain $ play 20 glider
