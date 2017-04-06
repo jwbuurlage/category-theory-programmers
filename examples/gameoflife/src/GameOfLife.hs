@@ -57,12 +57,13 @@ instance Comonad Universe where
   duplicate = fmap Universe . Universe . shifted . shifted . getUniverse
     where
       shifted :: Tape (Tape a) -> Tape (Tape (Tape a))
-      shifted tape = Tape (iterate' (fmap left) tape) tape (iterate' (fmap right) tape)
+      shifted tape = Tape (iterate' (fmap left) (left tape)) tape (iterate' (fmap right) (right tape))
 
 slice :: Int -> Int -> Universe a -> [[a]]
 slice x y = fmap (grab y) . grab x . getUniverse
 
-data Cell = Dead | Alive deriving (Eq)
+data Cell = Dead | Alive
+  deriving (Eq, Show)
 
 fromList :: [a] -> Stream a
 fromList xs = helper xs xs
