@@ -22,5 +22,4 @@ executable gameoflife
                        comonad,
                        diagrams,
                        diagrams-lib,
-                       diagrams-svg,
-                       diagrams-cairo
+                       diagrams-rasterific
