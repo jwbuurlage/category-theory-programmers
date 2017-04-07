@@ -22,9 +22,7 @@ rule u
   | alive == 3 = Alive
   | otherwise = Dead
   where
-    alive = length (filter (== Alive) $ join (slice 1 1 u)) - status
-      where
-        status = if extract u == Alive then 1 else 0
+    alive = length (filter (== Alive) $ join (slice 1 1 (setter u Dead)))
 
 evolve :: Universe Cell -> Universe Cell
 evolve universe = universe =>> rule
@@ -38,8 +36,17 @@ pretty u = unlines $ slice 2 2 (represent <$> u)
 
 -- Pictorial representation
 photo :: Universe Cell -> Picture
-photo u = vcat $ hcat . map
-  (\x -> square 0.1 # fc (if x == Alive then cyan else white)) <$> slice 4 4 u
+photo u =
+  vcat $
+  hcat .
+  map
+    (\x ->
+        square 0.1 #
+        fc
+          (if x == Alive
+             then cyan
+             else white)) <$>
+  slice 4 4 u
 
 -- Generate frames for gif
 play :: Int -> Universe Cell -> [(Picture, Int)]

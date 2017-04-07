@@ -57,7 +57,7 @@ Of course, we can also define duplicate in terms of `extend`:
 duplicate = extend id
 ```
 
-Let us build some intuition by looking at two examples:
+Before we look at the Haskell versions of the comonad laws, first let us build some intuition by looking at two examples:
 
 **Stream**
 
@@ -124,6 +124,16 @@ Store f :: s -> Store s a
 takes a key `x :: s`, and gives us back a store with dictionary `f`, and distinguished key `x`. By leveraging this function, we see that the dictionary in the `Store` returned by `duplicate`, takes a key and returns a `Store s a`, focused on that key, as required.
 
 As we will see later, the `Store` comonad is an important ingredient of the magnificant `lens` library.
+
+## Comonad laws in Haskell
+
+```haskell
+extend extract      = id                     -- (1)
+extract . extend f  = f                      -- (2)
+extend f . extend g = extend (f . extend g)  -- (3)
+```
+
+Let us discuss the intuition behind these laws.
 
 ## Comonads resemble objects
 

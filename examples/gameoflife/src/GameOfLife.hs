@@ -3,14 +3,16 @@ module GameOfLife where
 -- Reference:
 -- <https://kukuruku.co/post/cellular-automata-using-comonads/>
 -- <http://blog.emillon.org/posts/2012-10-18-comonadic-life.html>
-
 import Data.Functor
 import Control.Comonad
 
-class Functor f => Grab f where
+class Functor f =>
+      Grab f  where
   grab :: Int -> f a -> [a]
 
-data Stream a = Cons a (Stream a)
+data Stream a =
+  Cons a
+       (Stream a)
 
 instance Grab Stream where
   grab 0 (Cons x xs) = []
@@ -23,7 +25,10 @@ instance Comonad Stream where
   extract (Cons x _) = x
   duplicate (Cons x xs) = Cons (Cons x xs) (duplicate xs)
 
-data Tape a = Tape (Stream a) a (Stream a)
+data Tape a =
+  Tape (Stream a)
+       a
+       (Stream a)
 
 instance Grab Tape where
   grab n (Tape l x r) = reverse (grab n l) ++ [x] ++ grab n r
@@ -45,9 +50,12 @@ instance Functor Tape where
 
 instance Comonad Tape where
   extract (Tape _ x _) = x
-  duplicate tape = Tape (iterate' left (left tape)) tape (iterate' right (right tape))
+  duplicate tape =
+    Tape (iterate' left (left tape)) tape (iterate' right (right tape))
 
-data Universe a = Universe { getUniverse :: Tape (Tape a) }
+data Universe a = Universe
+  { getUniverse :: Tape (Tape a)
+  }
 
 instance Functor Universe where
   fmap f = Universe . (fmap . fmap) f . getUniverse
@@ -57,14 +65,25 @@ instance Comonad Universe where
   duplicate = fmap Universe . Universe . shifted . shifted . getUniverse
     where
       shifted :: Tape (Tape a) -> Tape (Tape (Tape a))
-      shifted tape = Tape (iterate' (fmap left) (left tape)) tape (iterate' (fmap right) (right tape))
+      shifted tape =
+        Tape
+          (iterate' (fmap left) (left tape))
+          tape
+          (iterate' (fmap right) (right tape))
 
 slice :: Int -> Int -> Universe a -> [[a]]
 slice x y = fmap (grab y) . grab x . getUniverse
 
-data Cell = Dead | Alive
+data Cell
+  = Dead
+  | Alive
   deriving (Eq, Show)
 
 fromList :: [a] -> Stream a
 fromList xs = helper xs xs
-  where helper xs ys = foldr Cons (fromList ys) xs
+  where
+    helper xs ys = foldr Cons (fromList ys) xs
+
+setter :: Universe a -> a -> Universe a
+setter (Universe (Tape st1 (Tape s1 _ s2) st2)) x =
+  Universe (Tape st1 (Tape s1 x s2) st2)
