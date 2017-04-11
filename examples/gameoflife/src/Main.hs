@@ -12,8 +12,10 @@ type Picture = QDiagram Rasterific V2 Double Any
 initial = fromList [Alive, Dead, Dead, Alive]
 
 -- Construct a universe by extending these streams everywhere
-glider :: Universe Cell
-glider = Universe $ duplicate $ Tape initial Dead initial
+arbitrary :: Universe Cell
+arbitrary = Universe $ duplicate $ Tape initial Dead initial
+
+glider = topU . rightU . setter Alive . leftU . setter Alive . leftU . setter Alive . bottomU . setter Alive . bottomU . rightU . setter Alive . topU $ repeatU Dead
 
 -- Rule and evolving
 rule :: Universe Cell -> Cell
@@ -22,14 +24,14 @@ rule u
   | alive == 3 = Alive
   | otherwise = Dead
   where
-    alive = length (filter (== Alive) $ join (slice 1 1 (setter u Dead)))
+    alive = length (filter (== Alive) $ join (slice 1 1 (setter Dead u)))
 
 evolve :: Universe Cell -> Universe Cell
 evolve universe = universe =>> rule
 
 -- Textual representation
 pretty :: Universe Cell -> String
-pretty u = unlines $ slice 2 2 (represent <$> u)
+pretty u = unlines $ slice 5 5 (represent <$> u)
   where
     represent Dead = 'o'
     represent Alive = 'x'
@@ -39,14 +41,9 @@ photo :: Universe Cell -> Picture
 photo u =
   vcat $
   hcat .
-  map
-    (\x ->
-        square 0.1 #
-        fc
-          (if x == Alive
-             then cyan
-             else white)) <$>
-  slice 4 4 u
+  map (\x -> square 0.1 # fc (color x)) <$> slice 4 4 u
+  where color Alive = cyan
+        color Dead = white
 
 -- Generate frames for gif
 play :: Int -> Universe Cell -> [(Picture, Int)]

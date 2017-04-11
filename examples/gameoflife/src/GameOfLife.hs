@@ -53,6 +53,8 @@ instance Comonad Tape where
   duplicate tape =
     Tape (iterate' left (left tape)) tape (iterate' right (right tape))
 
+repeatT x = Tape (repeat' x) x (repeat' x)
+
 data Universe a = Universe
   { getUniverse :: Tape (Tape a)
   }
@@ -62,14 +64,14 @@ instance Functor Universe where
 
 instance Comonad Universe where
   extract = extract . extract . getUniverse
-  duplicate = fmap Universe . Universe . shifted . shifted . getUniverse
+  duplicate = fmap Universe . Universe . shifts . shifts . getUniverse
     where
-      shifted :: Tape (Tape a) -> Tape (Tape (Tape a))
-      shifted tape =
+      shifts :: Tape (Tape a) -> Tape (Tape (Tape a))
+      shifts tape =
         Tape
-          (iterate' (fmap left) (left tape))
+          (iterate' (fmap left) (left <$> tape))
           tape
-          (iterate' (fmap right) (right tape))
+          (iterate' (fmap right) (right <$> tape))
 
 slice :: Int -> Int -> Universe a -> [[a]]
 slice x y = fmap (grab y) . grab x . getUniverse
@@ -84,6 +86,15 @@ fromList xs = helper xs xs
   where
     helper xs ys = foldr Cons (fromList ys) xs
 
-setter :: Universe a -> a -> Universe a
-setter (Universe (Tape st1 (Tape s1 _ s2) st2)) x =
+setter :: a -> Universe a -> Universe a
+setter x (Universe (Tape st1 (Tape s1 _ s2) st2)) =
   Universe (Tape st1 (Tape s1 x s2) st2)
+
+repeatU :: a -> Universe a
+repeatU = Universe . repeatT . repeatT
+
+leftU = Universe . fmap left . getUniverse
+rightU = Universe . fmap right . getUniverse
+topU = Universe . left . getUniverse
+bottomU = Universe . right . getUniverse
+
