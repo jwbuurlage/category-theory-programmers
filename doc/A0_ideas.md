@@ -32,7 +32,9 @@ Additionally, we can try to find interesting adjunctions through:
 - Kleisli categories
 - Endofunctors on **Hask**
 
-since we can represent these categories in Haskell
+since we can represent these categories in Haskell. On modelling categories in Haskell:
+
+- <https://www.youtube.com/watch?v=Klwkt9oJwg0>
 
 ## Kmett Says
 
