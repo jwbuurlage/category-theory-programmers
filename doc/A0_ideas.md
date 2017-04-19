@@ -6,7 +6,7 @@ Also have coalgebras for a comonad
 
 Lens example here: <https://bartoszmilewski.com/2017/03/14/algebras-for-monads/>
 
-\part{Advanced theory and applications}
+\part{Advanced theory and aplications}
 
 # Adjunctions in Haskell
 
@@ -47,8 +47,12 @@ coselect n = select (n + 1) - 1
 
 # Lenses; Yoneda, adjunctions and profunctors
 
-- <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
-- <https://github.com/ekmett/lens>
+- SPJ on lenses: <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
+- `lens` library: <https://github.com/ekmett/lens>
+- Elegant profunctor optics: <http://www.cs.ox.ac.uk/people/jeremy.gibbons/publications/poptics.pdf>
+- Glassery: <http://oleg.fi/gists/posts/2017-04-18-glassery.html>
+- Van Laarhoven lenses: <https://www.twanvl.nl/blog/haskell/cps-functional-references>
+- Also a number of blogposts by Bartosz Milewski.
 
 # Purely functional datastructures
 
