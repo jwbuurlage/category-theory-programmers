@@ -1,8 +1,8 @@
-% Category theory for programmers
+% Categories for programmers
 % Jan-Willem Buurlage
 
 ---
-tagline: An introduction to the mathematics of functional programming
+tagline: An introduction to the mathematics behind modern functional programming
 date: \today
 toc: true
 numbersections: true
