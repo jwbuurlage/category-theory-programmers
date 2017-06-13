@@ -1,50 +1,3 @@
-# Algebras for a monad
-
-- Eilenberg-Moore category of algebras over a monad, can also be used to show that every monad arises from an adjunction.
-
-Also have coalgebras for a comonad
-
-Lens example here: <https://bartoszmilewski.com/2017/03/14/algebras-for-monads/>
-
-\part{Advanced theory and aplications}
-
-# Adjunctions in Haskell
-
-The only monad over $\mathbf{Hask}$ arising from an adjunction that goes through $\mathbf{Hask}$ itself is the `State` monad:
-```haskell
-(, f) -| (->) e
-```
-You can show this using: <https://en.wikipedia.org/wiki/Representable_functor#Left_adjoint>. Witnessed by `curry` and `uncurry`.
-
-We have:
-```haskell
-(-> e) -| (-> e)
-```
-as an adjunction through $\mathbf{Hask}^{\text{op}}$. Witnessed by `flip`.
-This leads to the continuation monad, which we should talk about.
-
-- <http://www.stephendiehl.com/posts/adjunctions.html>
-
-## Additional adjunctions
-
-Additionally, we can try to find interesting adjunctions through:
-
-- Kleisli categories
-- Endofunctors on **Hask**
-
-since we can represent these categories in Haskell. On modelling categories in Haskell:
-
-- <https://www.youtube.com/watch?v=Klwkt9oJwg0>
-
-## Kmett Says
-
-There is a full adjoint triple for succinct dictionaries:
-```haskell
-select -| rank -| coselect
-coselect n = select (n + 1) - 1
-```
-<https://en.wikipedia.org/wiki/Succinct_data_structure>
-
 # Lenses; Yoneda, adjunctions and profunctors
 
 - SPJ on lenses: <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
@@ -54,62 +7,73 @@ coselect n = select (n + 1) - 1
 - Van Laarhoven lenses: <https://www.twanvl.nl/blog/haskell/cps-functional-references>
 - Also a number of blogposts by Bartosz Milewski.
 
-# Purely functional datastructures
+\part{Advanced theory and aplications}
 
-- <http://apfelmus.nfshost.com/articles/monoid-fingertree.html>
-- <https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504>
+\chapter*{Further study}
 
-# Applicative functors
+- **Algebras for a monad**. Eilenberg-Moore category of algebras over a monad, can also be used to show that every monad arises from an adjunction. Also have coalgebras for a comonad Lens example here: <https://bartoszmilewski.com/2017/03/14/algebras-for-monads/>
 
-Applicative ~= Monoidal
+- **Adjunctions in Haskell**. The only monad over $\mathbf{Hask}$ arising from an adjunction that goes through $\mathbf{Hask}$ itself is the `State` monad:
+    ```haskell
+    (, f) -| (->) e
+    ```
+    You can show this using: <https://en.wikipedia.org/wiki/Representable_functor#Left_adjoint>. Witnessed by `curry` and `uncurry`.
+    We have:
+    ```haskell
+    (-> e) -| (-> e)
+    ```
+    as an adjunction through $\mathbf{Hask}^{\text{op}}$. Witnessed by `flip`.
+    This leads to the continuation monad, which we should talk about.
+    - <http://www.stephendiehl.com/posts/adjunctions.html>
 
-Is strong lax functor
+- **Additional adjunctions**: Additionally, we can try to find interesting adjunctions through:
+    - Kleisli categories
+    - Endofunctors on **Hask**
+    since we can represent these categories in Haskell. On modelling categories in Haskell:
+    - <https://www.youtube.com/watch?v=Klwkt9oJwg0>
+    Kmett: there is a full adjoint triple for succinct dictionaries:
+    ```haskell
+    select -| rank -| coselect
+    coselect n = select (n + 1) - 1
+    ```
+    <https://en.wikipedia.org/wiki/Succinct_data_structure>
 
-- McBride, Paterson; Applicative Programming with Effects
-    - <http://www.staff.city.ac.uk/~ross/papers/Applicative.pdf>
+- **Purely functional datastructures**:
+    - <http://apfelmus.nfshost.com/articles/monoid-fingertree.html>
+    - <https://www.amazon.com/Purely-Functional-Structures-Chris-Okasaki/dp/0521663504>
 
-# Monad transformers
+- **Applicative functors**:
+    - Applicative ~= Monoidal. Is strong lax functor.
+    - McBride, Paterson; Applicative Programming with Effects <http://www.staff.city.ac.uk/~ross/papers/Applicative.pdf>
 
-'Translation of a monad along an adjunction'
+- **Monad transformers**: 'Translation of a monad along an adjunction'
+    - <https://oleksandrmanzyuk.files.wordpress.com/2012/02/calc-mts-with-cat-th1.pdf>
 
-- <https://oleksandrmanzyuk.files.wordpress.com/2012/02/calc-mts-with-cat-th1.pdf>
+- **Proof assistants**: Curry-Howard isomorphism
 
-# Proof assistants
+- **List of advanced topics**: <http://www.haskellforall.com/2014/03/introductions-to-advanced-haskell-topics.html>
 
-Curry-Howard isomorphism
+- **Ends and co-ends**.
 
-# Further Ideas
+- **'Theorems for free!'**
 
-- <http://www.haskellforall.com/2014/03/introductions-to-advanced-haskell-topics.html>
+- **'Fast and loose reasoning is morally correct'**
+    - $\omega$-CPOs
+    - Domain theory
+    - Note that `newtype` and bottom cause issues.
+    - Note that `seq` messes everything op
+    - References
+        - About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
+        - <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
+        - <https://ro-che.info/articles/2016-08-07-hask-category>
+        - <https://wiki.haskell.org/Newtype>
+        - <http://blog.sigfpe.com/2009/10/what-category-do-haskell-types-and.html>
 
-## Ends and co-ends
+- **Homotopy type theory**
 
-## 'Theorems for free!'
+- **Quantum computations**. (Bert Jacobs)
 
-## 'Fast and loose reasoning is morally correct'
-
-- $\omega$-CPOs
-- Domain theory
-- Note that `newtype` and bottom cause issues.
-- Note that `seq` messes everything op
-
-### References
-
-- About **Hask**: <http://www.cs.ox.ac.uk/jeremy.gibbons/publications/fast+loose.pdf>
-- <http://math.andrej.com/2016/08/06/hask-is-not-a-category/>
-- <https://ro-che.info/articles/2016-08-07-hask-category>
-- <https://wiki.haskell.org/Newtype>
-- <http://blog.sigfpe.com/2009/10/what-category-do-haskell-types-and.html>
-
-## Homotopy type theory
-
-## Quantum computations?
-
-(Bert Jacobs)
-
-## Haskell tricks and gems
-
-- <https://deque.blog/2016/11/27/open-recursion-haskell/>
+- **Haskell tricks and gems**. <https://deque.blog/2016/11/27/open-recursion-haskell/>
 
 # Literature
 

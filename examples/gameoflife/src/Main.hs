@@ -15,14 +15,22 @@ initial = fromList [Alive, Dead, Dead, Alive]
 arbitrary :: Universe Cell
 arbitrary = Universe $ duplicate $ Tape initial Dead initial
 
-glider = topU . rightU . setter Alive . leftU . setter Alive . leftU . setter Alive . bottomU . setter Alive . bottomU . rightU . setter Alive . topU $ repeatU Dead
+glider =
+    topU .
+    rightU .
+    setter Alive .
+    leftU .
+    setter Alive .
+    leftU .
+    setter Alive . bottomU . setter Alive . bottomU . rightU . setter Alive . topU $
+    repeatU Dead
 
 -- Rule and evolving
 rule :: Universe Cell -> Cell
 rule u
-  | alive == 2 = extract u
-  | alive == 3 = Alive
-  | otherwise = Dead
+    | alive == 2 = extract u
+    | alive == 3 = Alive
+    | otherwise = Dead
   where
     alive = length (filter (== Alive) $ join (slice 1 1 (setter Dead u)))
 
@@ -38,12 +46,10 @@ pretty u = unlines $ slice 5 5 (represent <$> u)
 
 -- Pictorial representation
 photo :: Universe Cell -> Picture
-photo u =
-  vcat $
-  hcat .
-  map (\x -> square 0.1 # fc (color x)) <$> slice 4 4 u
-  where color Alive = cyan
-        color Dead = white
+photo u = vcat $ hcat . map (\x -> square 0.1 # fc (color x)) <$> slice 4 4 u
+  where
+    color Alive = cyan
+    color Dead = white
 
 -- Generate frames for gif
 play :: Int -> Universe Cell -> [(Picture, Int)]
