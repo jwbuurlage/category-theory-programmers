@@ -11,6 +11,7 @@ all:
 	08_monads.md \
 	09_f_algebras.md \
 	10_comonads.md \
+	11_lenses.md \
 	A0_ideas.md \
 	A1_exercises.md \
 	A2_haskell.md \
