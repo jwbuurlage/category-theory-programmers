@@ -1,4 +1,4 @@
-\chapter*{Introduction}
+\chapter*{Preface}
 
 This document contains notes for a small-scale seminar on category theory in the context of (functional) programming, organized at Centrum Wiskunde \& Informatica, the national Dutch research centre for mathematics and computer science. The goal of the seminar is to gain familiarity with concepts of category theory (and other branches of mathematics) that apply (in a broad sense) to the field of functional programming.
 
@@ -14,14 +14,14 @@ I would like to thank:
 
 -- Jan-Willem Buurlage (<janwillembuurlage@gmail.com>)
 
-\chapter*{Preliminaries}
+\chapter*{Introduction}
 
-Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. This is originally described by mathematicians such as Turing and von Neuman in the 30s.
+Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. Imperative programming was first treated by mathematicians such as Turing and von Neuman in the 30s.
 
-A different way of programming is *declarative programming*, which is a way of expressing *what* you want the program to compute (without explicitely saying how it should do this). A good way of expressing what you want to have computed, is by describing your program mathematically, i.e. *using functions*, which is what we explore here. This functional style of looking at computations is based on work in the 20s/30s by Curry and Church among others.
+A different way of programming is *declarative programming*, which is a way of expressing *what* you want the program to compute (without explicitely saying how it should do this). A good way of expressing what you want to have computed, is by describing your program mathematically, i.e. *using functions*. This exactly what we will explore. The functional style of looking at computations is based on work done in the 20s/30s by Curry and Church among others.
 
-The difficulty in using a *(typed, pure) functional* programming language, is that the **functions that you write** between types **should behave like mathematical functions** on the corresponding sets. This means, for example, that if you call a function multiple times with the same arguments, it should produce the same result every time. This is often summarized as a *side-effect free function*. Other difficulties are that values are in principle immutable.
+Partically speaking, the difficulty in using a *(typed, pure) functional* programming language, is that the **functions that you write** between types **should behave like mathematical functions** on the corresponding sets. This means, for example, that if you call a function multiple times with the same arguments, it should produce the same result every time. This is often summarized as a *side-effect free function*. More generally, values are in principle immutable.
 
-Something else that would allow us to more accurately describe our programs in a mathematical way is if execution is *lazy*, and Haskell indeed is lazy. This means we can work with **infinite lists and sequences**, and only peeking inside such as a list causes the necessary computations to be done (or 'collapses the wave function' if you want a quantum analogy).
+Something else that would allow us to more accurately describe our programs in a mathematical way is if execution is *lazy* (which is the case in e.g. Haskell). This means we can work with **infinite lists and sequences**, and only peeking inside such a list causes the necessary computations to be done.
 
-
+In these notes I will assume some 'mathematical maturity' from the reader, but I have tried throughout to keep everything as simple as possible. There is certainly some advanced mathematics to be found, and for those who have not encountered abstract mathematics some sections may be hard to follow. In any case, as a rule there are no overly exotic examples. All the concepts introduced should be accompanied by practical and understandable examples.
