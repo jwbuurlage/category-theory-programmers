@@ -1,4 +1,4 @@
-% Category theory for programmers
+% Categories and Haskell
 % Jan-Willem Buurlage
 
 ---
@@ -7,6 +7,7 @@ date: \today
 toc: true
 numbersections: true
 documentclass: memoir
+bibliography: mendeley.bib
 classoption: 12pt,openany,oneside
 header-includes:
     - \usepackage{tikz-cd}

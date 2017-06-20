@@ -82,15 +82,15 @@ The `duplicate` method is more interesting, it creates and infinite number of st
 
 Note that the expressive power gained by working with infinite lists of infinite lists is brought to us by the laziness of Haskell.
 
-This example immediately suggests a way of looking at (this specific class of) comonads, namely as a container of values with one _distinguished_ value (the one reurned by extract), and a duplicate function that can be used to _shift the focus_ (that is to say, change which value is distinguished).
+This example immediately suggests a way of looking at (this specific class of) comonads, namely as a container of values with one _distinguished_ value (the one returned by extract), and a duplicate function that can be used to _shift the focus_ (that is to say, change which value is distinguished).
 
 **Store**
 
-Store is dual to the `State` monad^[What I mean here, is that the adjunction that gives rise to the `State` monad, also gives rise to the `Store` comonad. We will talk more about this in a subsequent chapter.], and is defined as:
+Store is dual to the `State` monad^[What I mean here, is that the adjunction that gives rise to the `State` monad, also gives rise to the `Store` comonad.], and is defined as:
 ```haskell
 data Store s a = Store (s -> a) s
 ```
-We interpret a `Store` as follows. The first part, with signature `(s -> a)` of a store, can be seen as a container with values of type `a`, which are _keyed_ by elements of type `s`, or a _dictionary_. Indeed, for any key `x :: s`, we can use this part to obtain a value of type `a`.
+We interpret a `Store` as follows. The first part, with signature `(s -> a)` of a store, can be seen as a container with values of type `a`, which are _keyed_ by elements of type `s`, so the container is a _dictionary_. Indeed, for any key `x :: s`, we can use the first component to obtain a value of type `a`.
 
 The second part of type `s` defines the _focus_ of our store, the distinguished element is the one keyed by this value.
 
@@ -127,13 +127,25 @@ As we will see later, the `Store` comonad is an important ingredient of the magn
 
 ## Comonad laws in Haskell
 
+We will consider the following form of the laws that a comonad should satisfy in
+Haskell.
+
 ```haskell
 extend extract      = id                     -- (1)
 extract . extend f  = f                      -- (2)
 extend f . extend g = extend (f . extend g)  -- (3)
 ```
 
-Let us discuss the intuition behind these laws.
+Let us discuss the intuition behind these laws, specifically for the case of
+comonadic containers. We take the viewpoint
+that extend applies a function to each element of the comonad, but this
+'comonad valued function' can depend on other elements in the comonad. For (1), we simply
+extract the value at each component of the comonad and then gather the
+results, which should clearly be equivalent to doing nothing. Law (2) states
+that when extending a comonad valued function over a comonad, and observing what it did to
+the focused element is the same as just evaluating the function on the comonad.
+Finally, (3) says that composing extended comonad valued functions can be done
+either before or after extending the second function.
 
 ## Comonads resemble objects
 
@@ -141,6 +153,9 @@ Gabriel Gonzalez' blog post
 
 ## References
 
+- [@Milewski2014, \S 3.7]
+- [@Awodey, \S 10.4]
+- [@Riehl2016, \S 5.2]
 - <http://www.haskellforall.com/2013/02/you-could-have-invented-comonads.html>
 - <https://bartoszmilewski.com/2017/01/02/comonads/>
 

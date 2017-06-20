@@ -1,5 +1,7 @@
 all:
-	pandoc --template template.texinfo \
+	pandoc \
+	--filter pandoc-citeproc \
+	--template template.texinfo \
 	00_header.md \
 	01_introduction.md \
 	02_categories.md \
@@ -15,6 +17,7 @@ all:
 	A0_ideas.md \
 	A1_exercises.md \
 	A2_haskell.md \
+	R0_references.md \
 	-o categories_for_programmers.pdf
 
 html:
