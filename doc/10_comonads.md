@@ -147,10 +147,6 @@ the focused element is the same as just evaluating the function on the comonad.
 Finally, (3) says that composing extended comonad valued functions can be done
 either before or after extending the second function.
 
-## Comonads resemble objects
-
-Gabriel Gonzalez' blog post
-
 ## References
 
 - [@Milewski2014, \S 3.7]
@@ -158,6 +154,5 @@ Gabriel Gonzalez' blog post
 - [@Riehl2016, \S 5.2]
 - <http://www.haskellforall.com/2013/02/you-could-have-invented-comonads.html>
 - <https://bartoszmilewski.com/2017/01/02/comonads/>
-
 - <https://www.youtube.com/watch?v=F7F-BzOB670> spreadsheets (see also <https://github.com/kwf/ComonadSheet>)
 - Game of Life / diagram: <https://github.com/bollu/cellularAutomata>, <http://blog.sigfpe.com/2006/12/evaluating-cellular-automata-is.html>
