@@ -37,7 +37,7 @@ T \arrow[r, Leftarrow, "\epsilon T"] \arrow[dr, Leftarrow, "\text{id}"'] & T^2 \
 
 We call $\epsilon$ the _counit_, and $\delta$ the _comultiplication_. These are called `extract` and `duplicate` in Haskell.
 
-We note that by duality every adjunction $F \dashv G$ gives rise to a comonad on $\mathcal{D}$. Conversely, every comonad arises from an adjunction (by factoring through e.g. the co-Kleisli category).
+We note that by duality every adjunction $F \dashv G$ gives rise to a comonad on $\mathcal{D}$. Conversely, every comonad arises from an adjunction (by factoring through e.g. the co-Kleisli category). The dual of an $F$-algebra is an $F$-coalgebra, and is given by an arrow $a \to Fa$. These form a category $\textbf{Coalg}_F$.
 
 ## Comonads in Haskell
 
