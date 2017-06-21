@@ -1,3 +1,11 @@
+@article{Pickering,
+abstract = {Data accessors allow one to read and write components of a data structure, such as the fields of a record, the variants of a union, or the elements of a container. These data accessors are collectively known as optics; they are fundamental to programs that manipulate complex data. Individual data accessors for simple data structures are easy to write, for example as pairs of 'getter' and 'setter' methods. However, it is not obvious how to combine data accessors, in such a way that data accessors for a compound data structure are composed out of smaller data accessors for the parts of that structure. Generally, one has to write a sequence of statements or declarations that navigate step by step through the data structure, accessing one level at a time—which is to say, data accessors are traditionally not first-class citizens, combinable in their own right. We present a framework for modular data access, in which individual data accessors for simple data struc-tures may be freely combined to obtain more complex data accessors for compound data structures. Data accessors become first-class citizens. The framework is based around the notion of profunctors, a flexible gen-eralization of functions. The language features required are higher-order functions ('lambdas' or 'closures'), parametrized types ('generics' or 'abstract types') of higher kind, and some mechanism for separating inter-faces from implementations ('abstract classes' or 'modules'). We use Haskell as a vehicle in which to present our constructions, but other languages such as Scala that provide the necessary features should work just as well. We provide implementations of all our constructions, in the form of a literate program: the manuscript file for the paper is also the source code for the program, and the extracted code is available separately for evaluation. We also prove the essential properties, demonstrating that our profunctor-based representations are precisely equivalent to the more familiar concrete representations. Our results should pave the way to simpler ways of writing programs that access the components of compound data structures.},
+author = {Pickering, Matthew and Gibbons, Jeremy and Wu, Nicolas},
+file = {:ufs/buurlage/docs/literature/poptics.pdf:pdf},
+keywords = {compositionality,lens,traversal},
+title = {{Profunctor Optics: Modular Data Accessors}},
+year = {2017}
+}
 @misc{Milewski2014,
 author = {Milewski, Bartosz},
 title = {{Category Theory for Programmers}},
@@ -8,7 +16,8 @@ year = {2014}
 @article{Awodey,
 author = {Awodey},
 file = {:ufs/buurlage/Documents/awodey.pdf:pdf},
-title = {{Category Theory}}
+title = {{Category Theory}},
+year = {2010}
 }
 @book{Leinster,
 archivePrefix = {arXiv},
@@ -17,7 +26,8 @@ author = {Leinster, T O M},
 eprint = {arXiv:1612.09375v1},
 file = {:ufs/buurlage/.local/share/data/Mendeley Ltd./Mendeley Desktop/Downloaded/Leinster - 1995 - Basic Category Theory.pdf:pdf},
 isbn = {9781107044241},
-title = {{Basic Category Theory}}
+title = {{Basic Category Theory}},
+year = {2016}
 }
 @article{Riehl2016,
 author = {Riehl, Emily},
