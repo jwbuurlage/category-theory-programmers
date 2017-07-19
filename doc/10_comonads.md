@@ -1,5 +1,7 @@
 # Comonads
 
+_(This brief chapter only covers the very basics of comonads, see the suggested list of literature for further reading at the end)_
+
 We have established some interesting notions such as monads and $F$-algebras, but we have not yet looked at their dual statements. In this chapter we will partly remedy this shortcoming.
 
 Over the last couple of chapters, we have grown to appreciate the usefulness of monads. Here, we will explore the dual notion of a _comonad_.

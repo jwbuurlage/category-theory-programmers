@@ -1,5 +1,7 @@
 # Lenses and other optics
 
+_(This brief chapter only covers the very basics of lenses and other optics, see the suggested list of literature for further reading at the end)_
+
 Compound data structures (records, containers, tuples, sum types, ...) are the bread and butter of real-world programs. Tools for manipulating and accessing these compound data structures are collectively called _optics_. In the first part of this chapter, we will follow roughly [@Pickering].
 
 The simplest way of accessing the components of these compounds is _viewing_ and _updating_ single components. Doing this naively is fairly simple. We have seen viewers for e.g. pair already:
@@ -64,7 +66,7 @@ data Prism a b s t = Prism { match :: s -> Either t a
                            , build :: b -> t }
 ```
 There is a whole zoo of optics, and we will give more examples after introducing
-a better framework. The problem with using the lenses and prisms as given in the this section, is that they do not easily compose (among themselves, or with each other). In the remainder of this chapter, we will study these lenses and other examples of optics in more detail, and put them into a unifying framework which will allow us to compose them.
+a better framework. The problem with using the lenses and prisms as given in the this section (in _concrete_ representations), is that they do not easily compose already with other optics of the same types, let alone when optics are mixed. In the remainder of this chapter, we will study these lenses and other examples of optics in more detail, and put them into a unifying framework which will allow us to compose them.
 
 ## Profunctor optics
 
@@ -74,7 +76,7 @@ follows.
 
 \begin{definition}
 Let $\mathcal{C}$ and $\mathcal{D}$ be categories. A \textbf{profunctor}:
-$$\phi: \mathcal{C} \nrightarrow \mathcal{D}$$
+$$\phi: \mathcal{C} \nrightarrow \mathcal{D},$$
 is a functor $\mathcal{D}^{\text{op}} \times \mathcal{C} \to \mathbf{Set}$.
 \end{definition}
 
@@ -82,7 +84,8 @@ The underlying theory for the material we will discuss here is interesting but
 vast (in particular we would have to discuss monoidal categories and tensorial strengths). Therefore, we will take a pragmatic approach in this part, for once, and define most of the
 concepts in Haskell directly. We can define profunctors as:
 ```haskell
-data Profunctor
+class Profunctor p where
+   dimap :: (a -> b) -> (c -> d) -> p b c -> p a d
 ```
 with laws (omitted here) making it a bifunctor that is contravariant in the first argument, and
 covariant in the second.
@@ -92,30 +95,69 @@ values of type `b`. The simplest example of course, is a function `a -> b`, and
 indeed we can define:
 ```haskell
 instance Profunctor (->) where
-    ...
+    dimap f g h  = g . h . f
 ```
+Different classes of optics, correspond to different constraints on our functors. In this exposition, we focus on Cartesian, and coCartesian profunctors.
 
-Let us define our optics in this framework.
-
-## Showing the equivalence
-
-We started out with the following definition of a lens:
 ```haskell
-data Lens a b s t = Lens { view :: s -> a,  update :: b -> s -> t }
+class Profunctor p => Cartesian p where
+    first :: p a b -> p (a, c) (b, c)
+    second :: p a b -> p (c, a) (c, b)
+
+class Profunctor p => CoCartesian p where
+    left :: p a b -> p (Either a c) (Either b c)
+    right :: p a b -> p (Either c a) (Either c b)
 ```
-And ended up with the profunctor definition:
+
+An intuition for Cartesian profunctors is that they transform an `a` into a `b`, but can carry along any contextual information of type `c`. Similarly, coCartesian profunctors that can turn an `a` into a `b`, can also take care of the respective sum types with `c` (e.g. by not transforming values the values in that component). The function arrow is both Cartesian and coCartesian.
+
 ```haskell
-data LensP = ...
+cross f g (x, y) = (f x, g y)
+
+plus f _ (Left x) = Left (f x)
+plus _ g (Right y) = Right (g y)
+
+instance Cartesian (->) where
+    first h = cross h id
+    second h = cross id h
+
+instance CoCartesian (->) where
+    left h = plus h id
+    right h = plus id h
 ```
-In this section, we will use the Yoneda lemma to show the equivalence between --
-hopefully giving a deeper understanding of why they are equivalent (it is fairly
-easy to construct an isomorphism between the two constructions).
+
+Let us define our two example optics, lenses and prisms, in this framework. After giving the definitions, we analyse what we gained exactly by using our new representation. First, any optic is a transformations between profunctors. 
+```haskell
+type Optic p a b s t = p a b -> p s t
+```
+A _lens_ is an optic that works uniformly for all Cartesian profunctors.
+```haskell
+type LensP a b s t = forall p. Cartesian p => Optic p a b s t
+```
+We can turn any _concrete_ lens into this representation, using the following function:
+```haskell
+lensC2P :: Lens a b s t -> LensP a b s t
+lensC2P (Lens v u) = dimap (fork v id) (uncurry u) . first
+  where fork f g x = (f x, g x)
+```
+Similarly, we can define Prisms in terms of transformations of coCartesian profunctors.
+```haskell
+type PrismP a b s t = forall p. Cocartesian p => Optic p a b s
+
+prismC2P :: Prism a b s t -> PrismP a b s t
+prismC2P (Prism m b) = diamp m (either id b) . right
+```
+In summary, with the 'concrete to profunctor' functions `lensC2P` and `prismC2P` (which, as it turns out, have inverses) we can turn any concrete lens into the (less intuitive) profunctor representation. Once they are in this representation, they compose beautifully using the standard composition operator `(.)` which means that it even looks like imperative code where nested accessors are usually written with dots in between.
+
+As the final note of this section, we mention that with prisms and lenses we are only scratching the surface. There are other optics (in particular adapters and traversals) that can fit into this framework. 
 
 ## Further reading
 
+- Elegant profunctor optics: <http://www.cs.ox.ac.uk/people/jeremy.gibbons/publications/poptics.pdf>
+- Van Laarhoven lenses: <https://www.twanvl.nl/blog/haskell/cps-functional-references>
+- A great many blogposts by Bartosz Milewski, e.g.:
+  - Showing that the concrete/profunctor equivalence is Yoneda in disguise: <https://bartoszmilewski.com/2016/09/06/lenses-yoneda-with-adjunctions/>
+  - A detailed categorical look at lenses <https://bartoszmilewski.com/2017/07/07/profunctor-optics-the-categorical-view/>
+- Glassery: <http://oleg.fi/gists/posts/2017-04-18-glassery.html>
 - SPJ on lenses: <https://skillsmatter.com/skillscasts/4251-lenses-compositional-data-access-and-manipulation>
 - `lens` library: <https://github.com/ekmett/lens>
-- Elegant profunctor optics: <http://www.cs.ox.ac.uk/people/jeremy.gibbons/publications/poptics.pdf>
-- Glassery: <http://oleg.fi/gists/posts/2017-04-18-glassery.html>
-- Van Laarhoven lenses: <https://www.twanvl.nl/blog/haskell/cps-functional-references>
-- Also a number of blogposts by Bartosz Milewski.

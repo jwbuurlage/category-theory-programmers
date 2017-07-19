@@ -2,16 +2,16 @@
 
 module Main where
 
-data Lens a b s t = Lens { view' :: s -> a, update' :: b -> s -> t }
+data Lens a b s t = Lens { view' :: s -> a, update' :: (b, s) -> t }
 
-fst' x (_, z) = (x, z)
+fst' (x, (_, z)) = (x, z)
 
 lens1 = Lens fst fst'
 
 sign = Lens view' update'
   where
     view' = (>= 0)
-    update' b x = if b then abs x else (-(abs x))
+    update' (b, x) = if b then abs x else (-(abs x))
 
 (^..) = flip view'
 
@@ -58,40 +58,32 @@ fork f g x = (f x, g x)
 
 type LensP a b s t = forall p. Cartesian p => Optic p a b s t
 
--- dimap :: (a -> b) -> (c -> d) -> p b c -> p a d
--- s -> a
--- (b, s) -> t
--- p a (b, s) -dimap v u-> p s t
-
--- p a b -first-> p (a, s) (b, s)
--- p (a, s) (b, s) -dimap (fork v id) u-> p s t
-
--- p a b -> p a (b, s)
-
 lensC2P :: Lens a b s t -> LensP a b s t
-lensC2P (Lens v u) = dimap (fork v id) (uncurry u) . first
-
-
--- lensP2C l = l (Lens id fst)
--- 
--- (^.) x l = view (lensP2C l) x 
+lensC2P (Lens v u) = dimap (fork v id) u . first
 
 _1 = lensC2P lens1
 
-type Fst a b = a
-instance Profunctor Fst where
-    dimap f _ 
+instance Profunctor (Lens a b) where
+  dimap f g (Lens v u) = Lens (v . f) (g . u . cross id f)
 
-view :: LensP a b s t -> s -> a
-view l 
+instance Cartesian (Lens a b) where
+  first (Lens v u) = Lens (v . fst)  (fork (u . cross id fst) (snd . snd))
+  second (Lens v u) = Lens (v . snd) (fork (fst . snd) (u . cross id snd))
+
+lensP2C :: LensP a b s t -> Lens a b s t
+lensP2C l = l (Lens id fst)
+
+view = view' . lensP2C
+
+--(^.) = flip view 
 
 main :: IO ()
 main = do
   print $ show $ view' lens1 (2, 3)
   print $ show $ (2, 3)^..lens1
-  print $ show $ update' lens1 "Hi!" (2, 3)
+  print $ show $ update' lens1 ("Hi!", (2, 3))
   print $ show $ view' sign 3
-  print $ show $ update' sign False 3
+  print $ show $ update' sign (False, 3)
   print $ show $ 12000^..sign
   print $ show $ _1 (+1) (2, 3)
   print $ show $ (_1 . _1) (+1) ((2, 4), 3)

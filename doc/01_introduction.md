@@ -10,7 +10,8 @@ I would like to thank:
 - Peter Kristel for valuable comments on the Yoneda embedding
 - Willem Jan Palenstijn for corrections and comments regarding cartesian closed categories.
 - Tom de Jong for examples and suggestions for the section on adjunctions
-- Edward Kmett for examples of Monads arising from adjunctions in Haskell.
+
+And everyone else who has attended or contributed to the seminar.
 
 -- Jan-Willem Buurlage (<janwillembuurlage@gmail.com>)
 
