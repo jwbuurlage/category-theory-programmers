@@ -53,7 +53,7 @@ Saying a diagram commutes means that for all pairs of vertices $a'$ and $b'$ all
 
 \end{definition}
 
-If $f: a \to b$, then we say that $a$ is the *domain* and $b$ is the *codomain* of $b$. It is also written as:
+If $f: a \to b$, then we say that $a$ is the *domain* and $b$ is the *codomain* of $f$. It is also written as:
 $$\text{dom}(f) = a,~\text{cod}(f) = b.$$
 The composition $g \circ f$ is only defined on arrows $f$ and $g$ if the domain of $g$ is equal to the codomain of $f$.
 
