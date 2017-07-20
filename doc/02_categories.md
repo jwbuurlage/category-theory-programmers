@@ -198,9 +198,9 @@ An object $x \in \mathcal{C}$ is \textbf{terminal} if for all $a \in \mathcal{C}
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-  &a \arrow[dr]&  \\
-i\arrow[ur] \arrow[rr, shift left] \arrow[dr] & & t \arrow[ll, shift left]\\
-  &b \arrow[ur] &
+  &a \arrow[dr] \arrow[dl, shift right] &  \\
+i\arrow[ur, shift right] \arrow[rr] \arrow[dr] & & t \arrow[dl, shift right]\\
+  &b \arrow[ur, shift right] &
 \end{tikzcd}
 \end{figure}
 Here, $i$ is initial, and $t$ is terminal.
