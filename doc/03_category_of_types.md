@@ -30,7 +30,7 @@ To compose:
 
 ```haskell
     g :: B -> C
-    h = f . g
+    h = g . f
 ```
 
 This means that `h` is a function `h :: A -> C`! Note how easy it is to compose functions in Haskell. Compare how this would be in C++, if we were to take two polymorphic functions in C++ and compose them:
