@@ -48,7 +48,7 @@ Ft \arrow[r, "\tau"'] & t
 \end{tikzcd}
 \end{figure}
 Here, the top square commutes because $h$ is a homomorphism, and the bottom square commutes trivially.
-First, we note that by commutativity of this diagram, $\tau \circ h$ is a homomorhism between $(t, \tau) \to (t, \tau)$, and since $(t, \tau)$ is initial it is the unique homomorphism, i.e. the identity, and hence:
+First, we note that by commutativity of this diagram, $\tau \circ h$ is a homomorphism between $(t, \tau) \to (t, \tau)$, and since $(t, \tau)$ is initial it is the unique homomorphism, i.e. the identity, and hence:
 $$\tau \circ h = \text{id}_{t},$$
 i.e. $h$ is a right inverse to $\tau$. To show that it is also a left inverse (and hence that $\tau$ is an isomorphism) we compute using the commutativity of the top square:
 $$h \circ \tau = F\tau \circ Fh = F(\tau \circ h) = F(\text{id}_{t}) = \text{id}_{Ft}.$$
@@ -406,7 +406,7 @@ $$(c_i: F^i 0 \to \ell)_{i \in \omega}.$$
 
 To show that there is a unique algebra homomorphism which we suggestively denote $\lbanana \alpha \rbanana$ from $\ell$ to $a$, we will first show that if it exists, then it should be the unique mediating arrow $\bar{f}$ between the cocones with vertices $\ell$ and $a$ respectively, i.e. we should have for all $i \in \omega$:
 $$\lbanana \alpha \rbanana \circ c_i = \alpha_i.$$
-The first case is trivially true, because both arrows have domain $0$ which is initial. We proceed using induction, and we use thata $F\ell$ is the vertex of a cocone $(F c_n)$, and the mediating arrow has to be given by the isomorphism $\phi$: 
+The first case is trivially true, because both arrows have domain $0$ which is initial. We proceed using induction, and we use that $F\ell$ is the vertex of a cocone $(F c_n)$, and the mediating arrow has to be given by the isomorphism $\phi$: 
 \begin{align*}
 \lbanana \alpha \rbanana \circ c_{n + 1} &= \lbanana \alpha \rbanana \circ \phi \circ F(c_n)\\
 &= \alpha \circ F \lbanana \alpha \rbanana \circ Fc_n \\
@@ -535,7 +535,7 @@ Books:
 - Limits are in all basic CT books, here we followed Tom Leinster Basic Category Theory
 - Barr & Wells: Chapter 14 deals with F-algebras and fixed points, or final chapter of Awodey
 - Some theory on fixed points in Haskell can be found in 'Hinze; Adjoint Folds and Unfolds' and 'Bird; Generalized Folds for RDT'. See also Philip Wadler; Recursive types for free.
-- Catamorphisms and its siblings were popularized by 'Meijer et al; Fucntional Programming using bananas, envelopes and barbed wire'. Also discussed in 'Bird, de Moor; Algebra of Programming'.
+- Catamorphisms and its siblings were popularized by 'Meijer et al; Functional Programming using bananas, envelopes and barbed wire'. Also discussed in 'Bird, de Moor; Algebra of Programming'.
 
 On the web:
 
