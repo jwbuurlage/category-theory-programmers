@@ -355,7 +355,7 @@ Let $\Delta: \mathcal{C} \to \mathcal{C} \times \mathcal{C}$ be the \emph{diagon
 \Delta a &= (a, a) \\
 \Delta (f: a \to b) &= (f, f) : (a, a) \to (b, b)
 \end{align*}
-Show that if the category $\mathcal{C}$ has binary products if and only if $\Delta$ has a right adjoint $\Pi$. Here, the functor $\Pi: \mathcal{C} \times \mathcal{C} \to \mathcal{C}$ should send $(a, b) \mapsto a \times b$.
+Show that the category $\mathcal{C}$ has binary products if and only if $\Delta$ has a right adjoint $\Pi$. Here, the functor $\Pi: \mathcal{C} \times \mathcal{C} \to \mathcal{C}$ should send $(a, b) \mapsto a \times b$.
 
 \emph{Hint:} write the components of the counit and the arrows that arise in the universal arrow property of the counit (see Exercise \ref{exc:universal-mapping-property-counit}), in terms components of $\mathcal{C} \times \mathcal{C}$, i.e. $\epsilon_d = (p_1, p_2)$, $f = (q_1, q_2)$.
 

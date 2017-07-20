@@ -58,9 +58,9 @@ and vice versa:
 $$\lambda^{-1} g = \text{eval}_b^c \circ (g \times \text{id}_b).$$
 which is an isomorphism by the commutativity of the diagram and the uniqueness of $\lambda f$.
 
-To prove that curried and uncurried version of binary functions are actually *equivalent* we would have to show something stronger, that there is an arrow between $[a \times b \to c] \to [a \to [b \to c]]$ that is *iso*, but for this we some more complicated machinery which for now would be too big of a diversion.
+To prove that curried and uncurried version of binary functions are actually *equivalent* we would have to show something stronger, that there is an arrow between $[a \times b \to c] \to [a \to [b \to c]]$ that is *iso*, but for this we need some more complicated machinery which for now would be too big of a diversion.
 
-One can show also show that exponentials are unique up to unique isomorphism, but this also requires some machinery that we have not yet developed. We may revisit this when when we get to discuss adjunctions.
+One can show that exponentials are unique up to unique isomorphism, but this again requires some machinery that we have not yet developed. We may revisit this when when we get to discuss adjunctions.
 
 We have already seen that \textbf{Set} is a CCC. Before we give some additional properties of CCCs and the exponential objects in them, let us look at some additional examples of CCCs:
 
@@ -99,7 +99,7 @@ Before, we briefly discussed $\mathbf{Cat}$, the category of small categories. L
 $$[\mathcal{C} \to \mathcal{D}] \equiv \mathbf{Fun}(\mathcal{C}, \mathcal{D}).$$
 So the exponentials correspond to the \emph{functor categories} between the categories in question.
 
-Let $F: \mathcal{C} \times \mathcal{D} \to \mathcal{E}$ be a functor, then we want to construct a functor $\lambda F: \mathcal{C} \to [\mathcal{D} \rightarrow \mathcal{E}]$. This functor should sends each object $c$ to a functor $\lambda F(c)$ between $\mathcal{D}$ and $\mathcal{E}$, and arrows of $\mathcal{C}$ to natural transformations between $\mathcal{D}$ and $\mathcal{E}$. We define this, using $F$, as:
+Let $F: \mathcal{C} \times \mathcal{D} \to \mathcal{E}$ be a functor, then we want to construct a functor $\lambda F: \mathcal{C} \to [\mathcal{D} \rightarrow \mathcal{E}]$. This functor should send each object $c$ to a functor $\lambda F(c)$ between $\mathcal{D}$ and $\mathcal{E}$, and arrows of $\mathcal{C}$ to natural transformations between $\mathcal{D}$ and $\mathcal{E}$. We define this, using $F$, as:
 \begin{itemize}
 \item The functor for $c \in \mathcal{C}$:
     \begin{itemize}
@@ -189,7 +189,7 @@ Also, note that this implies that the same identifiers may be used indepently in
 
 Say $f$ does not contain $x$ as a free variable, then we can equivalently write:
 $$\lambda x.fx \equiv f,$$
-this is called $\eta$-conversion.
+this is called **$\eta$-conversion**.
 
 \begin{example}[Natural numbers]
 Since the $\lambda$-calculus forms a very minimal programming language, we may expect it to be able to perform basic mathematical tasks. Indeed it can, and as an example we will see how we can model the natural numbers as expressions in $\lambda$-calculus.
@@ -205,7 +205,7 @@ The natural numbers are defined recursively by applying $s$ to the body of the f
 3 &= \lambda sz.s(s(sz))\\
 &\ldots
 \end{align*}
-This leads naturally to the \emph{succesor function}, which correspond to the following expression:
+This leads naturally to the \emph{successor function}, which corresponds to the following expression:
 $$S = \lambda wyx.y(wyx).$$
 Writing $s^k z = s(s(s(s(s \ldots (sz)))))$, with $k$ occurences of $s$, we can see that:
 \begin{align*}
@@ -240,7 +240,7 @@ If $t$ is an expression then we write $t:T$ to indicate that its type is $T$. Ty
 
 *Equations*, or *equality judgements* in this calculus have the form:
 $$\Gamma|t = s:T.$$
-Here, $\Gamma$ is some set of variables that at least contains *all* the free variables in both $t$ and $s$. Such an equation means that according to $\Gamma$ (i.e. with respect to its variables), the expressions $t$ and $s$ of type $T$ are equal. These equations are subjects to some rules, e.g. for fixed $\Gamma$ they define an equivalence relation of expressions of type $T$, but we will not list these here. For an overview, see the suggested literature at the end of this chapter.
+Here, $\Gamma$ is some set of variables that at least contains *all* the free variables in both $t$ and $s$. Such an equation means that according to $\Gamma$ (i.e. with respect to its variables), the expressions $t$ and $s$ of type $T$ are equal. These equations are subject to some rules, e.g. for fixed $\Gamma$ they define an equivalence relation of expressions of type $T$, but we will not list these here. For an overview, see the suggested literature at the end of this chapter.
 
 ## Typed $\lambda$-calculus as a CCC
 
