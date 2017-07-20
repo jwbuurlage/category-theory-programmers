@@ -10,10 +10,10 @@ documentclass: memoir
 bibliography: mendeley.bib
 classoption: 12pt,openany,oneside
 header-includes:
+    - \renewcommand{\familydefault}{\sfdefault}
     - \usepackage{tikz-cd}
     - \usepackage{amsthm}
     - \usepackage[T1]{fontenc}
-    - \usepackage{palatino}
     - \usepackage[scaled]{beramono}
     - \usepackage{float}
     - \usepackage{epigraph}
