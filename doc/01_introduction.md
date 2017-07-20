@@ -6,12 +6,12 @@ Although the main focus is on the mathematics, examples are given in Haskell to 
 
 I would like to thank:
 
-- Tom Bannink for supplying the proof for the bifunctor example.
-- Peter Kristel for valuable comments on the Yoneda embedding
-- Willem Jan Palenstijn for corrections and comments regarding cartesian closed categories.
-- Tom de Jong for examples and suggestions for the section on adjunctions
+- Tom Bannink for supplying the proof for the bifunctor example,
+- Peter Kristel for valuable comments on the Yoneda embedding,
+- Willem Jan Palenstijn for corrections and comments regarding Cartesian closed categories,
+- Tom de Jong for examples and suggestions for the section on adjunctions,
 
-Also Matt Noonan, and Ruben Pieters for fixing typos and/or making other improvements to the text.
+as well as Matt Noonan, Ruben Pieters, Conal Elliott, Scott Fleischman, and `@ed359` for fixing typos and/or making other improvements to the text.
 
 And everyone else who has attended or contributed to the seminar.
 
