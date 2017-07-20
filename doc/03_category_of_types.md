@@ -184,7 +184,7 @@ def fn(a):
 ```
 This function returns `None` (corresponding to 'no value') if we provide 'invalid input'. This functor can be defined as:
 ```haskell
-data Maybe = Nothing | Just a
+data Maybe a = Nothing | Just a
 ```
 And to turn it into a functor, we define `fmap`:
 ```haskell
