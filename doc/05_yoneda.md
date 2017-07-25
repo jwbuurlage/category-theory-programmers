@@ -65,22 +65,22 @@ Now, we are ready to describe the Yonedda embedding. Note that because it is a f
 \begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
-a \arrow[d, "f"'] \arrow[r, "Y"] & h^a \arrow[d, Leftarrow, "Yf"] \\
-b \arrow[r, "Y"] & h^b
+a \arrow[d, "f"] \arrow[r, "Y"] & h^a \arrow[d, Leftarrow, "Yf^{\text{op}}"] \\
+b \arrow[u, bend left, dashed, "f^{\text{op}}"] \arrow[r, "Y"] & h^b
 \end{tikzcd}
 \end{figure}
 
-The natural transformation $Yf$ should have components which are arrows in **Set**, indexed by objects in $\mathcal{C}$. Let $k: d \to c$ (note the reversed order), the corresponding naturality square looks like this:
+The natural transformation $Yf$ should have components which are arrows in **Set**, indexed by objects in $\mathcal{C}$. Let $k: c \to d$, the corresponding naturality square looks like this:
 
 \begin{figure}[H]
 \centering
 \begin{tikzcd}[sep=large]
-\text{Hom}(a, c) \arrow[r, "(Yf)_c"] \arrow[d, "h^a(k)"'] & \text{Hom}(b, c)  \arrow[d, "h^b(k)"] \\
-\text{Hom}(a, d) \arrow[r, "(Yf)_d"] & \text{Hom}(b, d)
+\text{Hom}(a, c) \arrow[d, "h^a(k)"'] & \text{Hom}(b, c)  \arrow[l, "(Yf^{\text{op}})_c"'] \arrow[d, "h^b(k)"] \\
+\text{Hom}(a, d) & \text{Hom}(b, d) \arrow[l, "(Yf^{\text{op}})_d"]
 \end{tikzcd}
 \end{figure}
 
-So the natural components should be maps between hom-sets, and again we can find these maps by composition! This is summarized in the following definition:
+So the natural components should be maps between hom-sets, and again we can find these maps by composition! The naturality follows simply from the associativity of composition. This is summarized in the following definition:
 
 \begin{definition}[Yoneda embedding]
 The \textbf{Yoneda functor} $Y: \mathcal{C}^{\text{op}} \to \mathbf{Fun}(\mathcal{C}, \mathbf{Set})$, is defined as follows. Let $a \in \mathcal{C}$ and $f: b \to c$ in $\mathcal{C}$.
