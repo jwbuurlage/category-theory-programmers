@@ -14,7 +14,7 @@ b  \arrow[r, "F"] & \text{Hom}(c, b)
 \end{tikzcd}
 \end{figure}
 
-The arrow marked with a question marked is an arrow in **Set**. Arrows in sets are functions, which we can define by saying what it does on elements. The elements of the hom-sets are arrows in $\mathcal{C}$. Given some element of $\text{Hom}(c, a)$, i.e. an arrow in $\mathcal{C}$: $g: c \to a$, we need to obtain an element of $\text{Hom}(c, b)$, i.e. an arrow from $c \to b$. We have the following picture
+The arrow with a question mark is an arrow in **Set**. Arrows in sets are functions, which we can define by saying what it does on elements. The elements of the hom-sets are arrows in $\mathcal{C}$. Given some element of $\text{Hom}(c, a)$, i.e. an arrow in $\mathcal{C}$: $g: c \to a$, we need to obtain an element of $\text{Hom}(c, b)$, i.e. an arrow from $c \to b$. We have the following picture
 
 \begin{figure}[H]
 \centering
