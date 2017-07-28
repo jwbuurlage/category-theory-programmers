@@ -80,7 +80,7 @@ The natural transformation $Yf$ should have components which are arrows in **Set
 \end{tikzcd}
 \end{figure}
 
-So the natural components should be maps between hom-sets, and again we can find these maps by composition! The naturality follows simply from the associativity of composition. This is summarized in the following definition:
+So the natural components should be maps between hom-sets, and as we will see, we can again find these maps by composition! This is summarized in the following definition:
 
 \begin{definition}[Yoneda embedding]
 The \textbf{Yoneda functor} $Y: \mathcal{C}^{\text{op}} \to \mathbf{Fun}(\mathcal{C}, \mathbf{Set})$, is defined as follows. Let $a \in \mathcal{C}$ and $f: b \to c$ in $\mathcal{C}$.
