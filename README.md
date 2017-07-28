@@ -1,6 +1,8 @@
 # Notes on Category Theory and Haskell
 
-The notes can be found here: [pdf](https://github.com/jwbuurlage/category-theory-programmers/raw/master/doc/categories_for_programmers.pdf), [epub](https://github.com/jwbuurlage/category-theory-programmers/raw/master/doc/categories_for_programmers.epub).
+The notes can be found here:
+- [pdf](https://github.com/jwbuurlage/category-theory-programmers/raw/master/doc/categories_for_programmers.pdf)
+- [epub](https://github.com/jwbuurlage/category-theory-programmers/raw/master/doc/categories_for_programmers.epub) (work in progress, missing diagrams and theorems)
 
 This document contains notes on category theory in the context of (functional) programming. Originally they were lecture notes for a seminar hosted at Centrum Wiskunde & Informatica, the national Dutch research centre for mathematics and computer science. The main reason for compiling these notes is to provide a way to gain familiarity with concepts of category theory (and other branches of mathematics) that apply in a broad sense to the field of functional programming.
 
