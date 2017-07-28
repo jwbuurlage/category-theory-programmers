@@ -309,7 +309,13 @@ instance Bifunctor Either where
     bimap _ g (Right y) = Right (g y)
 ```
 
-These are examples of type constructors (or algebraic data types, as we have seen). Since functors compose, we could ask ourselves: "Are all algebraic data types functors?". The answer is positive, and this allows the Haskell language to derive an implementation of `fmap` for all ADTs!
+These are examples of type constructors (or algebraic data types, as we have seen). Since functors compose, we could ask ourselves: "Are all algebraic data types functors?". The answer is positive; functor implementations can be automatically derived for all ADTs! For the simplest case (an ordinary functor), GHC allows you to do this in the following way^[See: <https://ghc.haskell.org/trac/ghc/wiki/Commentary/Compiler/DeriveFunctor>]:
+```haskell
+{-# LANGUAGE DeriveFunctor #-}
+
+data Example a = Ex a Char (Example a) (Example Char)
+  deriving (Functor)
+```
 
 ## Exercises
 
