@@ -483,7 +483,7 @@ So, in summary, catamorphing an algebra can be done recursively using:
 type Algebra f a = f a -> a
 data Fix f = Fix { unFix :: f (Fix f) }
 
-cata :: Functor f => Algebra f a -> Mu f -> a
+cata :: Functor f => Algebra f a -> Fix f -> a
 cata a = f . fmap (cata a) . unFix
 ```
 
