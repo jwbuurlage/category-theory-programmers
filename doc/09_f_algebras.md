@@ -382,7 +382,7 @@ Let $f_!$ be the unique arrow $0 \to F0$. Consider the $\omega$-chain:
 \end{tikzcd}
 \end{figure}
 Let $\ell$ be the object of the limit of this sequence Since $F$ preserves colimits, we have:
-$$F\ell \equiv F \varinjlim F^i \simeq \varinjlim F(F^i 0) \simeq F^i 0 \equiv \ell.$$
+$$F\ell \equiv F \varinjlim F^i \simeq \varinjlim F(F^i 0) \simeq \varinjlim F^i 0 \equiv \ell.$$
 here, the last isomorphism says that the limit of the $\omega$-chain disregarding $0$ is the same as the one of the original $\omega$-chain. Intuitively, $0$ has a unique arrow to the limit anyway, so removing it does not change anything.
 
 So we have an isomorphism $\phi: F\ell \simeq \ell$. To show that $(\ell, \phi)$ is initial we consider any $F$-algebra $(a, \alpha)$, and look at the data:
