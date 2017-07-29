@@ -468,7 +468,7 @@ Now we have our `cata` function, but it is of no use if `Fix f` is not inhabited
 -- can be done using Fix' and unFix'
 data Fix' f = Fix' { unFix' :: f (Fix' f) }
 -- for Fix, we can define cata as:
-cata' :: Functor f => (a -> f a) -> Fix' f -> a
+cata' :: Functor f => (f a -> a) -> Fix' f -> a
 cata' alpha = alpha . fmap (cata' alpha) . unFix'
 -- to show that we can convert between the Fix and Fix':
 iso :: Functor f => Fix' f -> Fix f
