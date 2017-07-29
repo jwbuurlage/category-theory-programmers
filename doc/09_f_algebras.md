@@ -484,7 +484,7 @@ type Algebra f a = f a -> a
 data Fix f = Fix { unFix :: f (Fix f) }
 
 cata :: Functor f => Algebra f a -> Fix f -> a
-cata a = f . fmap (cata a) . unFix
+cata a = a . fmap (cata a) . unFix
 ```
 
 ## Using catamorphisms in Haskell
