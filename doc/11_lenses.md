@@ -42,7 +42,7 @@ positive :: Lens Bool Bool Integer Integer
 positive = Lens view update
   where
     view = (>= 0)
-    update b = if b then (abs x) else (-(abs x))
+    update b x = if b then (abs x) else (-(abs x))
 ```
 Let us add some syntactic sugar:
 ```haskell
