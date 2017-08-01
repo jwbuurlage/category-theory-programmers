@@ -148,7 +148,7 @@ A functor is a map between categories. This means it sends objects to objects, a
 - An *arrow function* that assigns to each arrow $f: a \to b$ in $\mathcal{C}$ an arrow $Tf: Ta \to Tb$ in $\mathcal{D}$, such that:
 $$T(\text{id}_a) = \text{id}_{Ta},~T(g \circ f) = Tg \circ Tf.$$
 
-A functor is a very powerful concept, since it allows you to translate between different branches of mathematics! They also play an important role in functional programming. Where among many other things, they are useful for defining the _container types_ or more generally _type constructors_.
+A functor is a very powerful concept, since it allows you to translate between different branches of mathematics! They also play an important role in functional programming where among many other things, they are useful for defining _container types_ or more generally _type constructors_.
 
 Functors can be composed, and this allows one to define a category of categories\footnote{Actually, there are some technicalities to be worked out and the resulting category consists of 'small categories' only.} **Cat**, where the arrows are functors.
 
