@@ -2,6 +2,8 @@
 
 # Categories, functors and natural transformations
 
+In a way, category theory captures the core of mathematics. Many, if not all, mathematical theories seem to have a number of common ingredients: there are _objects_ which can be numbers, sets, or some other entity, and _arrows_ that somehow relate these objects. For example, a number is related to its divisors, and functions can relate sets. These relations have in common that they can be composed. In category theory, we only consider _objects_ and _arrows_, and results about these categories only make use of a single operation; composition of arrows. It turns out, that using this description (and thereby ignoring domain specific information), it is still possible to obtain rich results that automatically apply for every conceivable category.
+
 ## Core definitions
 
 We start with giving the definition of a category:
