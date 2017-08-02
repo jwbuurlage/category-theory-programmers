@@ -20,9 +20,9 @@ And everyone else who has attended or contributed to the seminar.
 
 \chapter*{Introduction}
 
-Today, the most common programming style is *imperative*. Imperative programming lets the user describes *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. Imperative programming was first treated by mathematicians such as Turing and von Neuman in the 30s.
+Today, the most common programming style is *imperative*. Imperative programming lets the user describe *how* a program should operate, mostly by directly changing the memory of a computer. Most computer hardware is imperative; a processor executes a machine code sequence, and this sequence is certainly imperative. Imperative programming was first treated by mathematicians such as Turing and von Neuman in the 30s.
 
-A different way of programming is *declarative programming*, which is a way of expressing *what* you want the program to compute (without explicitly saying how it should do this). A good way of expressing what you want to have computed, is by describing your program mathematically, i.e. *using functions*. This exactly what we will explore. The functional style of looking at computations is based on work done in the 20s/30s by Curry and Church among others.
+A different way of programming is *declarative programming*, which is a way of expressing *what* you want the program to compute (without explicitly saying how it should do this). A good way of expressing what you want to have computed, is by describing your program mathematically, i.e. *using functions*. This is exactly what we will explore. The functional style of looking at computations is based on work done in the 20s/30s by Curry and Church among others.
 
 Practically speaking, the difficulty in using a *(typed, pure) functional* programming language, is that the functions that you write between types should behave like mathematical functions on the corresponding sets. This means, for example, that if you call a function multiple times with the same arguments, it should produce the same result every time. This is often summarized as a *side-effect free function*. More generally, values are in principle immutable.
 
