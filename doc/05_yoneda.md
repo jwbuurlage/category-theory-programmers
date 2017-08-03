@@ -57,7 +57,7 @@ To simplify the notation in the upcoming sections, we will denote the covariant 
 For any category $\mathcal{C}$ the Yoneda embedding is a functor between the opposite category and the category of functors between $\mathcal{C}$ and **Set**. Let us first introduce this target category.
 
 \begin{definition}
-Let $\mathcal{C}$ and $\mathcal{D}$ be two categories, then we define $\mathbf{Fun}(\mathcal{C}, \mathcal{D})$ as the category with as objects functors $\mathcal{C} \to \mathcal{D}$, and as arrows natural transformations between these functors.
+Let $\mathcal{C}$ and $\mathcal{D}$ be two categories, then we define $\mathbf{Fun}(\mathcal{C}, \mathcal{D})$ as the category that has functors $\mathcal{C} \to \mathcal{D}$ as objects, and natural transformations between these functors as arrows.
 \end{definition}
 
 Now, we are ready to describe the Yonedda embedding. Note that because it is a functor between *the opposite of* $\mathcal{C}$ and the category of *functors* between $\mathcal{C}$ and **Set**, it should take objects to functors, and arrows to natural transformations. For all objects, we have introduced a functor associated to it in the previous section; the *hom-functor*.
