@@ -224,7 +224,7 @@ Here, e.g. `f<int>(1)` would yield `2`, while `f<char>('a')` would result in a c
 
 In Haskell, this is not allowed, polymorphic functions must work for _all types_, this is called parametric polymorphism. Specializing function definitions is done using type classes^[in C++ this would be done using overloading and (partial) template specialization]. This has an important consequence (or perhaps, it is the underlying reason): a parametric polymorphic function satisfies automatically the naturality conditions.
 
-The corresponding diagram is:
+The corresponding naturality square in this context is:
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
@@ -233,20 +233,20 @@ The corresponding diagram is:
 \end{tikzcd}
 \end{figure}
 
-Here the left `fmap` works for `F`, while the right `fmap` corresponds to `G`, and the top `alpha` is implicitely the component at `a`, while the bottom one is the component at `b`. What would have to show, is that automatically
+Here, the left `fmap` corresponds to `F`, while the right `fmap` corresponds to `G`, and the top `alpha` is implicitely the component at `a`, while the bottom one is the component at `b`. What we would have to show, is that:
 
 ```haskell
 fmap f . alpha = alpha . fmap f
 ```
 
-This can be shown in a very general context, and it has to do with the fact that the 'bodies'for `f`, `fmap` and `alpha` are the same for all types. We will show this in an upcoming part when we discuss _free theorems_.
+Indeed this can be shown in a very general context, and it has to do with the fact that the 'bodies' for `f`, `fmap` and `alpha` are the same for all types. We will discuss this in an upcoming part on _free theorems_.
 
 Let us revisit our `head :: [a] -> Maybe a` example, and consider the naturality condition here. It says that:
 
 ```haskell
 fmap f . head = head . fmap f
 ```
-Here, the fmap on the lhs corresonds to the `Maybe` functor, while on the rhs it corresponds to the `[]` functor. The lhs can b e read like this; take the first element of the list, then apply f on it. The rhs can be read as "apply the function f to the enitre list, then take the first element". The result is the same; the funtion f applied to the head of the list (if any). But for the rhs we apply the function `f` for each element in the list, while on the lhs we only apply it to the head. Because of the constraint on polymorphic function, the compiler knows that the result is equal and can choose which one to use!
+Here, the fmap on the lhs corresonds to the `Maybe` functor, while on the rhs it corresponds to the `[]` functor. The lhs can b e read like this; take the first element of the list, then apply f on it. The rhs can be read as "apply the function f to the enitre list, then take the first element". The result is the same; the funtion f applied to the head of the list (if any). On the rhs we apply the function `f` for each element in the list, whereas on the lhs we only apply it to the head. Because of the constraint on polymorphic function, the compiler knows that the result is equal and can choose which one to use!
 
 ## References
 
