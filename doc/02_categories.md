@@ -258,7 +258,7 @@ F:~\text{Hom}_\mathcal{C}(a, b) &\to \text{Hom}_\mathcal{D}(Fa, Fb),\\
 is a surjection. It is called \textbf{faithful} if it is an injection.
 \end{definition}
 
-When after applying $F$ an arrow $Ff$ or an object $Fa$ has a certain property(i.e. being initial, terminal or epi, mono), it is implied that $f$ (or $a$) had this property, then we say the \emph{$F$ \textbf{reflects} the property}.
+When after applying $F$ an arrow $Ff$ or an object $Fa$ has a certain property (i.e. being initial, terminal or epi, mono), it is implied that $f$ (or $a$) had this property, then we say the \emph{$F$ \textbf{reflects} the property}.
 
 This allows for statements such as this:
 
