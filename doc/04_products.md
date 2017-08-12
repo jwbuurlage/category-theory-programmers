@@ -37,7 +37,7 @@ a & & b
 \end{figure}
 \end{definition}
 
-In this case, the (unique) arrows $q$ are what gives the product a *universal mapping property*. If a product exists, it is unique op to unique isomorphism.
+In this case, the (unique) arrows $q$ are what gives the product a *universal mapping property*. If a product exists, it is unique up to unique isomorphism.
 
 We say that the functions $f$ and $g$ *factors* through $a \times b$, or that $a \times b$ *factorizes* $f$ and $g$. The reason for this name is clear when making the analogy with numbers. Consider:
 $$f = p_1 \circ q,~g = p_2 \circ q.$$
