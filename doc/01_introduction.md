@@ -11,10 +11,9 @@ I would like to thank:
 - Willem Jan Palenstijn for corrections and comments regarding Cartesian closed categories,
 - Tom de Jong for examples and suggestions for the section on adjunctions,
 
-as well as Matt Noonan, Ruben Pieters, Conal Elliott, Scott Fleischman, Tommy Vagbratt,
+And everyone else who has attended or contributed to the seminar, as well as Matt Noonan, Ruben Pieters, Conal Elliott, Scott Fleischman, Tommy Vagbratt,
 Juan Manuel Gimeno, Matej Kollar, John Galt, `@ed359`, `@argent0` and `@delta4d` for fixing typos and/or making other improvements to the text.
 
-And everyone else who has attended or contributed to the seminar.
 
 -- Jan-Willem Buurlage (<janwillembuurlage@gmail.com>)
 
