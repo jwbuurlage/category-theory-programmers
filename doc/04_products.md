@@ -206,7 +206,7 @@ Given two categories $\mathcal{C}, \mathcal{D}$ their product category $\mathcal
 \item The objects are pairs $(c, d)$ where $c \in \mathcal{C}$ and $d \in \mathcal{D}$.
 \item The arrows are pairs of arrows, $(f, g): (c, d) \to (c', d')$ for $f: c \to c'$ in $\mathcal{C}$ and $g: d \to d'$ in $\mathcal{D}$.
 \item The identity arrow for $(c, d)$ is the pair $(\text{id}_c, \text{id}_d)$.
-\item Composition of arrows happens per component, i.e.\ when $f, g$ in $\mathcal{C}$ and $h, k \in \mathcal{D}$:
+\item Composition of arrows happens per component, i.e.\ when $f, g$ \in $\mathcal{C}$ and $h, k \in \mathcal{D}$:
 $$(f, h) \circ (g, k) \equiv (f \circ g, h \circ k)$$
 \end{itemize}
 \end{definition}
