@@ -231,7 +231,7 @@ we have a unique map $\bar{f}$ such that the following diagram commutes.
 \begin{figure}[H]
 \centering
 \begin{tikzcd}
-a \arrow[rd, "\bar{f}"] \arrow[rdd, bend right, "f_2"'] \arrow[rrd, bend left, "f_1"]& & \\
+a \arrow[rd, "\bar{f}"] \arrow[rdd, bend right, "f_1"'] \arrow[rrd, bend left, "f_2"]& & \\
 & p \arrow[r, "p_2"] \arrow[d, "p_1"'] & y \arrow[d, "t"] \\
 & x \arrow[r, "s"'] & z
 \end{tikzcd}
