@@ -12,7 +12,7 @@ I would like to thank:
 - Tom de Jong for examples and suggestions for the section on adjunctions,
 
 and everyone else who has attended or contributed to the seminar. I wouldd also like to Matt Noonan, Ruben Pieters, Conal Elliott, Scott Fleischman, Tommy Vagbratt,
-Juan Manuel Gimeno, Matej Kollar, John Galt, `@ed359`, `@argent0` and `@delta4d` for fixing typos and/or making other improvements to the text.
+Juan Manuel Gimeno, Matej Kollar, John Galt, `@ed359`, `@argent0`, `@nskins`, and `@delta4d` for fixing typos and/or making other improvements to the text.
 
 
 -- Jan-Willem Buurlage (<janwillembuurlage@gmail.com>)
