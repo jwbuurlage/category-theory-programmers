@@ -23,7 +23,7 @@ Whenever defining something it always make sense to see what this means in the o
 
 \subsection*{Products}
 
-Initial objects and terminal objects have a *universal property*, they are defined by the property that e.g. all other objects have a *unique morphism to the object*. A more involved example of such a universal property is the *notion of a product of objects*. The categorical product is a unifying definition for many 'products' encountered in mathematics, such as the cartesian product, product group, products of topological spaces, and so on.
+Initial objects and terminal objects have a *universal property*, meaning that they are defined by the property that e.g. all other objects have a *unique morphism to the object*. A more involved example of such a universal property is the *notion of a product of objects*. The categorical product is a unifying definition for many 'products' encountered in mathematics, such as the cartesian product, product group, products of topological spaces, and so on.
 
 \begin{definition}
 Let $\mathcal{C}$ be a category, and let $a, b \in \mathcal{C}$ be objects in $\mathcal{C}$. A \emph{product} of $a$ and $b$ is an object $a \times b \in \mathcal{C}$ along with two arrows $p_1: a \times b \to a$ and $p_2: a \times b \to b$ (the \emph{projections}) so that for all objects $c \in \mathcal{C}$ and arrows $f: c \to a$ and $g: c \to b$ there exists a unique morphism $q: c \to a \times b$ that makes the following diagram commute:
@@ -75,7 +75,7 @@ Indeed, we have constructed an arrow that makes the above diagram commute. It is
 For a completely different example, we consider the category corresponding to a poset.
 
 \begin{example}
-Let us consider the product of objects in the category corresponding to some poset $P$. Consider two elements $x, y \in P$. A product $z \equiv x \times y$ would be equiped with two arrows $z \to x$ and $z \to y$, which means $z \leq x$ and $z \leq y$. Furthermore, for any element $w$ with arrows to $x, y$ (i.e. $w \leq x$ and $w \leq y$), there has to be an arrow $q: w \to z$ (i.e. $w \leq z$). This is the same as saying that, in addition to $z \leq x$ and $z \leq y$, we have for all elements $w$ of the poset:
+Let us consider the product of objects in the category corresponding to some poset $P$. Consider two elements $x, y \in P$. A product $z \equiv x \times y$ would be equipped with two arrows $z \to x$ and $z \to y$, which means $z \leq x$ and $z \leq y$. Furthermore, for any element $w$ with arrows to $x, y$ (i.e. $w \leq x$ and $w \leq y$), there has to be an arrow $q: w \to z$ (i.e. $w \leq z$). This is the same as saying that, in addition to $z \leq x$ and $z \leq y$, we have for all elements $w$ of the poset:
 $$w \leq x \text{ and } w \leq y \implies w \leq z$$
 This means that $z$ is the "largest element that is smaller or equal to $x$ and $y$", also called the \emph{infimum} of $x$ and $y$.
 \end{example}
@@ -152,7 +152,7 @@ Here, the two value constructors take an element of type `a`, or an element of t
 
 A sum type means choosing an alternative between types, while the product type is a combination of the types. Let us look at some more examples:
 
-- In C, an `enum` represents a fixed number of alternative constants. In Haskell, this would correspond to the sum type of multiple 0-ary value constructors (implicitely the finite sum type of the type `()` with itself):
+- In C, an `enum` represents a fixed number of alternative constants. In Haskell, this would correspond to the sum type of multiple 0-ary value constructors (implicitly the finite sum type of the type `()` with itself):
 ```haskell
     data Enum = One | Two | Three
 ```
