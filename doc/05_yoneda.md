@@ -1,6 +1,6 @@
 # The Yoneda Lemma
 
-The Yoneda Lemma relates a category $\mathcal{C}$ with the functors from $\mathcal{C}$ to $\mathbf{Set}$. Before we can introduce the lemma's we will introduce a number of concepts; first we introduce a class of functors called *hom-functors*, we introduce the notion of *representable functors*, we will discuss the *Yoneda embedding* and finally we will move on to the Yoneda Lemma; one of the important tools in category theory
+The Yoneda Lemma relates a category $\mathcal{C}$ with the functors from $\mathcal{C}$ to $\mathbf{Set}$. Before we can introduce the lemma we will introduce a number of concepts; first we introduce a class of functors called *hom-functors*, we introduce the notion of *representable functors*, we will discuss the *Yoneda embedding* and finally we will move on to the Yoneda Lemma; one of the important tools in category theory
 
 ## Hom-functors
 
@@ -60,7 +60,7 @@ For any category $\mathcal{C}$ the Yoneda embedding is a functor between the opp
 Let $\mathcal{C}$ and $\mathcal{D}$ be two categories, then we define $\mathbf{Fun}(\mathcal{C}, \mathcal{D})$ as the category that has functors $\mathcal{C} \to \mathcal{D}$ as objects, and natural transformations between these functors as arrows.
 \end{definition}
 
-Now, we are ready to describe the Yonedda embedding. Note that because it is a functor between *the opposite of* $\mathcal{C}$ and the category of *functors* between $\mathcal{C}$ and **Set**, it should take objects to functors, and arrows to natural transformations. For all objects, we have introduced a functor associated to it in the previous section; the *hom-functor*.
+Now, we are ready to describe the Yoneda embedding. Note that because it is a functor between *the opposite of* $\mathcal{C}$ and the category of *functors* between $\mathcal{C}$ and **Set**, it should take objects to functors, and arrows to natural transformations. For all objects, we have introduced a functor associated to it in the previous section; the *hom-functor*.
 
 \begin{figure}[H]
 \centering
@@ -163,7 +163,7 @@ $$\mu: h^a \Rightarrow F.$$
 \begin{proof}
 We already saw that each element of $Fa$ induces a natural transformation, so we have a map:
 $$\Phi: F a \to \text{Nat}(h^a, F).$$
-Here, $\text{Nat}(h^a, F)$ denotes the set of natural transformations between $h^A$ and $F$. We now need to show show that $\Phi$ has an inverse.
+Here, $\text{Nat}(h^a, F)$ denotes the set of natural transformations between $h^A$ and $F$. We now need to show that $\Phi$ has an inverse.
 Let $\mu$ be any natural transformation, then we can obtain an element of $F a$ by looking at the component $\mu_a$ and let it act on the identity arrow $\text{id}_c \in h^a a$, i.e.:
 $$\Psi: \mu \mapsto \mu_a(\text{id}_a).$$
 Now let us show that $\Phi$ and $\Psi$ are inverses of each other. First, we compute:
