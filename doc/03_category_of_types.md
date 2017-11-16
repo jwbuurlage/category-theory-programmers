@@ -203,7 +203,7 @@ Note that implicitly we talk about the component of `alpha` at `a`, since this f
 ```haskell
 head :: [a] -> Maybe a
 head [] = Nothing
-head (x:xs) = x
+head (x:xs) = Just x
 ```
 Here, we have a natural transformation between the `List` and the `Maybe` functor!
 
