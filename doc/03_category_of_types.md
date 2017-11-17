@@ -4,7 +4,7 @@
 
 To establish a link between functional programming and category theory, we need to find a category that is applicable. Observe that a _type_ in a programming language, corresponds to a _set_ in mathematics. Indeed, the type `int` in C based languages, corresponds to some finite set of numbers, the type `char` to a set of letters like `'a'`, `'z'` and `'$'`, and the type `bool` is a set of two elements (`true` and `false`). This category, the category of types, turns out to be a very fruitful way to look at programming.
 
-Why do we want to look at types? Programming safety and correctness. In this part we will hopefully give an idea of how category theory applies to programming, but we will not go into to much detail yet, this is saved for later parts.
+Why do we want to look at types? Programming safety and correctness. In this part we will hopefully give an idea of how category theory applies to programming, but we will not go into to much detail yet as this is saved for later parts.
 
 We will take as our model for the category of Haskell types (**Hask**) the category **Set**. Recall that the elements of **Set** are sets, and the arrows correspond to maps. There is a major issue to address here: Mathematical maps and functions in a computer program are not identical (bottom value $\perp$). We may come back to this, but for now we consider **Set** and **Hask** as the same category.
 
@@ -66,7 +66,7 @@ in fact, this is part of the core standard library of Haskell (the Prelude) that
     }
 ```
 
-There is one issue we have glared over; in mathematics all functions are *pure*: they will always give the same output for the same input. This is not always the case for computer programs, using IO functions, returning the current date, using a global variable are all examples of impure operations that are common in programming. In Haskell, *all functions are pure*, and this is a requirement that allows us to make the mapping to the category **Set**. The mechanism that allows Haskell programs to still do useful things is powered by *monads*, which we will discuss later.
+There is one issue we have glared over; in mathematics all functions are *pure*: they will always give the same output for the same input. This is not always the case for computer programs. Using IO functions, returning the current date, using a global variable are all examples of impure operations that are common in programming. In Haskell, *all functions are pure*, and this is a requirement that allows us to make the mapping to the category **Set**. The mechanism that allows Haskell programs to still do useful things is powered by *monads*, which we will discuss later.
 
 Although many of the things we will consider can apply to other languages (such as Python and C++), there is a strong reason why people often consider Haskell as an example in the context of category theory and programming; it originates in academia and therefore takes care to model the language more accurately. For example, since we take as our model the category **Set**, there should be a type that corresponds to the empty set $\emptyset$. In C / C++, the obvious candidate would be `void` for this set, but consider a function definition:
 ```cpp
@@ -107,7 +107,7 @@ or in Python we would have;
 >>> a.dtype
 dtype('int64')
 ```
-Note here that the true type of the numpy array is hidden inside the object, meaning its the responsiblity of the program to make sure that the types of operations match! The reason that we consider `numpy` arrays is that normal 'lists' in Python are actually _tuples_, which we will discuss when we talk about products and coproducts.
+Note here that the true type of the numpy array is hidden inside the object, meaning it's the responsiblity of the program to make sure that the types of operations match! The reason that we consider `numpy` arrays is that normal 'lists' in Python are actually _tuples_, which we will discuss when we talk about products and coproducts.
 
 Let us consider the mathematical way of expressing this:
 
@@ -121,7 +121,7 @@ These are all examples of \emph{words} in $X$ (where the last example correspond
 T&: X \to X^*\\
  &: (f: X \to Y) \mapsto (Tf: X^* \to Y^*)
 \end{align*}
-For this second option, we have an obvious candidate for the precise function, let $f: X \to Y$ be some map, then $Tf$ maps a word in $X$ gets to a word in $Y$ in the following way:
+For this second option, we have an obvious candidate for the precise function. Let $f: X \to Y$ be some map, then $Tf$ maps a word in $X$ to a word in $Y$ in the following way:
 $$Tf(x_1, x_2, x_3, ... x_n) = (f(x_1), f(x_2), f(x_3), \ldots, f(x_n)).$$
 \label{exa:kleene-closure}
 \end{example}
@@ -148,7 +148,7 @@ If we want to express the concept^[In C++, type constructors are referred to as 
 class Functor F where
     fmap :: (a -> b) -> F a -> F b
 ```
-This says that `F` is a functor, if there is a function `fmap` that takes a function `f :: a -> b` and maps it to a function `fmap f :: F a -> F b`. Note that we do not explicitely have to state that `F` sends types to types, because this can be induced from the fact that we use `F a` where the compiler expects a type.
+This says that `F` is a functor, if there is a function `fmap` that takes a function `f :: a -> b` and maps it to a function `fmap f :: F a -> F b`. Note that we do not explicitly have to state that `F` sends types to types, because this can be induced from the fact that we use `F a` where the compiler expects a type.
 
 \subsection*{The List functor}
 
@@ -203,7 +203,7 @@ Note that implicitly we talk about the component of `alpha` at `a`, since this f
 ```haskell
 head :: [a] -> Maybe a
 head [] = Nothing
-head (x:xs) = x
+head (x:xs) = Just x
 ```
 Here, we have a natural transformation between the `List` and the `Maybe` functor!
 
