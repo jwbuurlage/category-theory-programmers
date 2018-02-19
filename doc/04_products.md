@@ -49,7 +49,7 @@ For an example with numbers:
 8 & 8 \arrow[l, "\times 1"] \arrow[r, "\times 2"'] & 16
 \end{tikzcd}
 \end{figure}
-$$4 = 2 \times 2,~8 = 4 \times 2.$$
+$$4 = 1 \times 4,~8 = 2 \times 4.$$
 This seems to indicate that in 'some category related to numbers' (in fact, precisely the category of natural numbers with arrows to their multiples, that we gave as an example in the first chapter), the product would correspond to the gcd!
 
 
